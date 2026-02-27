@@ -42,7 +42,7 @@ Idris, like many other programming languages, allows us to generalize this behav
 > [!NOTE]
 > While the prelude calls this type `Maybe`, we are calling it `Option` to avoid conflict. We are also altering the names of the data constructors `Some` is equivlant to `Just`, and `None` is equivalent to `Nothing`.
 >
-> You may recognize the name `Option` from other programming languages, for instance, Rust uses the name `Option` to refer to this concept, and C++ uses `optional`.
+> You may recognize the name `Option` from other programming languages. For instance Rust uses the name `Option` to refer to this concept and C++ uses `optional`.
 
 ```idris
 data Option a = Some a | None
