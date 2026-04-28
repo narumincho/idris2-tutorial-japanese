@@ -39,7 +39,7 @@ Prelude.List.length : List a -> Nat
 
 Here, `Nat` is the type of natural numbers (unbounded, unsigned integers). `Nat` is actually not a primitive data type but a sum type defined in the *Prelude* with data constructors `Z : Nat` (for zero) and `S : Nat -> Nat` (for successor). It might seem highly inefficient to define natural numbers this way, but the Idris compiler treats these and several other *number-like* types specially, and replaces them with primitive integers during code generation.
 
-We are now ready to give the implementation of `mean` a go. Since this is Idris, and we care about clear semantics, we will quickly define a custom record type instead of just returning a tuple of `Double`s. This makes it clearer, which floating point number corresponds to which statistic entity:
+We are now ready to give the implementation of `mean` a go. Since this is Idris, and we care about clear semantics, we will quickly define a custom record type instead of just returning a tuple of `Double`s. This makes it clear which floating point number corresponds to which statistic:
 
 ```idris
 square : Double -> Double
@@ -66,7 +66,7 @@ Tutorial.Functions2> stats [2,4,4,4,5,5,7,9]
 MkStats 5.0 4.0 2.0
 ```
 
-Seems to work, so let's digest this step by step. We introduce several new local variables (`len`, `mean`, and `variance`), which all will be used more than once in the remainder of the implementation. To do so, we use a `let` binding. This consists of the `let` keyword, followed by one or more variable assignments, followed by the final expression, which has to be prefixed by `in`. Note, that whitespace is significant again: We need to properly align the three variable names. Go ahead, and try out what happens if you remove a space in front of `mean` or `variance`. Note also, that the alignment of assignment operators `:=` is optional. I do this, since I thinks it helps readability.
+Seems to work, so let's digest this step by step. We introduce several new local variables (`len`, `mean`, and `variance`), which all will be used more than once in the remainder of the implementation. To do so, we use a `let` binding. This consists of the `let` keyword, followed by one or more variable assignments, followed by the final expression, which has to be prefixed by `in`. Note, that whitespace is significant again: We need to properly align the three variable names. Go ahead, and try out what happens if you remove a space in front of `mean` or `variance`. Note also, that the alignment of assignment operators `:=` is optional. I do so here to improve readability.
 
 Let's also quickly look at the different variables and their types. `len` is the length of the list cast to a `Double`, since this is what's needed later on, where we divide other values of type `Double` by the length. Idris is very strict about this: We are not allowed to mix up numeric types without explicit casts. Please note, that in this case Idris is able to *infer* the type of `len` from the surrounding context. `mean` is straight forward: We `sum` up the values stored in the list and divide by the list's length. `variance` is the most involved of the three: We map each item in the list to a new value using an anonymous function to subtract the mean and square the result. We then sum up the new terms and divide again by the number of values.
 
@@ -104,7 +104,7 @@ record User where
   albums   : List Album
 ```
 
-Most of these should be self-explanatory. Note, however, that in several cases (`Email`, `Artist`, `Password`) we wrap a single value in a new record type. Of course, we *could* have used the unwrapped `String` type instead, but we'd have ended up with many `String` fields, which can be hard to disambiguate. In order not to confuse an email string with a password string, it can therefore be helpful to wrap both of them in a new record type to drastically increase type safety at the cost of having to reimplement some interfaces. Utility function `on` from the *Prelude* is very useful for this. Don't forget to inspect its type at the REPL, and try to understand what's going on here.
+Note that in several cases (`Email`, `Artist`, `Password`) we wrap a single value in a new record type. Of course, we *could* have used the unwrapped `String` type instead, but we'd have ended up with many `String` fields, which can be hard to disambiguate. In order not to confuse an email string with a password string, it can therefore be helpful to wrap both of them in a new record type to drastically increase type safety at the cost of having to reimplement some interfaces. The utility function `on` from the *Prelude* is very useful for this. Don't forget to inspect its type at the REPL, and try to understand what's going on here.
 
 ```idris
 Eq Artist where (==) = (==) `on` name
@@ -151,7 +151,7 @@ handleRequest : DB -> Request -> Response
 
 Note, how we defined a short alias for `List User` called `DB`. This is often useful to make lengthy type signatures more readable and communicate the meaning of a type in the given context. However, this will *not* introduce a new type, nor will it increase type safety: `DB` is *identical* to `List User`, and as such, a value of type `DB` can be used wherever a `List User` is expected and vice versa. In more complex programs it is therefore usually preferable to define new types by wrapping values in single-field records.
 
-The implementation will proceed as follows: It will first try and lookup a `User` by is email address in the data base. If this is successful, it will compare the provided password with the user's actual password. If the two match, it will lookup the requested album in the user's list of albums. If all of these steps succeed, the result will be an `Album` wrapped in a `Success`. If any of the steps fails, the result will describe exactly what went wrong.
+The implementation will proceed as follows: It will first try and lookup a `User` by is email address in the database. If this is successful, it will compare the provided password with the user's actual password. If the two match, it will lookup the requested album in the user's list of albums. If all of these steps succeed, the result will be an `Album` wrapped in a `Success`. If any of the steps fails, the result will describe exactly what went wrong.
 
 Here's a possible implementation:
 
