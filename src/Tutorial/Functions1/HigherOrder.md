@@ -9,9 +9,11 @@ import Tutorial.Functions1.FunctionComposition
 Functions can take other functions as arguments. This is an incredibly powerful concept which can be taken to an extreme very easily, but to keep things simple, we'll start slowly:
 
 ```idris
+export
 isEven : Integer -> Bool
 isEven n = mod n 2 == 0
 
+export
 testSquare : (Integer -> Bool) -> Integer -> Bool
 testSquare fun n = fun (square n)
 ```
