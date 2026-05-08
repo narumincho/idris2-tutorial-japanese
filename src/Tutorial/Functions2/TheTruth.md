@@ -85,11 +85,11 @@ If you see such a thing for the first time, it can be hard to understand what's 
 
 Note, how in the type signature of `intOrString`, we *must* give the argument of type `Bool` a name (`v`) in order to reference it in the result type `IntOrString v`.
 
-You might wonder at this moment, why this is useful and why we would ever want to define a function with such a strange type. We will see lots of very useful examples in due time! For now, suffice to say that in order to express dependent function types, we need to name at least some of the function's arguments and refer to them by name in the types of other arguments.
+You might wonder why this is useful and why we would ever want to define a function with such a strange type. We will see lots of very useful examples in due time! For now, suffice to say that in order to express dependent function types, we need to name at least some of the function's arguments and refer to them by name in the types of other arguments.
 
 ## Implicit Arguments
 
-Implicit arguments are arguments, the values of which the compiler should infer and fill in for us automatically. For instance, in the following function signature, we expect the compiler to infer the value of type parameter `a` automatically from the types of the other arguments (ignore the 0 quantity for the moment; I'll explain it in the next subsection):
+Implicit arguments are arguments whose values the compiler should infer and fill in for us automatically. For instance, in the following function signature, we expect the compiler to infer the value of type parameter `a` automatically from the types of the other arguments (ignore the 0 quantity for the moment; I'll explain it in the next subsection):
 
 ```idris
 maybeToEither : {0 a : Type} -> Maybe a -> Either String a
@@ -160,7 +160,7 @@ It is also possible to annotate explicit arguments with multiplicities, in which
 
 ## Underscores
 
-It is often desirable, to only write as little code as necessary and let Idris figure out the rest. We have already learned about one such occasion: Catch-all patterns. If a variable in a pattern match is not used on the right hand side, we can't just drop it, as this would make it impossible for Idris to know, which of several arguments we were planning to drop, but we can use an underscore as a placeholder instead:
+It is often desirable to write as little code as necessary and let Idris figure out the rest. We have already learned about one such occasion: Catch-all patterns. If a variable in a pattern match is not used on the right hand side, we can't just drop it, as this would make it impossible for Idris to know which of several arguments we were planning to drop, but we can use an underscore as a placeholder instead:
 
 ```idris
 isRight : Either a b -> Bool
@@ -176,7 +176,7 @@ isRight' (Right _) = True
 isRight' _         = False
 ```
 
-In the detailed type signature of `zipEitherWith`, it should be obvious for Idris that the implicit arguments are of type `Type`. After all, all of them are later on applied to the `Either` type constructor, which is of type `Type -> Type -> Type`. Let's get rid of them:
+In the detailed type signature of `zipEitherWith`, it should be obvious to Idris that the implicit arguments are of type `Type`. After all, all of them are later on applied to the `Either` type constructor, which is of type `Type -> Type -> Type`. Let's get rid of them:
 
 ```idris
 zipEitherWith'' :  {0 a : _}
@@ -203,7 +203,7 @@ foo' : Integer -> String
 foo' n = show (the (_ String _) (Right n))
 ```
 
-Please note, that using underscores as in `foo'` is not always desirable, as it can quite drastically obfuscate the written code. Always use a syntactic convenience to make code more readable, and not to show people how clever you are.
+Please note that using underscores as in `foo'` is not always desirable, as it can quite drastically obfuscate the written code. Always use a syntactic convenience to make code more readable, and not to show people how clever you are.
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

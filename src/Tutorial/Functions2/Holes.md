@@ -6,7 +6,7 @@ module Tutorial.Functions2.Holes
 %default total
 ```
 
-Solved all the exercises so far? Got angry at the type checker for always complaining and never being really helpful? It's time to change that. Idris comes with several highly useful interactive editing features. Sometimes, the compiler is able to implement complete functions for us (if the types are specific enough). Even if that's not possible, there's an incredibly useful and important feature, which can help us when the types are getting too complicated: Holes. Holes are variables, the names of which are prefixed with a question mark. We can use them as placeholders whenever we plan to implement a piece of functionality at a later time. In addition, their types and the types and quantities of all other variables in scope can be inspected at the REPL (or in your editor, if you setup the necessary plugin). Let's see them holes in action.
+Solved all the exercises so far? Got angry at the type checker for always complaining and never being really helpful? It's time to change that. Idris comes with several highly useful interactive editing features. Sometimes, the compiler is able to implement complete functions for us (if the types are specific enough). Even if that's not possible, there's an incredibly useful and important feature which can help us when the types are getting too complicated: holes. Holes are variables prefixed with a question mark. We can use them as placeholders whenever we plan to implement a piece of functionality at a later time. In addition, their types and the types and quantities of all other variables in scope can be inspected at the REPL (or in your editor, if you setup the necessary plugin). Let's see them holes in action.
 
 Remember the `traverseList` example from an Exercise earlier in this section? If this was your first encounter with applicative list traversals, this might have been a nasty bit of work. Well, let's just make it a wee bit harder still. We'd like to implement the same piece of functionality for functions returning `Either e`, where `e` is a type with a `Semigroup` implementation, and we'd like to accumulate the values in all `Left`s we meet along the way.
 
@@ -95,7 +95,7 @@ Tutorial.Functions2> :t impl_1
 impl_1 : Either e (List b)
 ```
 
-Since `x` is of type `a`, we can either use it as an argument to `fun` or drop and ignore it. `xs`, on the other hand, is the remainder of the list of type `List a`. We could again drop it or process it further by invoking `traverseEither` recursively. Since the goal is to try and convert *all* values, we should drop neither. Since in case of two `Left`s we are supposed to accumulate the values, we eventually need to run both computations anyway (invoking `fun`, and recursively calling `traverseEither`). We therefore can do both at the same time and analyze the results in a single pattern match by wrapping both in a `Pair`:
+Since `x` is of type `a`, we can either use it as an argument to `fun` or drop and ignore it. `xs`, on the other hand, is the remainder of the list of type `List a`. We could again drop it or process it further by invoking `traverseEither` recursively. Since the goal is to try and convert *all* values, we should drop neither. Since in the case of two `Left`s we are supposed to accumulate the values, we eventually need to run both computations anyway (invoking `fun`, and recursively calling `traverseEither`). We therefore can do both at the same time and analyze the results in a single pattern match by wrapping both in a `Pair`:
 
 ```repl
 traverseEither fun (x :: xs) =
@@ -186,7 +186,7 @@ Left ["Unknown nucleobase: 'F'", "Unknown nucleobase: 'Q'"]
 
 ## Interactive Editing
 
-There are plugins available for several editors and programming environments, which facilitate interacting with the Idris compiler when implementing your functions. One editor, which is well supported in the Idris community, is Neovim. Since I am a Neovim user myself, I added some examples of what's possible to the [appendix](../../Appendices/Neovim.md). Now would be a good time to start using the utilities discussed there.
+There are plugins available for several editors and programming environments which facilitate interacting with the Idris compiler when implementing your functions. One editor, which is well supported in the Idris community, is Neovim. Since I am a Neovim user myself, I added some examples of what's possible to the [appendix](../../Appendices/Neovim.md). Now would be a good time to start using the utilities discussed there.
 
 If you use a different editor, probably with less support for the Idris programming language, you should at the very least have a REPL session open all the time, where the source file you are currently working on is loaded. This allows you to introduce new metavariables and inspect their types and context as you develop your code.
 
