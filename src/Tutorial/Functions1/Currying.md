@@ -3,6 +3,7 @@
 ```idris
 module Tutorial.Functions1.Currying
 
+import Tutorial.Functions1.HigherOrder
 import Tutorial.Functions1.FunctionsWithMultipleArguments
 ```
 
