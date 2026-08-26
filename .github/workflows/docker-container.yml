@@ -5,10 +5,11 @@ on:
   push:
     branches: [main, japanese]
     paths:
-      - 'Dockerfile'
-      - '.github/workflows/docker-container.yml'
+      - "Dockerfile"
+      - ".github/workflows/docker-container.yml"
   schedule:
-    - cron: '0 0 * * 0' # Weekly on Sunday
+    # - cron: '0 0 * * 0' # Weekly on Sunday
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 permissions:
