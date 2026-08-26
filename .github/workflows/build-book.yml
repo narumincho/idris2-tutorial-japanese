@@ -3,7 +3,7 @@ name: Publish Book
 on:
   push:
     branches:
-      # - main
+      - main
       - japanese
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     name: Build Book
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}:latest
+      image: ghcr.io/idris-community/idris2-tutorial:latest
       options: --user root
     env:
       PACK_DIR: /root/.pack
