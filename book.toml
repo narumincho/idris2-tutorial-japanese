@@ -1,8 +1,8 @@
 [book]
 authors = ["Stefan Höck", "Nathan McCarty"]
-language = "en"
+language = "ja"
 src = "src"
-title = "Idris 2 Tutorial"
+title = "Idris 2 チュートリアル"
 
 [build]
 create-missing = false

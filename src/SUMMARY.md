@@ -1,6 +1,6 @@
 # Summary
 
-[The Idris 2 Programming Langauge](./Preface.md)
+[Idris 2 プログラミング言語](./Preface.md)
 
 # Core Language Features
 

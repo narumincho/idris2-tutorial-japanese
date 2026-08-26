@@ -1,7 +1,7 @@
-# The Idris 2 Programming Language
+# Idris 2 プログラミング言語
 
-_by Stefan Höck, Nathan McCarty, [and others](https://github.com/idris-community/idris2-tutorial/graphs/contributors)_
+_著: Stefan Höck, Nathan McCarty, [他コントリビューター](https://github.com/idris-community/idris2-tutorial/graphs/contributors)_
 
-Welcome to the community Idris 2 tutorial! This book aims to be a comprehensive resource for learning the Idris 2 programming language.
+コミュニティ版 Idris 2 チュートリアルへようこそ！このドキュメントは、Idris 2 プログラミング言語を学ぶための包括的なリソースとなることを目指しています。
 
-This book is rendered from a collection of [Idris source files](https://github.com/idris-community/idris2-tutorial) structured as a normal Idris project, which you can download and play around with.
+本書は、通常の Idris プロジェクトとして構成された [Idris ソースファイル群](https://github.com/idris-community/idris2-tutorial) から生成されています。手元にダウンロードして実際に動かしながら試すこともできます。
