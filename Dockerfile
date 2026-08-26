@@ -8,7 +8,7 @@ RUN zypper ref && \
         git \
         rakudo \
         gmp-devel \
-        nodejs22 \
+        nodejs \
         rustup && \
     zypper clean
 
