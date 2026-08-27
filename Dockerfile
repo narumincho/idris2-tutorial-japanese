@@ -16,7 +16,7 @@ RUN zypper ref && \
 RUN echo "scheme" | bash -c "$(curl -fsSL https://raw.githubusercontent.com/stefan-hoeck/idris2-pack/main/install.bash)"
 
 # Add the pack store bin to the path
-ENV PATH="/root/.pack/bin:$PATH"
+ENV PATH="/root/.local/bin:/root/.pack/bin:$PATH"
 
 # Update pack
 RUN pack update-db && pack switch latest
