@@ -1,4 +1,7 @@
-# Do Blocks, Desugared
+# Do ブロックの脱糖（糖衣構文の解除）
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/DoUnsugared.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/DoUnsugared.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.IO.DoUnsugared
@@ -12,9 +15,9 @@ import Tutorial.IO.PureSideEffects
 %default total
 ```
 
-Here's an important piece of information: There is nothing special about *do blocks*. They are just syntactic sugar, which is converted to a sequence of operator applications. With [syntactic sugar](https://en.wikipedia.org/wiki/Syntactic_sugar), we mean syntax in a programming language that makes it easier to express certain things in that language without making the language itself any more powerful or expressive. Here, it means you could write all the `IO` programs without using `do` notation, but the code you'll write will sometimes be harder to read, so *do blocks* provide nicer syntax for these occasions.
+ここで重要な事実をお伝えします：**do ブロック** には特別な魔法は何一つありません。単なる糖衣構文（シンタックスシュガー）であり、一連の演算子の適用に変換（脱糖 / desugar）されるだけです。[糖衣構文](https://ja.wikipedia.org/wiki/%E7%B3%96%E8%A1%A3%E6%A7%8B%E6%96%87) とは、言語自体の表現力や機能を増やすことなく、特定のコードをより書きやすくするための構文のことです。つまり、すべての `IO` プログラムは `do` 記法を使わずに書くことも可能です。しかし、ネストが深くなって読みづらくなることがあるため、そのような場合に do ブロックが良い構文を提供してくれます。
 
-Consider the following example program:
+以下のサンプルプログラムを考えてみましょう：
 
 ```idris
 sugared1 : IO ()
@@ -25,7 +28,7 @@ sugared1 = do
   putStrLn (str1 ++ str2 ++ str3)
 ```
 
-The compiler will convert this to the following program *before disambiguating function names and type checking*:
+コンパイラは、**関数名の曖昧さ解消や型チェックを行う前** に、これを以下のプログラムに変換します：
 
 ```idris
 desugared1 : IO ()
@@ -39,25 +42,25 @@ desugared1 =
   )
 ```
 
-There is a new operator (`(>>=)`) called *bind* in the implementation of `desugared1`. If you look at its type at the REPL, you'll see the following:
+`desugared1` の実装に `(>>=)` という新しい演算子（**bind** と呼ばれます）が登場しました。REPL でその型を確認すると、以下のようになっています：
 
 ```repl
 Main> :t (>>=)
 Prelude.>>= : Monad m => m a -> (a -> m b) -> m b
 ```
 
-This is a constrained function requiring an interface called `Monad`. We will talk about `Monad` and some of its friends in the next chapter. Specialized to `IO`, *bind* has the following type:
+これは `Monad` と呼ばれるインターフェースを要求する制約付き関数です。`Monad` とその仲間たちについては次の章で詳しく解説します。`IO` に特化させると、*bind* は以下の型を持ちます：
 
 ```repl
 Main> :t (>>=) {m = IO}
 >>= : IO a -> (a -> IO b) -> IO b
 ```
 
-This describes a sequencing of `IO` actions. Upon execution, the first `IO` action is being run and its result is being passed as an argument to the function generating the second `IO` action, which is then also being executed.
+これは `IO` アクションの逐次実行（シーケンス）を表します。実行されると、1つ目の `IO` アクションが実行され、その結果が2つ目の `IO` アクションを生成する関数に引数として渡され、生成された2つ目のアクションも実行されます。
 
-You might remember, that you already implemented something similar in an earlier exercise: In Algebraic Data Types, you implemented *bind* for `Maybe` and `Either e`. We will learn in the next chapter, that `Maybe` and `Either e` too come with an implementation of `Monad`. For now, suffice to say that `Monad` allows us to run computations with some kind of effect in sequence by passing the *result* of the first computation to the function returning the second computation. In `desugared1` you can see, how we first perform an `IO` action and use its result to compute the next `IO` action and so on. The code is somewhat hard to read, since we use several layers of nested anonymous function, that's why in such cases, *do blocks* are a nice alternative to express the same functionality.
+代数的データ型の章の練習問題で、`Maybe` や `Either e` に対する *bind* をすでに実装したことを覚えているかもしれません。次の章で学ぶように、`Maybe` や `Either e` にも `Monad` の実装が用意されています。現時点では、`Monad` を使うことで、最初の計算の **結果** を2つ目の計算を返す関数に渡しながら、エフェクトを伴う計算を順番に実行できる、と理解しておけば十分です。`desugared1` では、1つの `IO` アクションを実行し、その結果を使って次の `IO` アクションを計算しているのがわかります。ネストした無名関数が何層にも重なって読みにくいため、このような場合には *do ブロック* が優れた代替表現となります。
 
-Since *do block* are always desugared to sequences of applied *bind* operators, we can use them to chain any monadic computation. For instance, we can rewrite function `eval` by using a *do block* like so:
+*do ブロック* は常に一連の *bind* 演算子の適用に脱糖されるため、任意のモナド計算を連結するために使用できます。たとえば、前節の `eval` 関数を *do ブロック* を使って次のように書き直すことができます：
 
 ```idris
 evalDo : String -> Either Error Integer
@@ -70,11 +73,11 @@ evalDo s = case forget $ split isSpace s of
   _       => Left (ParseError s)
 ```
 
-Don't worry, if this doesn't make too much sense yet. We will see many more examples, and you'll get the hang of this soon enough. The important thing to remember is how *do blocks* are always converted to sequences of *bind* operators as shown in `desugared1`.
+まだピンとこなくても心配いりません。今後たくさんの例が登場するので、すぐに慣れることができます。重要なのは、*do ブロック* が `desugared1` に示したように常に *bind* 演算子の連鎖に変換されるという点です。
 
-## Binding Unit
+## Unit の束縛 (Binding Unit)
 
-Remember our implementation of `friendlyReadHello`? Here it is again:
+先ほどの `friendlyReadHello` の実装を覚えていますか？
 
 ```idris
 friendlyReadHello' : IO ()
@@ -83,7 +86,7 @@ friendlyReadHello' = do
   readHello
 ```
 
-The underscore in there is a bit ugly and unnecessary. In fact, a common use case is to just chain effectful computations with result type `Unit` (`()`), merely for the side effects they perform. For instance, we could repeat `friendlyReadHello` three times, like so:
+ここにあるアンダースコア `_ <-` は少し冗長で不要に見えます。実際、結果型が `Unit`（`()`）のエフェクトフルな計算を、単にその副作用のために連鎖させるのは非常によくあるユースケースです。たとえば、`friendlyReadHello` を3回繰り返す場合、以下のようになります：
 
 ```idris
 friendly3 : IO ()
@@ -93,7 +96,7 @@ friendly3 = do
   friendlyReadHello
 ```
 
-This is such a common thing to do, that Idris allows us to drop the bound underscores altogether:
+これはあまりに一般的なパターンであるため、Idris では束縛のアンダースコアを完全に省略できます：
 
 ```idris
 friendly4 : IO ()
@@ -104,7 +107,7 @@ friendly4 = do
   friendlyReadHello
 ```
 
-Note, however, that the above gets desugared slightly differently:
+ただし、上記は少し異なる形に脱糖されます：
 
 ```idris
 friendly4Desugared : IO ()
@@ -115,18 +118,18 @@ friendly4Desugared =
   friendlyReadHello
 ```
 
-Operator `(>>)` has the following type:
+演算子 `(>>)` の型は以下の通りです：
 
 ```repl
 Main> :t (>>)
 Prelude.>> : Monad m => m () -> Lazy (m b) -> m b
 ```
 
-Note the `Lazy` keyword in the type signature. This means, that the wrapped argument will be *lazily evaluated*. This makes sense in many occasions. For instance, if the `Monad` in question is `Maybe` the result will be `Nothing` if the first argument is `Nothing`, in which case there is no need to even evaluate the second argument.
+型シグネチャ内の `Lazy` キーワードに注目してください。これは、ラップされた引数が **遅延評価 (lazily evaluated)** されることを意味します。これは多くの場合に理にかなっています。たとえば対象の `Monad` が `Maybe` である場合、第1引数が `Nothing` であれば結果も直ちに `Nothing` になるため、第2引数を評価する必要すらありません。
 
-## Do, Overloaded
+## Do のオーバーロード (Do, Overloaded)
 
-Because Idris supports function and operator overloading, we can write custom *bind* operators, which allows us to use *do notation* for types without an implementation of `Monad`. For instance, here is a custom implementation of `(>>=)` for sequencing computations returning vectors. Every value in the first vector (of length `m`) will be converted to a vector of length `n`, and the results will be concatenated leading to a vector of length `m * n`:
+Idris は関数や演算子のオーバーロードをサポートしているため、独自の *bind* 演算子を定義することで、`Monad` の実装を持たない型に対しても *do 記法* を使用できます。たとえば以下は、ベクトルを返す計算を連結するためのカスタム `(>>=)` の実装です。最初のベクトル（長さ `m`）の各要素が長さ `n` のベクトルに変換され、結果が連結されて長さ `m * n` のベクトルになります：
 
 ```idris
 flatten : Vect m (Vect n a) -> Vect (m * n) a
@@ -137,7 +140,7 @@ flatten (x :: xs) = x ++ flatten xs
 as >>= f = flatten (map f as)
 ```
 
-It is not possible to write an implementation of `Monad`, which encapsulates this behavior, as the types wouldn't match: Monadic *bind* specialized to `Vect` has type `Vect k a -> (a -> Vect k b) -> Vect k b`. As you see, the sizes of all three occurrences of `Vect` have to be the same, which is not what we expressed in our custom version of *bind*. Here is an example to see this in action:
+この振る舞いをカプセル化する `Monad` の実装を書くことはできません。型が合わないためです：`Vect` に特化したモナディックな *bind* は `Vect k a -> (a -> Vect k b) -> Vect k b` という型を持ちます。ご覧の通り、3箇所の `Vect` のサイズがすべて同一でなければならず、これはカスタム版の *bind* で表現した仕様とは異なります。実際の動作例を見てみましょう：
 
 ```idris
 modString : String -> Vect 4 String
@@ -150,15 +153,15 @@ testDo = DoUnsugared.do
   modString (s1 ++ show s2)
 ```
 
-Try to figure out how `testDo` works by desugaring it manually and then comparing its result with what you expected at the REPL. Note, how we helped Idris disambiguate, which version of the *bind* operator to use by prefixing the `do` keyword with part of the operator's namespace. In this case, this wasn't strictly necessary, although `Vect k` does have an implementation of `Monad`, but it is still good to know that it is possible to help the compiler with disambiguating do blocks.
+`testDo` を手動で脱糖し、REPL での結果と比較してどのように動作するか確認してみてください。`do` キーワードの前に演算子の名前空間の一部をプレフィックスとして付与することで、どのバージョンの *bind* 演算子を使用するかを Idris に指示している点に注目してください。
 
-Of course, we can (and should!) overload `(>>)` in the same manner as `(>>=)`, if we want to overload the behavior of *do blocks*.
+もちろん、*do ブロック* の挙動をオーバーロードしたい場合は、`(>>=)` と同様に `(>>)` もオーバーロードできます（すべきです）。
 
-### Modules and Namespaces
+### モジュールと名前空間 (Modules and Namespaces)
 
-Every data type, function, or operator can be unambiguously identified by prefixing it with its *namespace*. A function's namespace typically is the same as the module where it was defined. For instance, the fully qualified name of function `eval` would be `Tutorial.IO.eval`. Function and operator names must be unique in their namespace.
+すべてのデータ型、関数、演算子は、その **名前空間 (namespace)** をプレフィックスとして付けることで曖昧さなく一意に識別できます。関数の名前空間は通常、それが定義されたモジュール名と同じです。たとえば関数 `eval` の完全修飾名は `Tutorial.IO.eval` になります。関数名や演算子名は、その名前空間内で一意でなければなりません。
 
-As we already learned, Idris can often disambiguate between functions with the same name but defined in different namespaces based on the types involved. If this is not possible, we can help the compiler by *prefixing* the function or operator name with a *suffix* of the full namespace. Let's demonstrate this at the REPL:
+すでに見舞った通り、Idris は異なる名前空間で定義された同名の関数を、関与する型に基づいて曖昧さ解消することがよくあります。推論が不可能な場合は、関数名や演算子名の前に完全な名前空間の末尾（サフィックス）をプレフィックスとして付けることでコンパイラを助けることができます：
 
 ```repl
 Tutorial.IO> :t (>>=)
@@ -166,7 +169,7 @@ Prelude.>>= : Monad m => m a -> (a -> m b) -> m b
 Tutorial.IO.>>= : Vect m a -> (a -> Vect n b) -> Vect (m * n) b
 ```
 
-As you can see, if we load this module in a REPL session and inspect the type of `(>>=)`, we get two results as two operators with this name are in scope. If we only want the REPL to print the type of our custom *bind* operator, is is sufficient to prefix it with `IO`, although we could also prefix it with its full namespace:
+このように、このモジュールを REPL にロードして `(>>=)` の型を確認すると、スコープ内に同名の演算子が2つ存在するため2つの結果が表示されます。カスタム *bind* 演算子の型だけを表示させたい場合は、完全な名前空間ではなく `IO.` をプレフィックスとして付けるだけで十分です：
 
 ```repl
 Tutorial.IO> :t IO.(>>=)
@@ -175,7 +178,7 @@ Tutorial.IO> :t Tutorial.IO.(>>=)
 Tutorial.IO.>>= : Vect m a -> (a -> Vect n b) -> Vect (m * n) b
 ```
 
-Since function names must be unique in their namespace and we still may want to define two overloaded versions of a function in an Idris module, Idris makes it possible to add additional namespaces to modules. For instance, in order to define another function called `eval`, we need to add it to its own namespace (note, that all definitions in a namespace must be indented by the same amount of whitespace):
+同じモジュール内で同名のオーバーロード関数を複数定義したい場合のために、Idris ではモジュール内に追加の名前空間を追加できます（名前空間内のすべての定義は同じインデント幅で整列させる必要があります）：
 
 ```idris
 namespace Foo
@@ -183,27 +186,29 @@ namespace Foo
   eval : Nat -> Nat -> Nat
   eval = (*)
 
--- prefixing `eval` with its namespace is not strictly necessary here
+-- ここで `eval` に名前空間を付けることは必須ではありません
 testFooEval : Nat
 testFooEval = Foo.eval 12 100
 ```
 
-Now, here is an important thing: For functions and data types to be accessible from outside their namespace or module, they need to be *exported* by annotating them with the `export` or `public export` keywords.
+ここで重要な点があります：関数やデータ型がその名前空間やモジュールの外部からアクセスできるようにするには、`export` または `public export` キーワードでアノテーションを付けて **エクスポート** する必要があります。
 
-The difference between `export` and `public export` is the following: A function annotated with `export` exports its type and can be called from other namespaces. A data type annotated with `export` exports its type constructor but not its data constructors. A function annotated with `public export` also exports its implementation. This is necessary to use the function in compile-time computations. A data type annotated with `public export` exports its data constructors as well.
+`export` と `public export` の違いは以下の通りです：
+- `export` で修飾された関数は、その型のみがエクスポートされ、他の名前空間から呼び出すことができます。`export` で修飾されたデータ型は、型コンストラクタのみがエクスポートされ、データコンストラクタは非公開になります。
+- `public export` で修飾された関数は、その実装（定義）もエクスポートされます。これは、関数をコンパイル時計算で使用するために必要です。`public export` で修飾されたデータ型は、データコンストラクタもエクスポートされます。
 
-In general, consider annotating data types with `public export`, since otherwise you will not be able to create values of these types or deconstruct them in pattern matches. Likewise, unless you plan to use your functions in compile-time computations, annotate them with `export`.
+一般的に、データ型は `public export` で修飾することを推奨します。そうしないと、外部モジュールからその型の値を生成したり、パターンマッチで分解したりできなくなるためです。一方、関数については、コンパイル時計算で使用する予定がない限り `export` で修飾するのが基本です。
 
-## Bind, with a Bang
+## 感嘆符による Bind (Bind, with a Bang `!`)
 
-Sometimes, even *do blocks* are too noisy to express a combination of effectful computations. In this case, we can prefix the effectful parts with an exclamation mark (wrapping them in parentheses if they contain additional whitespace), while leaving pure expressions unmodified:
+エフェクトフルな計算の組み合わせを表現するのに、*do ブロック* でさえ冗長に感じられる場合があります。そのような場合、純粋な式はそのままにし、エフェクトフルな部分の先頭に感嘆符 `!` を付けることができます（空白を含む場合は括弧で囲みます）：
 
 ```idris
 getHello : IO ()
 getHello = putStrLn $ "Hello " ++ !getLine ++ "!"
 ```
 
-The above gets desugared to the following *do block*:
+上記は以下の *do ブロック* に脱糖されます：
 
 ```idris
 getHello' : IO ()
@@ -212,7 +217,7 @@ getHello' = do
   putStrLn $ "Hello " ++ s ++ "!"
 ```
 
-Here is another example:
+もう1つの例を示します：
 
 ```idris
 bangExpr : String -> String -> String -> Maybe Integer
@@ -220,7 +225,7 @@ bangExpr s1 s2 s3 =
   Just $ !(parseInteger s1) + !(parseInteger s2) * !(parseInteger s3)
 ```
 
-And here is the desugared *do block*:
+脱糖された *do ブロック* は以下の通りです：
 
 ```idris
 bangExpr' : String -> String -> String -> Maybe Integer
@@ -231,7 +236,7 @@ bangExpr' s1 s2 s3 = do
   Just $ x1 + x2 * x3
 ```
 
-Please remember the following: Syntactic sugar has been introduced to make code more readable or more convenient to write. If it is abused just to show how clever you are, you make things harder for other people (including your future self!) reading and trying to understand your code.
+糖衣構文は、コードをより読みやすく、より便利に書くために導入されたものであることを忘れないでください。単に賢く見せるためだけに乱用すると、他の人（そして未来の自分自身！）がコードを読んで理解するのが困難になってしまいます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

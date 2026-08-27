@@ -1,4 +1,7 @@
-# Working with Files
+# ファイル操作 (Working with Files)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Files.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Files.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.IO.Files
@@ -12,9 +15,9 @@ import System.File
 %default total
 ```
 
-Module `System.File` from the *base* library exports utilities necessary to work with file handles and read and write from and to files. When you have a file path (for instance "/home/hock/idris/tutorial/tutorial.ipkg"), the first thing we will typically do is to try and create a file handle (of type `System.File.File` by calling `fileOpen`).
+*base* ライブラリの `System.File` モジュールは、ファイルハンドルを操作してファイルへの読み書きを行うためのユーティリティをエクスポートしています。ファイルパス（例: `"/home/hock/idris/tutorial/tutorial.ipkg"`）がある場合、最初に行うのは通常、`openFile` を呼び出してファイルハンドル（`System.File.File` 型）の取得を試みることです。
 
-Here is a program for counting all empty lines in a Unix/Linux-file:
+以下は、Unix/Linux ファイル内の空行の数を数えるプログラムです：
 
 ```idris
 covering
@@ -29,15 +32,15 @@ countEmpty path = openFile path Read >>= either (pure . Left) (go 0)
           go (k + 1) file
 ```
 
-In the example above, I invoked `(>>=)` without starting a *do block*. Make sure you understand what's going on here. Reading concise functional code is important in order to understand other people's code. Have a look at function `either` at the REPL, try figuring out what `(pure . Left)` does, and note how we use a curried version of `go` as the second argument to `either`.
+上の例では、*do ブロック* を開始せずに直接 `(>>=)` を呼び出しています。何が起きているかを確認してください。他の人のコードを理解するためには、簡潔な関数型コードを読む力が必要です。REPL で `either` 関数の型を確認し、`(pure . Left)` が何を行っているかを把握し、カリー化された `go` が `either` の第2引数としてどのように渡されているかに注目してください。
 
-Function `go` calls for some additional explanations. First, note how we used the same syntax for pattern matching intermediary results as we also saw for `let` bindings. As you can see, we can use several vertical bars to handle more than one additional pattern. In order to read a single line from a file, we use function `fGetLine`. As with most operations working with the file system, this function might fail with a `FileError`, which we have to handle correctly. Note also, that `fGetLine` will return the line including its trailing newline character `'\n'`, so in order to check for empty lines, we have to match against `"\n"` instead of the empty string `""`.
+関数 `go` についてもいくつか解説が必要です。まず、`let` 束縛で見たのと同様の中間結果に対するパターンマッチ構文をここでも使用しています。縦線 `|` を使って複数のパターンを処理できます。ファイルから1行読み取るには `fGetLine` 関数を使用します。ファイルシステムを扱うほとんどの操作と同様に、この関数も `FileError` で失敗する可能性があり、適切に処理する必要があります。また、`fGetLine` は末尾の改行文字 `'\n'` を含んだ行を返すため、空行を判定するには空文字列 `""` ではなく `"\n"` とマッチさせる必要があります。
 
-Finally, `go` is not provably total and rightfully so. Files like `/dev/urandom` or `/dev/zero` provide infinite streams of data, so `countEmpty` will never terminate when invoked with such a file path.
+最後に、`go` は全域性が証明できず、`covering` が付けられています。`/dev/urandom` や `/dev/zero` などのファイルは無限のデータストリームを提供するため、そのようなパスで呼び出された場合、`countEmpty` は決して終了しないためです。
 
-## Safe Resource Handling
+## 安全なリソース管理 (Safe Resource Handling)
 
-Note, how we had to manually open and close the file handle in `countEmpty`. This is error-prone and tedious. Resource handling is a big topic, and we definitely won't be going into the details here, but there is a convenient function exported from `System.File`: `withFile`, which handles the opening, closing and handling of file errors for us.
+`countEmpty` では、ファイルハンドルを手動でオープンおよびクローズしなければならなかった点に注目してください。これはエラーを起こしやすく煩雑です。リソース管理は大きなトピックであり、ここでは詳細には踏み込みませんが、`System.File` は便利な関数 `withFile` をエクスポートしています。これはファイルのオープン、クローズ、およびエラーハンドリングを自動的に処理してくれます。
 
 ```idris
 covering
@@ -52,11 +55,11 @@ countEmpty' path = withFile path Read pure (go 0)
           go (k + 1) file
 ```
 
-Go ahead, and have a look at the type of `withFile`, then have a look how we use it to simplify the implementation of `countEmpty'`. Reading and understanding slightly more complex function types is important when learning to program in Idris.
+`withFile` の型を REPL で確認し、それを使って `countEmpty'` の実装がどのようにシンプルになったかを確認してみてください。少し複雑な関数の型を読んで理解することは、Idris でのプログラミングを学ぶ上で重要です。
 
-### Interface `HasIO`
+### `HasIO` インターフェース
 
-When you look at the `IO` functions we used so far, you'll notice that most if not all of them actually don't work with `IO` itself but with a type parameter `io` with a constraint of `HasIO`. This interface allows us to *lift* a value of type `IO a` into another context. We will see use cases for this in later chapters, especially when we talk about monad transformers. For now, you can treat these `io` parameters as being specialized to `IO`.
+ここまで使用してきた `IO` 関数を見ると、そのほとんどが `IO` 自体を直接扱うのではなく、`HasIO` 制約を持つ型パラメータ `io` を受け取っていることに気づくでしょう。このインターフェースは、`IO a` 型の値を別のコンテキストに **持ち上げる（lift する）** ことを可能にします。これについては後の章（特にモナド変換子を扱う際）でユースケースが登場します。現時点では、これらの `io` パラメータは `IO` に特化されているものとして扱って構いません。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

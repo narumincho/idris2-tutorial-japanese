@@ -1,6 +1,9 @@
-# Exercises part 2
+# IO 練習問題 パート2
 
-1. Reimplement the following *do blocks*, once by using *bang notation*, and once by writing them in their desugared form with nested *bind*s:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+1. 以下の *do ブロック* を、1回目は **bang 記法（`!`）** を使用して、2回目はネストした *bind* 演算子による **脱糖された形式** で再実装してください：
 
    ```idris
    ex1a : IO String
@@ -17,7 +20,7 @@
      Just $ n1 + n2 * 100
    ```
 
-2. Below is the definition of an indexed family of types, the index of which keeps track of whether the value in question is possibly empty or provably non-empty:
+2. 以下は、値が空である可能性があるか、または証明可能に空でないかを追跡するインデックス付き型族の定義です：
 
    ```idris
    data List01 : (nonEmpty : Bool) -> Type -> Type where
@@ -25,25 +28,25 @@
      (::) : a -> List01 False a -> List01 ne a
    ```
 
-   Please note, that the `Nil` case *must* have the `nonEmpty` tag set to `False`, while with the *cons* case, this is optional. So, a `List01 False a` can be empty or non-empty, and we'll only find out, which is the case, by pattern matching on it. A `List01 True a` on the other hand *must* be a *cons*, as for the `Nil` case the `nonEmpty` tag is always set to `False`.
+   `Nil` のケースは `nonEmpty` タグが **必ず** `False` に設定されていなければなりませんが、*cons* のケースではこれは任意（`ne`）である点に注意してください。つまり、`List01 False a` は空である可能性も空でない可能性もあり、どちらであるかはパターンマッチによってのみ判明します。一方、`List01 True a` は（`Nil` の `nonEmpty` タグが常に `False` であるため）**必ず** *cons* でなければなりません。
 
-   1. Declare and implement function `head` for non-empty lists:
+   1. 空でないリストに対する関数 `head` を宣言・実装してください：
 
       ```idris
       head : List01 True a -> a
       ```
 
-   2. Declare and implement function `weaken` for converting any `List01 ne a` to a `List01 False a` of the same length and order of values.
+   2. 任意の `List01 ne a` を同じ長さと要素順序を持つ `List01 False a` に変換する関数 `weaken` を宣言・実装してください。
 
-   3. Declare and implement function `tail` for extracting the possibly empty tail from a non-empty list.
+   3. 空でないリストから、空である可能性のある末尾（tail）を取り出す関数 `tail` を宣言・実装してください。
 
-   4. Implement function `(++)` for concatenating two values of type `List01`. Note, how we use a type-level computation to make sure the result is non-empty if and only if at least one of the two arguments is non-empty:
+   4. `List01` 型の2つの値を連結する関数 `(++)` を実装してください。2つの引数のうち少なくとも一方が空でない場合にのみ結果が空でなくなることを保証するために、型レベルの計算（`b1 || b2`）を使用している点に注目してください：
 
       ```idris
       (++) : List01 b1 a -> List01 b2 a -> List01 (b1 || b2) a
       ```
 
-   5. Implement utility function `concat'` and use it in the implementation of `concat`. Note, that in `concat` the two boolean tags are passed as unrestricted implicits, since you will need to pattern match on these to determine whether the result is provably non-empty or not:
+   5. ユーティリティ関数 `concat'` を実装し、それを使って `concat` を実装してください。`concat` では、結果が証明可能に空でないかどうかを決定するためにパターンマッチを行う必要があるため、2つのブール値タグが無制限の暗黙引数として渡されていることに注意してください：
 
       ```idris
       concat' : List01 ne1 (List01 ne2 a) -> List01 False a
@@ -53,21 +56,21 @@
              -> List01 (ne1 && ne2) a
       ```
 
-   6. Implement `map01`:
+   6. `map01` を実装してください：
 
       ```idris
       map01 : (a -> b) -> List01 ne a -> List01 ne b
       ```
 
-   7. Implement a custom *bind* operator in namespace `List01` for sequencing computations returning `List01`s.
+   7. `List01` を返す計算を連鎖させるためのカスタム *bind* 演算子を `List01` 名前空間内に実装してください。
 
-      Hint: Use `map01` and `concat` in your implementation and make sure to use unrestricted implicits where necessary.
+      ヒント: 実装には `map01` と `concat` を使用し、必要に応じて無制限の暗黙引数を使用してください。
 
-      You can use the following examples to test your custom *bind* operator:
+      以下のテスト例を使用して、カスタム *bind* 演算子の動作を確認できます：
 
       ```idris
-      -- this and lf are necessary to make sure, which tag to use
-      -- when using list literals
+      -- リストリテラルを使用する際にどのタグを使用するかを
+      -- 確定させるためにこれらと lf が必要です
       lt : List01 True a -> List01 True a
       lt = id
 
@@ -89,6 +92,7 @@
         lt [op x y]
       ```
 
-Some notes on Exercise 2: Here, we combined the capabilities of `List` and `Data.List1` in a single indexed type family. This allowed us to treat list concatenation correctly: If at least one of the arguments is provably non-empty, the result is also non-empty. To tackle this correctly with `List` and `List1`, a total of four concatenation functions would have to be written. So, while it is often possible to define distinct data types instead of indexed families, the latter allow us to perform type-level computations to be more precise about the pre- and postconditions of the functions we write, at the cost of more-complex type signatures. In addition, sometimes it's not possible to derive the values of the indices from pattern matching on the data values alone, so they have to be passed as unerased (possibly implicit) arguments.
+練習問題 2 の補足: ここでは `List` と `Data.List1` の機能を1つのインデックス付き型族に統合しました。これにより、リストの連結を正しく扱うことができました：少なくとも一方の引数が証明可能に空でない場合、結果も空でなくなります。これを `List` と `List1` で正しく扱おうとすると、合計4つの連結関数を書く必要があります。このように、別々のデータ型を定義する代わりにインデックス付き型族を定義することで、型シグネチャが多少複雑になる代償として、型レベル計算を実行して事前条件・事後条件をより厳密に指定することができます。
 
-Please remember, that *do blocks* are first desugared, before type-checking, disambiguating which *bind* operator to use, and filling in implicit arguments. It is therefore perfectly fine to define *bind* operators with arbitrary constraints or implicit arguments as was shown above. Idris will handle all the details, *after* desugaring the *do blocks*.
+*do ブロック* は、型チェックや使用する *bind* 演算子の曖昧さ解消、暗黙引数の補完が行われる **前** に、まず脱糖されることを思い出してください。したがって、上記のように任意の制約や暗黙引数を持つ *bind* 演算子を定義してもまったく問題ありません。Idris は *do ブロック* を脱糖した **後** にすべての詳細を処理します。
+

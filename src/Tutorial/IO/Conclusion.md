@@ -1,17 +1,16 @@
-# Conclusion
+# おわりに
 
-- Values of type `IO a` describe programs with side effects, which will eventually result in a value of type `a`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-- While we cannot safely extract a value of type `a` from an `IO a`, we can use several combinators and syntactic constructs to combine `IO` actions and build more-complex programs.
+- `IO a` 型の値は、最終的に `a` 型の値を返す副作用を伴うプログラムを記述したものです。
+- `IO a` から `a` 型の値を安全に取り出すことはできませんが、いくつかのコンビネータや糖衣構文を使用して `IO` アクションを組み合わせ、より複雑なプログラムを構築できます。
+- **Do ブロック** は、`IO` アクションを順次実行して組み合わせる便利な構文を提供します。
+- **Do ブロック** は、*bind* 演算子（`(>>=)`）のネストした適用に脱糖されます。
+- *Bind* 演算子（したがって *do ブロック*）はオーバーロード可能であり、デフォルトの（モナディックな）*bind* の代わりに独自の挙動を持たせることができます。
+- 内部的には、`IO` アクションはシンボリックな `%World` 状態を操作するステートフルな計算です。
 
-- *Do blocks* offer a convenient way to run and combine `IO` actions sequentially.
+## 次のステップ
 
-- *Do blocks* are desugared to nested applications of *bind* operators (`(>>=)`).
+*モナド* と *bind* 演算子を垣間見たところで、次の章では `Monad` とその関連インターフェースを本格的に導入します。
 
-- *Bind* operators, and thus *do blocks*, can be overloaded to achieve custom behavior instead of the default (monadic) *bind*.
-
-- Under the hood, `IO` actions are stateful computations operating on a symbolic `%World` state.
-
-## What's next
-
-Now, that we had a glimpse at *monads* and the *bind* operator, it is time to in the next chapter introduce `Monad` and some related interfaces for real.

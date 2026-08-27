@@ -1,4 +1,7 @@
-# Pure Side Effects?
+# 純粋な副作用？
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/PureSideEffects.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/PureSideEffects.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.IO.PureSideEffects
@@ -10,31 +13,31 @@ import Data.Vect
 %default total
 ```
 
-If we once again look at the *hello world* example from the introduction, it had the following type and implementation:
+導入章の *Hello World* の例を思い出すと、次のような型と実装になっていました：
 
 ```idris
 hello : IO ()
 hello = putStrLn "Hello World!"
 ```
 
-If you load this module in a REPL session and evaluate `hello`, you'll get the following:
+このモジュールを REPL にロードして `hello` を評価すると、次のような出力が得られます：
 
 ```repl
 Tutorial.IO> hello
 MkIO (prim__putStr "Hello World!")
 ```
 
-This might not be what you expected, given that we'd actually wanted the program to just print "Hello World!". In order to explain what's going on here, we need to quickly look at how evaluation at the REPL works.
+「Hello World!」と画面に表示されることを期待していたなら、これは意外な結果かもしれません。何が起きているかを説明するために、REPL での式の評価方法を簡単に見てみましょう。
 
-When we evaluate some expression at the REPL, Idris tries to reduce it to a value until it gets stuck somewhere. In the above case, Idris gets stuck at function `prim__putStr`. This is a *foreign function* defined in the *Prelude*, which has to be implemented by each backend in order to be available there. At compile time (and at the REPL), Idris knows nothing about the implementations of foreign functions and therefore can't reduce foreign function calls, unless they are built into the compiler itself. But even then, values of type `IO a` (`a` being a type parameter) are typically not reduced.
+REPL で式を評価すると、Idris はどこかで簡約できなくなる（行き詰まる）まで式を値へと簡約（reduce）しようとします。上の例では、Idris は `prim__putStr` 関数で行き詰まります。これは *Prelude* で定義されている **外部関数 (foreign function)** であり、各バックエンドが動作するために実装を提供する必要があります。コンパイル時（および REPL 上）において、Idris は外部関数の実装について何も知らないため、コンパイラ自身に組み込まれていない限り外部関数の呼び出しを簡約することはできません。しかしそれ以上に、`IO a` 型（`a` は型パラメータ）の値はそもそも通常は簡約されません。
 
-It is important to understand that values of type `IO a` *describe* a program, which, when being *executed*, will return a value of type `a`, after performing arbitrary side effects along the way. For instance, `putStrLn` has type `String -> IO ()`. Read this as: "`putStrLn` is a function, which, when given a `String` argument, will return a description of an effectful program with an output type of `()`". (`()` is syntactic sugar for type `Unit`, the empty tuple defined at the *Prelude*, which has only one value called `MkUnit`, for which we can also use `()` in our code.)
+重要なのは、`IO a` 型の値は「**実行されたときに**、途中で任意の副作用を実行した後に `a` 型の値を返すプログラムの **記述（Description）**」であると理解することです。たとえば `putStrLn` の型は `String -> IO ()` です。これは「`putStrLn` は、`String` 引数を受け取ると、出力型が `()` であるエフェクトフルなプログラムの記述を返す関数である」と読みます（`()` は *Prelude* で定義されている要素数 0 のタプル `Unit` 型の糖衣構文であり、唯一の値 `MkUnit` を持ち、コード内でも `()` と書くことができます）。
 
-Since values of type `IO a` are mere descriptions of effectful computations, functions returning such values or taking such values as arguments are still *pure* and thus referentially transparent. It is, however, not possible to extract a value of type `a` from a value of type `IO a`, that is, there is no generic function `IO a -> a`, as such a function would inadvertently execute the side effects when extracting the result from its argument, thus breaking referential transparency. (Actually, there *is* such a function called `unsafePerformIO`. Do not ever use it in your code unless you know what you are doing.)
+`IO a` 型の値はエフェクトフルな計算の単なる記述に過ぎないため、そのような値を返したり引数として受け取ったりする関数は依然として **純粋 (pure)** であり、参照透過です。しかし、`IO a` 型の値から `a` 型の値を取り出すことはできません。つまり、一般的な関数 `IO a -> a` は存在しません。もしそのような関数が存在すれば、引数から結果を取り出す際に不意に副作用が実行されてしまい、参照透過性が崩れてしまうからです（実際には `unsafePerformIO` という関数が存在しますが、何をしているか完全に理解していない限り絶対に使わないでください）。
 
-## Do Blocks
+## Do ブロック (Do Blocks)
 
-If you are new to pure functional programming, you might now - rightfully - mumble something about how useless it is to have descriptions of effectful programs without being able to run them. So please, hear me out. While we are not able to run values of type `IO a` when writing programs, that is, there is no function of type `IO a -> a`, we are able to chain such computations and describe more complex programs. Idris provides special syntax for this: *Do blocks*. Here's an example:
+純粋関数型プログラミングが初めての方は、「エフェクトフルなプログラムの記述があっても、実行できないなら何の役にも立たないではないか」と思うかもしれません。もう少しお付き合いください。プログラムを書く際に `IO a` 型の値を自分で実行することはできず（`IO a -> a` という関数は存在しない）、しかしそのような計算を連鎖させてより複雑なプログラムを記述することはできます。Idris はそのための特別な構文である **do ブロック (do block)** を提供しています。以下に例を示します：
 
 ```idris
 export
@@ -44,7 +47,7 @@ readHello = do
   putStrLn $ "Hello " ++ name ++ "!"
 ```
 
-Before we talk about what's going on here, let's give this a go at the REPL:
+何が起きているかを説明する前に、REPL で実行してみましょう：
 
 ```repl
 Tutorial.IO> :exec readHello
@@ -52,13 +55,13 @@ Stefan
 Hello Stefan!
 ```
 
-This is an interactive program, which will read a line from standard input (`getLine`), assign the result to variable `name`, and then use `name` to create a friendly greeting and write it to standard output.
+これは対話的なプログラムであり、標準入力から1行読み取り（`getLine`）、その結果を変数 `name` に代入し、その `name` を使って挨拶を作成して標準出力に書き出します。
 
-Note the `do` keyword at the beginning of the implementation of `readHello`: It starts a *do block*, where we can chain `IO` computations and bind intermediary results to variables using arrows pointing to the left (`<-`), which can then be used in later `IO` actions. This concept is powerful enough to let us encapsulate arbitrary programs with side effects in a single value of type `IO`. Such a description can then be returned by function `main`, the main entry point to an Idris program, which is being executed when we run a compiled Idris binary.
+`readHello` の実装の先頭にある `do` キーワードに注目してください。これは **do ブロック** を開始し、`IO` 計算を連鎖させたり、左向きの矢印（`<-`）を使って中間結果を変数に束縛し、後続の `IO` アクションで使用したりできます。この概念は非常に強力であり、副作用を伴う任意のプログラムを単一の `IO` 型の値としてカプセル化できます。そして、その記述はコンパイルされた Idris バイナリの実行時エントリポイントである `main` 関数から返すことができます。
 
-## The Difference between Program Description and Execution
+## プログラムの記述と実行の違い
 
-In order to better understand the difference between *describing* an effectful computation and *executing* or *running* it, here is a small program:
+エフェクトフルな計算の **記述** とその **実行** の違いをより深く理解するために、小さなプログラムを見てみましょう：
 
 ```idris
 launchMissiles : IO ()
@@ -85,33 +88,29 @@ readHellos : IO ()
 readHellos = runActions actions
 ```
 
-Before I explain what the code above does, please note function `pure` used in the implementation of `runActions`. It is a constrained function, about which we will learn in the next chapter. Specialized to `IO`, it has generic type `a -> IO a`: It allows us to wrap a value in an `IO` action. The resulting `IO` program will just return the wrapped value without performing any side effects. We can now look at the big picture of what's going on in `readHellos`.
+このコードの動作を説明する前に、`runActions` の実装で使用されている `pure` 関数に注目してください。これは制約付き関数であり、次の章で詳しく学びます。`IO` に特化させると `a -> IO a` というジェネリックな型を持ち、値を `IO` アクションでラップします。生成された `IO` プログラムは、いかなる副作用も実行せずにラップされた値をそのまま返します。それでは `readHellos` の全体像を見てみましょう。
 
-First, we define a friendlier version of `readHello`: When executed, this will ask about our name explicitly. Since we will not use the result of `putStrLn` any further, we can use an underscore as a catch-all pattern here. Afterwards, `readHello` is invoked. We also define `launchMissiles`, which, when being executed, will lead to the destruction of planet earth.
+まず、より親切なバージョンの `readHello` を定義します：実行されると、名前を明示的に尋ねます。`putStrLn` の結果はこれ以上使用しないため、アンダースコア `_` をプレースホルダーとして使用しています。その後 `readHello` が呼び出されます。また、実行されると地球を破滅させる `launchMissiles` も定義しています。
 
-Now, `runActions` is the function we use to demonstrate that *describing* an `IO` action is not the same as *running* it. It will drop the first action from the non-empty vector it takes as its argument and return a new `IO` action, which describes the execution of the remaining `IO` actions in sequence. If this behaves as expected, the first `IO` action passed to `runActions` should be silently dropped together with all its potential side effects.
+さて、`runActions` は「`IO` アクションの記述」と「その実行」が異なることを示すための関数です。この関数は、引数として受け取った空でないベクトルから先頭のアクションを破棄し、残りの `IO` アクションを順番に実行することを記述した新しい `IO` アクションを返します。期待通りに動作すれば、`runActions` に渡された最初のアクションは、その潜在的な副作用ごと静かに破棄されるはずです。
 
-When we execute `readHellos` at the REPL, we will be asked for our name twice, although `actions` also contains `launchMissiles` at the beginning. Luckily, although we described how to destroy the planet, the action was not executed, and we are (probably) still here.
+REPL で `readHellos` を実行すると、`actions` の先頭に `launchMissiles` が含まれているにもかかわらず、名前を2回尋ねられるだけです。幸いなことに、地球を破滅させる方法を記述したものの、そのアクションは実行されず、私たちは（おそらく）まだ無事です。
 
-From this example we learn several things:
+この例から以下の重要な教訓が得られます：
 
-- Values of type `IO a` are *pure descriptions* of programs, which, when being *executed*, perform arbitrary side effects before returning a value of type `a`.
+- `IO a` 型の値はプログラムの **純粋な記述** であり、**実行されたときに** 任意の副作用を実行して `a` 型の値を返します。
+- `IO a` 型の値は、勝手に実行される危険なしに、関数から安全に返したり、引数やデータ構造の中で引き回したりできます。
+- `IO a` 型の値は、**do ブロック** 内で安全に組み合わせて新しい `IO` アクションを **記述** できます。
+- `IO` アクションが実際に実行されるのは、REPL で `:exec` に渡されたときか、コンパイルされた Idris プログラムの `main` 関数として実行されたときだけです。
+- `IO` のコンテキストから抜け出すことは決してできません：`IO a -> a` という型を持つ関数は存在しません。なぜなら、そのような関数は最終結果を取り出すために引数を実行する必要があり、参照透過性を破壊してしまうからです。
 
-- Values of type `IO a` can be safely returned from functions and passed around as arguments or in data structures, without the risk of them being executed.
+## 純粋なコードと `IO` アクションの組み合わせ
 
-- Values of type `IO a` can be safely combined in *do blocks* to *describe* new `IO` actions.
+この小見出しは多少語弊があるかもしれません。`IO` アクション自体も純粋な値ですが、ここで一般に意味するのは、非 `IO` の関数とエフェクトフルな計算を組み合わせるということです。
 
-- An `IO` action will only ever get executed when it's passed to `:exec` at the REPL, or when it is the `main` function of a compiled Idris program that is being executed.
+例として、簡単な算術式を評価する小さなプログラムを作成してみましょう。簡単のため、1つの演算子と2つの引数（両方とも整数）のみを持つ式（例: `12 + 13`）のみを扱います。
 
-- It is not possible to ever break out of the `IO` context: There is no function of type `IO a -> a`, as such a function would need to execute its argument in order to extract the final result, and this would break referential transparency.
-
-## Combining Pure Code with `IO` Actions
-
-The title of this subsection is somewhat misleading. `IO` actions *are* pure values, but what is typically meant here, is that we combine non-`IO` functions with effectful computations.
-
-As a demonstration, in this section we are going to write a small program for evaluating arithmetic expressions. We are going to keep things simple and allow only expressions with a single operator and two arguments, both of which must be integers, for instance `12 + 13`.
-
-We are going to use function `split` from `Data.String` in *base* to tokenize arithmetic expressions. We are then trying to parse the two integer values and the operator. These operations might fail, since user input can be invalid, so we also need an error type. We could actually just use `String`, but I consider it to be good practice to use custom sum types for erroneous conditions.
+*base* の `Data.String` モジュールの `split` 関数を使って算術式をトークン化します。その後、2つの整数値と演算子のパースを試みます。ユーザー入力が無効な可能性があるため、これらの操作は失敗する可能性があり、エラー型が必要になります。単に `String` を使うこともできますが、エラー条件には専用の直和型を定義するのが良いプラクティスです。
 
 ```idris
 public export
@@ -126,7 +125,7 @@ dispError (UnknownOperator v) = "Unknown operator: " ++ v ++ "."
 dispError (ParseError v)      = "Invalid expression: " ++ v ++ "."
 ```
 
-In order to parse integer literals, we use function `parseInteger` from `Data.String`:
+整数リテラルをパースするために、`Data.String` の `parseInteger` 関数を使用します：
 
 ```idris
 export
@@ -134,7 +133,7 @@ readInteger : String -> Either Error Integer
 readInteger s = maybe (Left $ NotAnInteger s) Right $ parseInteger s
 ```
 
-Likewise, we declare and implement a function for parsing arithmetic operators:
+同様に、算術演算子をパースする関数を宣言・実装します：
 
 ```idris
 export
@@ -144,7 +143,7 @@ readOperator "*" = Right (*)
 readOperator s   = Left (UnknownOperator s)
 ```
 
-We are now ready to parse and evaluate simple arithmetic expressions. This consists of several steps (splitting the input string, parsing each literal), each of which can fail. Later, when we learn about monads, we will see that do blocks can be used in such occasions just as well. However, in this case we can use an alternative syntactic convenience: Pattern matching in let bindings. Here is the code:
+これでシンプルな算術式をパースして評価する準備が整いました。これには複数のステップ（入力文字列の分割、各リテラルのパース）が含まれ、そのいずれも失敗する可能性があります。後でモナドについて学ぶと、このような場合にも do ブロックを使用できることがわかります。しかし今回は、別の便利な構文である **let 束縛でのパターンマッチ** を使用してみます：
 
 ```idris
 eval : String -> Either Error Integer
@@ -156,13 +155,13 @@ eval s =
    in Right $ op v1 v2
 ```
 
-Let's break this down a bit. On the first line, we split the input string at all whitespace occurrences. Since `split` returns a `List1` (a type for non-empty lists exported from `Data.List1` in *base*) but pattern matching on `List` is more convenient, we convert the result using `Data.List1.forget`. Note, how we use a pattern match on the left hand side of the assignment operator `:=`. This is a partial pattern match (*partial* meaning, that it doesn't cover all possible cases), therefore we have to deal with the other possibilities as well, which is done after the vertical line. This can be read as follows: "If the pattern match on the left hand side is successful, and we get a list of exactly three tokens, continue with the `let` expression, otherwise return a `ParseError` in a `Left` immediately".
+このコードを分解してみましょう。1行目では、入力文字列をすべての空白文字の位置で分割します。`split` は `List1`（*base* の `Data.List1` からエクスポートされている空でないリストの型）を返しますが、`List` に対するパターンマッチの方が扱いやすいため、`Data.List1.forget` を使って変換しています。代入演算子 `:=` の左辺でパターンマッチを行っている点に注目してください。これは部分的な（網羅的でない）パターンマッチであるため、縦線 `|` の後で他の可能性に対処する必要があります。これは「左辺のパターンマッチが成功し、ちょうど3つのトークンからなるリストが得られた場合は `let` 式を続行し、それ以外の場合は直ちに `ParseError` を `Left` で返す」と読めます。
 
-The other three lines behave exactly the same: Each has a partial pattern match on the left hand side with instructions what to return in case of invalid input after the vertical bar. We will later see, that this syntax is also available in *do blocks*.
+他の3行もまったく同様に動作します。左辺に部分パターンマッチがあり、無効な入力の場合に何を返すかが縦線の後に指定されています。この構文は後ほど **do ブロック** 内でも利用できることを見ます。
 
-Note, how all of the functionality implemented so far is *pure*, that is, it does not describe computations with side effects. (One could argue that already the possibility of failure is an observable *effect*, but even then, the code above is still referentially transparent, can be easily tested at the REPL, and evaluated at compile time, which is the important thing here.)
+ここまで実装したすべての機能は **純粋** であり、副作用を伴う計算を記述していない点に注目してください（失敗の可能性自体を観測可能な「エフェクト」と呼ぶこともできますが、それでも上記のコードは参照透過であり、REPL で簡単にテストでき、コンパイル時に評価できます）。
 
-Finally, we can wrap this functionality in an `IO` action, which reads a string from standard input and tries to evaluate the arithmetic expression:
+最後に、標準入力から文字列を読み取り、算術式の評価を試みる `IO` アクションにこの機能をラップします：
 
 ```idris
 exprProg : IO ()
@@ -175,7 +174,7 @@ exprProg = do
     Right res => putStrLn (s ++ " = " ++ show res)
 ```
 
-Note, how in `exprProg` we were forced to deal with the possibility of failure and handle both constructors of `Either` differently in order to print a result. Note also, that *do blocks* are ordinary expressions, and we can, for instance, start a new *do block* on the right hand side of a case expression.
+`exprProg` では、失敗の可能性に対処し、結果を表示するために `Either` の両方のコンストラクタを適切に分岐処理する必要がある点に注目してください。また、do ブロックは通常の式であるため、case 式の右辺などで新しい do ブロックを開始できることにも注目してください。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

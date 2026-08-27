@@ -1,6 +1,9 @@
-# How `IO` is Implemented
+# `IO` の実装の仕組み
 
-In this final section of an already lengthy chapter, we will risk a glance at how `IO` is implemented in Idris. It is interesting to note, that `IO` is not a built-in type but a regular data type with only one minor speciality. Let's learn about it at the REPL:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Impl.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Impl.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+すでに長くなった本章の最後に、Idris で `IO` が内部的にどのように実装されているかを少し覗いてみましょう。興味深いことに、`IO` はコンパイラ組み込みの魔法の型ではなく、ほんの少しの特殊性を持つ通常のデータ型です。REPL で確認してみましょう：
 
 ```repl
 Tutorial.IO> :doc IO
@@ -14,9 +17,9 @@ data PrimIO.IO : Type -> Type
     Monad IO
 ```
 
-Here, we learn that `IO` has a single data constructor called `MkIO`, which takes a single argument of type `PrimIO a` with quantity *1*. We are not going to talk about the quantities here, as in fact they are not important to understand how `IO` works.
+ここから、`IO` には単一のデータコンストラクタ `MkIO` があり、数量 *1* を持つ `PrimIO a` 型の単一引数を取ることがわかります。ここでは数量については気にしなくて構いません。`IO` がどのように機能するかを理解する上で本質的ではないためです。
 
-Now, `PrimIO a` is a type alias for the following function:
+さて、`PrimIO a` は以下の関数の型エイリアスです：
 
 ```repl
 Tutorial.IO> :printdef PrimIO
@@ -24,7 +27,7 @@ PrimIO.PrimIO : Type -> Type
 PrimIO a = (1 _ : %World) -> IORes a
 ```
 
-Again, don't mind the quantities. There is only one piece of the puzzle missing: `IORes a`, which is a publicly exported record type:
+ここでも数量は気にしないでください。パズルの最後のピースは `IORes a` です。これは公開されているレコード型です：
 
 ```repl
 Solutions.IO> :doc IORes
@@ -33,17 +36,17 @@ data PrimIO.IORes : Type -> Type
   Constructor: MkIORes : a -> (1 _ : %World) -> IORes a
 ```
 
-So, to put this all together, `IO` is a wrapper around something similar to the following function type:
+これらすべてをまとめると、`IO` は実質的に以下のような関数型のラッパーに過ぎません：
 
 ```repl
 %World -> (a, %World)
 ```
 
-You can think of type `%World` as a placeholder for the state of the outside world of a program (file system, memory, network connections, and so on). Conceptually, to execute an `IO a` action, we pass it the current state of the world, and in return get an updated world state plus a result of type `a`. The world state being updated represents all the side effects describable in a computer program.
+型 `%World` は、プログラムの外の世界の状態（ファイルシステム、メモリ、ネットワーク接続など）を表すプレースホルダーと考えることができます。概念的には、`IO a` アクションを実行するには現在の「世界の状態」を渡し、その見返りとして「更新された世界の状態」と `a` 型の結果を受け取ります。世界の状態が更新されることが、コンピュータプログラムで記述可能なすべての副作用を表しています。
 
-Now, it is important to understand that there is no such thing as the *state of the world*. The `%World` type is just a placeholder, which is converted to some kind of constant that's passed around and never inspected at runtime. So, if we had a value of type `%World`, we could pass it to an `IO a` action and execute it, and this is exactly what happens at runtime: A single value of type `%World` (an uninteresting placeholder like `null`, `0`, or - in case of the JavaScript backends - `undefined`) is passed to the `main` function, thus setting the whole program in motion. However, it is impossible to programmatically create a value of type `%World` (it is an abstract, primitive type), and therefore we cannot ever extract a value of type `a` from an `IO a` action (modulo `unsafePerformIO`).
+もちろん、「世界の状態」という物理的な実体が存在するわけではないことを理解することが重要です。`%World` 型は単なるプレースホルダーであり、実行時には単に受け渡されるだけで中身が決して検査されない定数に変換されます。もし `%World` 型の値を持っていれば、それを `IO a` アクションに渡して実行することができます。そして、これこそが実行時に行われていることです：`%World` 型の単一の値（`null`, `0`, JavaScript バックエンドの場合は `undefined` などのダミー値）が `main` 関数に渡され、プログラム全体の実行が開始されます。しかし、コード上で `%World` 型の値を新しく作成することは不可能です（抽象的でプリミティブな型です）。そのため、`IO a` アクションから `a` 型の値を取り出すことは（`unsafePerformIO` を除いて）決してできません。
 
-Once we will talk about monad transformers and the state monad, you will see that `IO` is nothing else but a state monad in disguise but with an abstract state type, which makes it impossible for us to run the stateful computation.
+後にモナド変換子や State モナドについて学ぶと、`IO` は「プログラマが直接実行できないように状態型が隠蔽（抽象化）された State モナド」に他ならないことがわかるでしょう。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

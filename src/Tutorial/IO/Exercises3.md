@@ -1,6 +1,9 @@
-# Exercises part 3
+# IO 練習問題 パート3
 
-1. As we have seen in the examples above, `IO` actions working with file handles often come with the risk of failure. We can therefore simplify things by writing some utility functions and a custom *bind* operator to work with these nested effects. In a new namespace `IOErr`, implement the following utility functions and use these to further cleanup the implementation of `countEmpty'`:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+1. 前述の例で見たように、ファイルハンドルを操作する `IO` アクションには失敗のリスクが常に伴います。そこで、いくつかのユーティリティ関数とカスタム *bind* 演算子を作成して、これらのネストしたエフェクトを簡潔に扱えるようにしましょう。新しい名前空間 `IOErr` 内で以下のユーティリティ関数を実装し、それらを使って `countEmpty'` の実装をさらに整理してください：
 
    ```idris
    pure : a -> IO (Either e a)
@@ -16,9 +19,9 @@
    (>>) : IO (Either e ()) -> Lazy (IO (Either e a)) -> IO (Either e a)
    ```
 
-2. Write a function `countWords` for counting the words in a file. Consider using `Data.String.words` and the utilities from exercise 1 in your implementation.
+2. ファイル内の単語数をカウントする関数 `countWords` を作成してください。実装には `Data.String.words` および練習問題 1 のユーティリティを使用することを検討してください。
 
-3. We can generalize the functionality used in `countEmpty` and `countWords`, by implementing a helper function for iterating over the lines in a file and accumulating some state along the way. Implement `withLines` and use it to reimplement `countEmpty` and `countWords`:
+3. ファイルの各行を反復処理しながら状態を蓄積するヘルパー関数を実装することで、`countEmpty` や `countWords` で使用した機能を一般化できます。`withLines` を実装し、それを使って `countEmpty` と `countWords` を再実装してください：
 
    ```idris
    covering
@@ -28,7 +31,7 @@
              -> IO (Either FileError s)
    ```
 
-4. We often use a `Monoid` for accumulating values. It is therefore convenient to specialize `withLines` for this case. Use `withLines` to implement `foldLines` according to the type given below:
+4. 値の蓄積には `Monoid` がよく使われます。したがって、このケースのために `withLines` を特化させると便利です。`withLines` を使用して、以下の型を持つ `foldLines` を実装してください：
 
    ```idris
    covering
@@ -38,4 +41,5 @@
              -> IO (Either FileError s)
    ```
 
-5. Implement function `wordCount` for counting the number of lines, words, and characters in a text document. Define a custom record type together with an implementation of `Monoid` for storing and accumulating these values and use `foldLines` in your implementation of `wordCount`.
+5. テキストドキュメント内の行数、単語数、文字数をカウントする関数 `wordCount` を実装してください。これらの値を保持・蓄積するための専用レコード型と `Monoid` 実装を定義し、`wordCount` の実装内で `foldLines` を使用してください。
+
