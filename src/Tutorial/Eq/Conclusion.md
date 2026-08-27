@@ -1,3 +1,7 @@
-# Conclusion
+# おわりに
 
-The concept of *types as propositions, values as proofs* is a very powerful tool for writing provably correct programs. We will therefore spend some more time defining data types for describing contracts between values, and values of these types as proofs that the contracts hold. This will allow us to describe necessary pre- and postconditions for our functions, thus reducing the need to return a `Maybe` or other failure type, because due to the restricted input, our functions can no longer fail.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+「命題としての型、証明としての値」という概念は、正しさが証明されたプログラムを記述するための非常に強力な道具です。次章では、値どうしの契約を記述するデータ型（述語 / Predicates）や事前条件・事後条件をさらに探求し、入力制約によって失敗そのものを型レベルで防ぐプログラミング手法を学んでいきます。
+

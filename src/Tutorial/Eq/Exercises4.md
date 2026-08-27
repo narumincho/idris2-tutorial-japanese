@@ -1,18 +1,21 @@
-# Exercises part 4
+# 命題的等値性 練習問題 パート4
 
-1. Implement `plusSuccRightSucc` yourself.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Exercises4.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Exercises4.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-2. Proof that `minus n n` equals zero for all natural numbers `n`.
+1. `plusSuccRightSucc` を自力で実装してください。
 
-3. Proof that `minus n 0` equals n for all natural numbers `n`
+2. すべての自然数 `n` について `minus n n = 0` であることを証明してください。
 
-4. Proof that `n * 1 = n` and `1 * n = n` for all natural numbers `n`.
+3. すべての自然数 `n` について `minus n 0 = n` であることを証明してください。
 
-5. Proof that addition of natural numbers is commutative.
+4. すべての自然数 `n` について `n * 1 = n` および `1 * n = n` であることを証明してください。
 
-6. Implement a tail-recursive version of `map` for vectors.
+5. 自然数の加算が交換可能（可換 / commutative）であることを証明してください。
 
-7. Proof the following proposition:
+6. ベクトルに対する末尾再帰版の `map` を実装してください。
+
+7. 以下の命題を証明してください：
 
    ```idris
    mapAppend :  (f : a -> b)
@@ -21,4 +24,5 @@
              -> map f (xs ++ ys) = map f xs ++ map f ys
    ```
 
-8. Use the proof from exercise 7 to implement again a function for zipping two `Table`s, this time using a rewrite rule plus `Data.HList.(++)` instead of custom function `appRows`.
+8. 練習問題 7 の証明を利用して、2 つの `Table` を zip（結合）する関数を再実装してください。今回はヘルパー関数 `appRows` の代わりに書き換え規則（`rewrite`）と `Data.HList.(++)` を使用してください。
+

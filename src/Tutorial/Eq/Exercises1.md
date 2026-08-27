@@ -1,27 +1,27 @@
-# Exercises part 1
+# 命題的等値性 練習問題 パート1
 
-In the following exercises, you are going to implement some very basic properties of equality proofs. You'll have to come up with the types of the functions yourself, as the implementations will be incredibly simple.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-Note: If you can't remember what the terms "reflexive", "symmetric", and "transitive" mean, quickly read about [equivalence relations](https://en.wikipedia.org/wiki/Equivalence_relation).
+本節の練習問題では、等値性の証明に関する基本的な性質（同値関係）を実装します。
 
-1. Show that `SameColType` is a reflexive relation.
+1. `SameColType` が **反射的（reflexive）** な関係であることを示してください。
 
-2. Show that `SameColType` is a symmetric relation.
+2. `SameColType` が **対称的（symmetric）** な関係であることを示してください。
 
-3. Show that `SameColType` is a transitive relation.
+3. `SameColType` が **推移的（transitive）** な関係であることを示してください。
 
-4. Let `f` be a function of type `ColType -> a` for an arbitrary type `a`. Show that from a value of type `SameColType c1 c2` follows that `f c1` and `f c2` are equal.
+4. 任意の型 `a` に対する関数 `f : ColType -> a` について、`SameColType c1 c2` から `f c1 = f c2` が導かれること（**合同性 / congruence**）を示してください。
 
-   For `(=)` the above properties are available from the *Prelude* as functions `sym`, `trans`, and `cong`. Reflexivity comes from the data constructor `Refl` itself.
+   標準の等値性 `(=)` に対しては、これらの性質が *Prelude* で `sym`（対称律）、`trans`（推移律）、`cong`（合同律）として提供されています。反射律は `Refl` そのものです。
 
-5. Implement a function for verifying that two natural numbers are identical. Try using `cong` in your implementation.
+5. 2 つの自然数が等しいかどうかを検証する関数を実装してください（実装に `cong` を使ってみてください）。
 
-6. Use the function from exercise 5 for zipping two `Table`s if they have the same number of rows.
+6. 練習問題 5 の関数を使って、行数が一致する場合に 2 つの `Table` を zip（列方向に結合）する関数を実装してください。
 
-   Hint: Use `Vect.zipWith`. You will need to implement custom function `appRows` for this, since Idris will not automatically figure out that the types unify when using `HList.(++)`:
+   ヒント: `Vect.zipWith` を使用します。`HList.(++)` の型推論を補佐するために、以下のヘルパー関数 `appRows` を実装してください：
 
    ```idris
    appRows : {ts1 : _} -> Row ts1 -> Row ts2 -> Row (ts1 ++ ts2)
    ```
 
-We will later learn how to use *rewrite rules* to circumvent the need of writing custom functions like `appRows` and use `(++)` in `zipWith` directly.
