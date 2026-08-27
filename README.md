@@ -29,44 +29,37 @@
 
 ---
 
-## 🛠️ 依存関係とビルド方法
+## 🛠️ ローカルでのビルド方法 (Docker)
 
-本チュートリアルのビルドでは、Idris コードのシンタックスハイライトを行うために [katla](https://github.com/idris-community/katla) を使用し、Raku スクリプト（[scripts/build-book](scripts/build-book)）を介して [mdBook](https://rust-lang.github.io/mdBook/) 用のファイルを生成しています。
+本チュートリアルのビルド環境（Idris 2, pack, katla, Raku, mdBook 等）は、GitHub Packages (`ghcr.io`) で公開されている Docker コンテナに含まれています。Docker がインストールされていれば、ローカル環境を汚さずに 1 コマンドでビルドやプレビューが可能です。
 
-### 必要な依存関係
+### 1. 本のビルド
 
-1. **Idris 2 & pack**:
-   - [pack](https://github.com/stefan-hoeck/idris2-pack) のセットアップ後、katla をインストールします:
-     ```sh
-     pack install-app katla
-     ```
+プロジェクトのルートディレクトリで以下を実行します:
 
-2. **Raku & zef**:
-   - [Raku](https://rakudo.org/) および [zef](https://github.com/ugexe/zef) をインストール後、必要なモジュールをインストールします:
-     ```sh
-     zef install File::Temp Shell::Command paths
-     ```
+```sh
+docker run --rm \
+  -v "$(pwd)":/work \
+  -w /work \
+  ghcr.io/narumincho/idris2-tutorial-japanese:latest \
+  sh -c "pack build && ./scripts/build-book"
+```
 
-3. **mdBook**:
-   - Rust の [cargo](https://rustup.rs/) を使用してインストールします:
-     ```sh
-     cargo install mdbook
-     ```
+ビルドが完了すると、`book/` ディレクトリに HTML が出力されます。
 
-### ビルド手順
+### 2. ローカルサーバーでのプレビュー
 
-1. まず Idris コードをビルドします（シンタックスハイライト情報の生成に必要です）:
-   ```sh
-   pack build
-   ```
+ビルドと同時にローカルプレビューサーバーを起動することもできます:
 
-2. チュートリアル本をビルドします:
-   ```sh
-   ./scripts/build-book
-   ```
+```sh
+docker run --rm -it \
+  -v "$(pwd)":/work \
+  -w /work \
+  -p 3000:3000 \
+  ghcr.io/narumincho/idris2-tutorial-japanese:latest \
+  sh -c "pack build && ./scripts/build-book && mdbook serve -n 0.0.0.0"
+```
 
-3. ビルドされた HTML は `book/` ディレクトリに出力されます。ローカルサーバーを起動して確認できます:
-   ```sh
-   python3 -m http.server -d book 8000
-   ```
+ブラウザで [http://localhost:3000](http://localhost:3000) にアクセスすると、プレビューを閲覧できます。
+
 
