@@ -1,24 +1,27 @@
-# Exercises part 2
+# Functor 練習問題 パート2
 
-01. Implement `Applicative'` for `Either e` and `Identity`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-02. Implement `Applicative'` for `Vect n`. Note: In order to implement `pure`, the length must be known at runtime. This can be done by passing it as an unerased implicit to the interface implementation:
+01. `Either e` と `Identity` に対する `Applicative'` を実装してください。
+
+02. `Vect n` に対する `Applicative'` を実装してください。注意: `pure` を実装するためには、実行時に長さが判明している必要があります。これは、インターフェース実装に非消去の暗黙引数として渡すことで実現できます：
 
     ```idris
     implementation {n : _} -> Applicative' (Vect n) where
     ```
 
-03. Implement `Applicative'` for `Pair e`, with `e` having a `Monoid` constraint.
+03. `e` が `Monoid` 制約を持つ `Pair e` に対する `Applicative'` を実装してください。
 
-04. Implement `Applicative` for `Const e`, with `e` having a `Monoid` constraint.
+04. `e` が `Monoid` 制約を持つ `Const e` に対する `Applicative` を実装してください。
 
-05. Implement `Applicative` for `Validated e`, with `e` having a `Semigroup` constraint. This will allow us to use `(<+>)` to accumulate errors in case of two `Invalid` values in the implementation of *apply*.
+05. `e` が `Semigroup` 制約を持つ `Validated e` に対する `Applicative` を実装してください。これにより、*apply* の実装で両方が `Invalid` の場合に `(<+>)` を使ってエラーを蓄積（集約）できるようになります。
 
-06. Add an additional data constructor of type `CSVError -> CSVError -> CSVError` to `CSVError` and use this to implement `Semigroup` for `CSVError`.
+06. `CSVError` に `CSVError -> CSVError -> CSVError` 型のデータコンストラクタを追加し、それを使って `CSVError` に対する `Semigroup` を実装してください。
 
-07. Refactor our CSV-parsers and all related functions so that they return `Validated` instead of `Either`. This will only work, if you solved exercise 6.
+07. CSV パーサーおよびすべての関連関数をリファクタリングして、`Either` の代わりに `Validated` を返すように変更してください（これは練習問題 6 が解けている場合に機能します）。
 
-    Two things to note: You will have to adjust very little of the existing code, as we can still use applicative syntax with `Validated`. Also, with this change, we enhanced our CSV-parsers with the ability of error accumulation. Here are some examples from a REPL session:
+    注目すべき点：`Validated` でもアプリカティブ構文がそのまま使えるため、既存のコードの変更はごくわずかで済みます。そしてこの変更により、CSV パーサーに **エラーの蓄積（error accumulation）** 機能が追加されます。REPL での実行例は以下の通りです：
 
     ```repl
     Solutions.Functor> hdecode [Bool,Nat,Gender] 1 "t,12,f"
@@ -30,32 +33,21 @@
       (App (FieldError 1 2 "-12") (FieldError 1 3 "foo")))
     ```
 
-    Behold the power of applicative functors and heterogeneous lists: With only a few lines of code we wrote a pure, type-safe, and total parser with error accumulation for lines in CSV-files, which is very convenient to use at the same time!
+    Applicative Functor とヘテロジニアスリストの真価をご覧ください：わずか数行のコードで、エラー蓄積機能を備えた純粋で型安全かつ全域的な CSV 行パーサーが完成しました！
 
-08. Since we introduced heterogeneous lists in this chapter, it would be a pity not to experiment with them a little.
+08. せっかく本章でヘテロジニアスリストを導入したので、少し発展的な実験をしてみましょう。
 
-    This exercise is meant to sharpen your skills in type wizardry. It therefore comes with very few hints. Try to decide yourself what behavior you'd expect from a given function, how to express this in the types, and how to implement it afterwards. If your types are correct and precise enough, the implementations will almost come for free. Don't give up too early if you get stuck. Only if you truly run out of ideas should you have a glance at the solutions (and then, only at the types at first!)
+    この練習問題は、型レベルプログラミングのスキルを磨くためのものです。ヒントは最小限にしてあります。関数に期待される挙動、それを型でどう表現するか、そしてどう実装するかを自分で考えてみてください。型が正しく精密であれば、実装はほぼ自然に導かれます。
 
-    1. Implement `head` for `HList`.
+    1. `HList` に対する `head` を実装してください。
+    2. `HList` に対する `tail` を実装してください。
+    3. `HList` に対する `(++)` を実装してください。
+    4. `HList` に対する `index` を実装してください。
+    5. Idris プロジェクトの一部である *contrib* パッケージは、ヘテロジニアスベクトルのデータ型 `Data.HVect.HVect` を提供しています。`HList` との違いは、型のリストではなく型のベクトルでインデックス付けされている点だけです。独自の `HVect` 実装と、関数 `head`, `tail`, `(++)`, `index` を書いてください。
+    6. さらなる挑戦として、`Vect m (HVect ts)` を転置する関数を実装してみてください。
+       （行列表現のテーブルを行のベクトルから列のタプルに変換するのに役立ちます。）
 
-    2. Implement `tail` for `HList`.
+09. `Comp f g` に対する `Applicative` を実装することで、2つの Applicative Functor の合成が再び Applicative Functor になることを示してください。
 
-    3. Implement `(++)` for `HList`.
+10. `Prod f g` に対する `Applicative` を実装することで、2つの Applicative Functor の直積（プロダクト）が再び Applicative Functor になることを示してください。
 
-    4. Implement `index` for `HList`. This might be harder than the other three. Go back and look how we implemented `indexList` in an earlier exercise and start from there.
-
-    5. Package *contrib*, which is part of the Idris project, provides `Data.HVect.HVect`, a data type for heterogeneous vectors. The only difference to our own `HList` is, that `HVect` is indexed over a vector of types instead of a list of types. This makes it easier to express certain operations at the type level.
-
-       Write your own implementation of `HVect` together with functions `head`, `tail`, `(++)`, and `index`.
-
-    6. For a real challenge, try implementing a function for transposing a `Vect m (HVect ts)`. You'll first have to be creative about how to even express this in the types.
-
-       Note: In order to implement this, you'll need to pattern match on an erased argument in at least one case to help Idris with type inference. Pattern matching on erased arguments is forbidden (they are erased after all, so we can't inspect them at runtime), *unless* the structure of the value being matched on can be derived from another, un-erased argument.
-
-       Also, don't worry if you get stuck on this one. It took me several tries to figure it out. But I enjoyed the experience, so I just *had* to include it here. :-)
-
-       Note, however, that such a function might be useful when working with CSV-files, as it allows us to convert a table represented as rows (a vector of tuples) to one represented as columns (a tuple of vectors).
-
-09. Show, that the composition of two applicative functors is again an applicative functor by implementing `Applicative` for `Comp f g`.
-
-10. Show, that the product of two applicative functors is again an applicative functor by implementing `Applicative` for `Prod f g`.

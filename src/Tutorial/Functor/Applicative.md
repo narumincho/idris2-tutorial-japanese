@@ -1,4 +1,7 @@
-# Applicative
+# Applicative (アプリカティブ関手)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Applicative.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Applicative.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functor.Applicative
@@ -12,9 +15,9 @@ import Data.Vect
 %default total
 ```
 
-While `Functor` allows us to map a pure, unary function over a value in a context, it doesn't allow us to combine n such values under an n-ary function.
+`Functor` を使うと、コンテキスト内の値に対して純粋な1引数関数をマップできますが、複数のコンテキスト内の値を多引数関数に渡して結合することはできません。
 
-For instance, consider the following functions:
+たとえば、以下の関数を考えてみましょう：
 
 ```idris
 liftMaybe2 : (a -> b -> c) -> Maybe a -> Maybe b -> Maybe c
@@ -34,7 +37,7 @@ liftIO2 f ioa iob = fromPrim $ go (toPrim ioa) (toPrim iob)
            in MkIORes (f va vb) w3
 ```
 
-This behavior is not covered by `Functor`, yet it is a very common thing to do. For instance, we might want to read two numbers from standard input (both operations might fail), calculating the product of the two. Here's the code:
+この振る舞いは `Functor` ではカバーできませんが、プログラミングでは非常によく行われる操作です。たとえば、標準入力から2つの数値を読み取り（どちらの操作も失敗する可能性がある）、それらの積を計算したいとします：
 
 ```idris
 multNumbers : Num a => Neg a => IO (Maybe a)
@@ -44,9 +47,9 @@ multNumbers = do
   pure $ liftMaybe2 (*) (parseInteger s1) (parseInteger s2)
 ```
 
-And it won't stop here. We might just as well want to have `liftMaybe3` for ternary functions and three `Maybe` arguments and so on, for arbitrary numbers of arguments.
+さらに、3引数関数と3つの `Maybe` 引数に対応する `liftMaybe3` や、任意の個数の引数に対応する関数も欲しくなります。
 
-But there is more: We'd also like to lift pure values into the context in question. With this, we could do the following:
+それだけではありません。純粋な値を対象のコンテキストに持ち上げる（リフトする）ことも必要になります。これがあれば、以下のようなことができるようになります：
 
 ```idris
 liftMaybe3 : (a -> b -> c -> d) -> Maybe a -> Maybe b -> Maybe c -> Maybe d
@@ -62,7 +65,7 @@ multAdd100 s t = liftMaybe3 calc (parseInteger s) (parseInteger t) (pure 100)
         calc x y z = x * y + z
 ```
 
-As you'll of course already know, I am now going to present a new interface to encapsulate this behavior. It's called `Applicative`. Here is its definition and an example implementation:
+この振る舞いをカプセル化する新しいインターフェースが **`Applicative`** です。以下はその定義と実装例です：
 
 ```idris
 public export
@@ -78,9 +81,9 @@ implementation Applicative' Maybe where
   pure' = Just
 ```
 
-Interface `Applicative` is of course already exported by the *Prelude*. There, function `app` is an operator sometimes called *app* or *apply*: `(<*>)`.
+`Applicative` インターフェースは *Prelude* でエクスポートされています。そこでは `app` 関数は **`(<*>)`** という演算子（*apply* または *app* と呼ばれます）になっています。
 
-You may wonder, how functions like `liftMaybe2` or `liftIO3` are related to operator *apply*. Let me demonstrate this:
+`liftMaybe2` や `liftIO3` のような関数と *apply* 演算子 `(<*>)` がどう関係しているのか疑問に思うかもしれません。以下をお見せしましょう：
 
 ```idris
 liftA2 : Applicative f => (a -> b -> c) -> f a -> f b -> f c
@@ -90,9 +93,9 @@ liftA3 : Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
 liftA3 fun fa fb fc = pure fun <*> fa <*> fb <*> fc
 ```
 
-It is really important for you to understand what's going on here, so let's break these down. If we specialize `liftA2` to use `Maybe` for `f`, `pure fun` is of type `Maybe (a -> b -> c)`. Likewise, `pure fun <*> fa` is of type `Maybe (b -> c)`, as `(<*>)` will apply the value stored in `fa` to the function stored in `pure fun` (currying!).
+ここで何が起きているかを理解することは非常に重要です。`f` を `Maybe` に特化させた場合、`pure fun` は `Maybe (a -> b -> c)` 型になります。そして `pure fun <*> fa` は `Maybe (b -> c)` 型になります。`(<*>)` が `fa` に格納された値を `pure fun` に格納された関数に適用するためです（カリー化！）。
 
-You'll often see such chains of applications of *apply*, the number of *applies* corresponding to the arity of the function we lift. You'll sometimes also see the following, which allows us to drop the initial call to `pure`, and use the operator version of `map` instead:
+このように、リフトする関数のアリティ（引数の数）の分だけ `(<*>)` を連鎖させるパターンがよく使われます。また、最初の `pure` の呼び出しを省略して `map` 演算子 `(<$>)` を使う以下の書き方も一般的です：
 
 ```idris
 liftA2' : Applicative f => (a -> b -> c) -> f a -> f b -> f c
@@ -102,13 +105,13 @@ liftA3' : Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
 liftA3' fun fa fb fc = fun <$> fa <*> fb <*> fc
 ```
 
-So, interface `Applicative` allows us to lift values (and functions!) into computational contexts and apply them to values in the same contexts. Before we will see an extended example why this is useful, I'll quickly introduce some syntactic sugar for working with applicative functors.
+このように、`Applicative` インターフェースを使用すると、値（および関数！）を計算コンテキストに持ち上げ、同じコンテキスト内の値に適用することができます。
 
-## Idiom Brackets
+## イディオムブラケット (Idiom Brackets `[| ... |]`)
 
-The programming style used for implementing `liftA2'` and `liftA3'` is also referred to as *applicative style* and is used a lot in Haskell for combining several effectful computations with a single pure function.
+`liftA2'` や `liftA3'` で使用したプログラミングスタイルは **アプリカティブスタイル (applicative style)** とも呼ばれ、Haskell で複数のエフェクトフルな計算を単一の純粋関数で組み合わせる際によく使われます。
 
-In Idris, there is an alternative to using such chains of operator applications: Idiom brackets. Here's another reimplementation of `liftA2` and `liftA3`:
+Idris には、このような演算子の連鎖に対する便利な代替構文として **イディオムブラケット (idiom brackets)** `[| ... |]` が用意されています：
 
 ```idris
 liftA2'' : Applicative f => (a -> b -> c) -> f a -> f b -> f c
@@ -118,13 +121,13 @@ liftA3'' : Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
 liftA3'' fun fa fb fc = [| fun fa fb fc |]
 ```
 
-The above implementations will be desugared to the one given for `liftA2` and `liftA3`, again *before disambiguating, type checking, and filling in of implicit values*. Like with the *bind* operator, we can therefore write custom implementations for `pure` and `(<*>)`, and Idris will use these if it can disambiguate between the overloaded function names.
+上記の実装は、**曖昧さ解消・型チェック・暗黙引数の補完が行われる前** に、`liftA2` や `liftA3` の形式に自動的に脱糖されます。
 
-## Use Case: CSV Reader
+## ユースケース: CSV リーダー
 
-In order to understand the power and versatility that comes with applicative functors, we will look at a slightly extended example. We are going to write some utilities for parsing and decoding content from CSV files. These are files where each line holds a list of values separated by commas (or some other delimiter). Typically, they are used to store tabular data, for instance from spread sheet applications. What we would like to do is convert lines in a CSV file and store the result in custom records, where each record field corresponds to a column in the table.
+Applicative Functor の力と汎用性を理解するために、少し実践的な例を見てみましょう。CSV ファイルのコンテンツをパースしてデコードするユーティリティを作成します。
 
-For instance, here is a simple example file, containing tabular user information from a web store: First name, last name, age (optional), email address, gender, and password.
+たとえば、ウェブストアのユーザー情報（名、姓、年齢（省略可能）、メールアドレス、性別、パスワード）を含む簡単な CSV ファイルを考えます：
 
 ```repl
 Jon,Doe,42,jon@doe.ch,m,weijr332sdk
@@ -132,7 +135,7 @@ Jane,Doe,,jane@doe.ch,f,aa433sd112
 Stefan,Hoeck,,nope@goaway.ch,m,password123
 ```
 
-And here are the Idris data types necessary to hold this information at runtime. We use again custom string wrappers for increased type safety and because it will allow us to define for each data type what we consider to be valid input:
+実行時にこの情報を保持するために必要な Idris のデータ型は以下の通りです：
 
 ```idris
 data Gender = Male | Female | Other
@@ -160,7 +163,7 @@ record User where
   password  : Password
 ```
 
-We start by defining an interface for reading fields in a CSV file and writing implementations for the data types we'd like to read:
+まず、CSV ファイルのフィールドを読み取るためのインターフェースを定義し、読み込みたいデータ型に対する実装を作成します：
 
 ```idris
 public export
@@ -168,7 +171,7 @@ interface CSVField a where
   read : String -> Maybe a
 ```
 
-Below are implementations for `Gender` and `Bool`. I decided to in these cases encode each value with a single lower case character:
+以下は `Gender` と `Bool` の実装です：
 
 ```idris
 export
@@ -185,7 +188,7 @@ CSVField Bool where
   read _   = Nothing
 ```
 
-For numeric types, we can use the parsing functions from `Data.String`:
+数値型には `Data.String` のパース関数を使用できます：
 
 ```idris
 export
@@ -201,7 +204,7 @@ CSVField Double where
   read = parseDouble
 ```
 
-For optional values, the stored type must itself come with an instance of `CSVField`. We can then treat the empty string `""` as `Nothing`, while a non-empty string will be passed to the encapsulated type's field reader. (Remember that `(<$>)` is an alias for `map`.)
+省略可能な値（`Maybe a`）の場合、格納される型 `a` 自体が `CSVField` のインスタンスを持っている必要があります。空文字列 `""` を `Nothing` として扱い、空でない文字列を `a` のフィールドリーダーに渡します：
 
 ```idris
 export
@@ -210,7 +213,7 @@ CSVField a => CSVField (Maybe a) where
   read s  = Just <$> read s
 ```
 
-Finally, for our string wrappers, we need to decide what we consider to be valid values. For simplicity, I decided to limit the length of allowed strings and the set of valid characters.
+文字列ラッパー型については、バリデーションロジックを定義します：
 
 ```idris
 readIf : (String -> Bool) -> (String -> a) -> String -> Maybe a
@@ -240,9 +243,8 @@ CSVField Email where
 
 isPasswordChar : Char -> Bool
 isPasswordChar ' ' = True
--- please note that isSpace holds as well for other characaters than ' '
--- e.g. for non-breaking space: isSpace '\160' = True
--- but only ' ' shall be llowed in passwords
+-- isSpace はノーブレークスペース等にもマッチするため、
+-- パスワードでは空白文字として ' ' のみを許可します
 isPasswordChar c   = not (isControl c) && not (isSpace c)
 
 isValidPassword : String -> Bool
@@ -254,9 +256,7 @@ CSVField Password where
   read = readIf isValidPassword MkPassword
 ```
 
-In a later chapter, we will learn about refinement types and how to store an erased proof of validity together with a validated value.
-
-We can now start to decode whole lines in a CSV file. In order to do so, we first introduce a custom error type encapsulating how things can go wrong:
+次に、CSV ファイルの行全体をデコードします。まずエラー型を定義します：
 
 ```idris
 public export
@@ -266,7 +266,7 @@ data CSVError : Type where
   ExpectedEndOfInput   : (line, column : Nat) -> CSVError
 ```
 
-We can now use `CSVField` to read a single field at a given line and position in a CSV file, and return a `FieldError` in case of a failure.
+`CSVField` を使って指定位置のフィールドを読み取り、失敗した場合は `FieldError` を返します：
 
 ```idris
 export
@@ -275,7 +275,7 @@ readField line col str =
   maybe (Left $ FieldError line col str) Right (read str)
 ```
 
-If we know in advance the number of fields we need to read, we can try and convert a list of strings to a `Vect` of the given length. This facilitates reading record values of a known number of fields, as we get the correct number of string variables when pattern matching on the vector:
+読み取るフィールド数が事前にわかっている場合、文字列のリストを指定した長さの `Vect` に変換します：
 
 ```idris
 toVect : (n : Nat) -> (line, col : Nat) -> List a -> Either CSVError (Vect n a)
@@ -285,7 +285,7 @@ toVect (S k) line col []        = Left (UnexpectedEndOfInput line col)
 toVect (S k) line col (x :: xs) = (x ::) <$> toVect k line (S col) xs
 ```
 
-Finally, we can implement function `readUser` to try and convert a single line in a CSV-file to a value of type `User`:
+最後に、CSV の1行を `User` 型の値に変換する `readUser` 関数を実装します：
 
 ```idris
 readUser' : (line : Nat) -> List String -> Either CSVError User
@@ -302,7 +302,7 @@ readUser : (line : Nat) -> String -> Either CSVError User
 readUser line = readUser' line . forget . split (',' ==)
 ```
 
-Let's give this a go at the REPL:
+REPL で動作を確認してみましょう：
 
 ```repl
 Tutorial.Functor> readUser 1 "Joe,Foo,46,j@f.ch,m,pw1234567"
@@ -312,13 +312,11 @@ Tutorial.Functor> readUser 7 "Joe,Foo,46,j@f.ch,m,shortPW"
 Left (FieldError 7 6 "shortPW")
 ```
 
-Note, how in the implementation of `readUser'` we used an idiom bracket to map a function of six arguments (`MkUser`) over six values of type `Either CSVError`. This will automatically succeed, if and only if all of the parsings have succeeded. It would have been notoriously cumbersome resulting in much less readable code to implement `readUser'` with a succession of six nested pattern matches.
+`readUser'` の実装において、イディオムブラケットを使用して 6引数関数（`MkUser`）を `Either CSVError` 型の 6つの値の上にマップしている点に注目してください。これにより、**すべてのパースが成功した場合にのみ自動的に全体が成功** します。
 
-However, the idiom bracket above looks still quite repetitive. Surely, we can do better?
+### ヘテロジニアスリスト (Heterogeneous Lists)
 
-### A Case for Heterogeneous Lists
-
-It is time to learn about a family of types, which can be used as a generic representation for record types, and which will allow us to represent and read rows in heterogeneous tables with a minimal amount of code: Heterogeneous lists.
+レコード型の汎用的な表現として使用でき、ヘテロジニアスなテーブルの行を最小限のコードで表現・読み込みできるようにする型族：**ヘテロジニアスリスト（型混在リスト / Heterogeneous Lists）** を導入します。
 
 ```idris
 namespace HList
@@ -328,16 +326,14 @@ namespace HList
     (::) : (v : t) -> (vs : HList ts) -> HList (t :: ts)
 ```
 
-A heterogeneous list is a list type indexed over a *list of types*. This allows us to at each position store a value of the type at the same position in the list index. For instance, here is a variant, which stores three values of types `Bool`, `Nat`, and `Maybe String` (in that order):
+ヘテロジニアスリストは、**型のリスト** でインデックス付けされたリスト型です。これにより、各位置にリストインデックスの同じ位置にある型の値を格納できます：
 
 ```idris
 hlist1 : HList [Bool, Nat, Maybe String]
 hlist1 = [True, 12, Nothing]
 ```
 
-You could argue that heterogeneous lists are just tuples storing values of the given types. That's right, of course, however, as you'll learn the hard way in the exercises, we can use the list index to perform compile-time computations on `HList`, for instance when concatenating two such lists to keep track of the types stored in the result at the same time.
-
-But first, we'll make use of `HList` as a means to concisely parse CSV-lines. In order to do that, we need to introduce a new interface for types corresponding to whole lines in a CSV-file:
+`HList` を使って CSV 行を簡潔にパースしてみましょう。行全体に対応する新しいインターフェースを導入します：
 
 ```idris
 public export
@@ -345,7 +341,7 @@ interface CSVLine a where
   decodeAt : (line, col : Nat) -> List String -> Either CSVError a
 ```
 
-We'll now write two implementations of `CSVLine` for `HList`: One for the `Nil` case, which will succeed if and only if the current list of strings is empty. The other for the *cons* case, which will try and read a single field from the head of the list and the remainder from its tail. We use again an idiom bracket to concatenate the results:
+`HList` に対する `CSVLine` の実装を書きます：
 
 ```idris
 export
@@ -359,7 +355,7 @@ CSVField t => CSVLine (HList ts) => CSVLine (HList (t :: ts)) where
   decodeAt l c (s :: ss) = [| readField l c s :: decodeAt l (S c) ss |]
 ```
 
-And that's it! All we need to add is two utility function for decoding whole lines before they have been split into tokens, one of which is specialized to `HList` and takes an erased list of types as argument to make it more convenient to use at the REPL:
+これだけで完了です！ トークン分割前の行全体をデコードするユーティリティ関数を追加します：
 
 ```idris
 decode : CSVLine a => (line : Nat) -> String -> Either CSVError a
@@ -373,7 +369,7 @@ hdecode :  (0 ts : List Type)
 hdecode _ = decode
 ```
 
-It's time to reap the fruits of our labour and give this a go at the REPL:
+REPL で試してみましょう：
 
 ```repl
 Tutorial.Functor> hdecode [Bool,Nat,Double] 1 "f,100,12.123"
@@ -382,43 +378,14 @@ Tutorial.Functor> hdecode [Name,Name,Gender] 3 "Idris,,f"
 Left (FieldError 3 2 "")
 ```
 
-## Applicative Laws
+## Applicative の法則 (Applicative Laws)
 
-Again, `Applicative` implementations must follow certain laws. Here they are:
+`Applicative` の実装は以下の法則に従う必要があります：
 
-- `pure id <*> fa = fa`: Lifting and applying the identity function has no visible effect.
-
-- `[| f . g |] <*> v = f <*> (g <*> v)`: I must not matter, whether we compose our functions first and then apply them, or whether we apply our functions first and then compose them.
-
-  The above might be hard to understand, so here they are again with explicit types and implementations:
-
-  ```idris
-  compL : Maybe (b -> c) -> Maybe (a -> b) -> Maybe a -> Maybe c
-  compL f g v = [| f . g |] <*> v
-
-  compR : Maybe (b -> c) -> Maybe (a -> b) -> Maybe a -> Maybe c
-  compR f g v = f <*> (g <*> v)
-  ```
-
-  The second applicative law states, that the two implementations `compL` and `compR` should behave identically.
-
-- `pure f <*> pure x = pure (f x)`. This is also called the *homomorphism* law. It should be pretty self-explaining.
-
-- `f <*> pure v = pure ($ v) <*> f`. This is called the law of *interchange*.
-
-  This should again be explained with a concrete example:
-
-  ```idris
-  interL : Maybe (a -> b) -> a -> Maybe b
-  interL f v = f <*> pure v
-
-  interR : Maybe (a -> b) -> a -> Maybe b
-  interR f v = pure ($ v) <*> f
-  ```
-
-  Note, that `($ v)` has type `(a -> b) -> b`, so this is a function type being applied to `f`, which has a function of type `a -> b` wrapped in a `Maybe` context.
-
-  The law of interchange states that it must not matter whether we apply a pure value from the left or right of the *apply* operator.
+- `pure id <*> fa = fa`: 恒等関数をリフトして適用しても何も変わらない。
+- `[| f . g |] <*> v = f <*> (g <*> v)`: 関数を合成してから適用しても、適用してから合成しても等価である。
+- `pure f <*> pure x = pure (f x)`: **準同型性 (Homomorphism)** の法則。
+- `f <*> pure v = pure ($ v) <*> f`: **交換 (Interchange)** の法則。純粋な値を `(<*>)` の左から適用しても右から適用しても等価である。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

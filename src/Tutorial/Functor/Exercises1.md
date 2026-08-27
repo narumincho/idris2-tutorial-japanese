@@ -1,10 +1,13 @@
-# Exercises part 1
+# Functor 練習問題 パート1
 
-1. Write your own implementations of `Functor'` for `Maybe`, `List`, `List1`, `Vect n`, `Either e`, and `Pair a`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-2. Write a named implementation of `Functor` for pairs of functors (similar to the one implemented for `Product`).
+1. `Maybe`, `List`, `List1`, `Vect n`, `Either e`, `Pair a` に対する独自の `Functor'` 実装を記述してください。
 
-3. Implement `Functor` for data type `Identity` (which is available from `Control.Monad.Identity` in *base*):
+2. Functor のペアに対する名前付き `Functor` 実装を記述してください（`Product` に対して実装したものと同様です）。
+
+3. データ型 `Identity`（*base* の `Control.Monad.Identity` から利用可能）に対する `Functor` を実装してください：
 
    ```idris
    record Identity a where
@@ -12,9 +15,9 @@
      value : a
    ```
 
-4. Here is a curious one: Implement `Functor` for `Const e` (which is also available from `Control.Applicative.Const` in *base*). You might be confused about the fact that the second type parameter has absolutely no relevance at runtime, as there is no value of that type. Such types are sometimes called *phantom types*. They can be quite useful for tagging values with additional typing information.
+4. 少し珍しい例です：`Const e`（*base* の `Control.Applicative.Const` から利用可能）に対する `Functor` を実装してください。第2型パラメータが実行時に一切使われず、その型の値が存在しないことに戸惑うかもしれません。このような型は **幽霊型（ファントム型 / phantom types）** と呼ばれることがあります。値に追加の型情報を付与してタグ付けするのに非常に有用です。
 
-   Don't let the above confuse you: There is only one possible implementation. As usual, use holes and let the compiler guide you if you get lost.
+   惑わされる必要はありません。可能な実装は1通りしかありません。いつものように、迷ったらホールを使ってコンパイラに導いてもらいましょう。
 
    ```idris
    record Const (e,a : Type) where
@@ -22,7 +25,7 @@
      value : e
    ```
 
-5. Here is a sum type for describing CRUD operations (Create, Read, Update, and Delete) in a data store:
+5. 以下はデータストアにおける CRUD 操作（Create, Read, Update, Delete）を記述する直和型です：
 
    ```idris
    data Crud : (i : Type) -> (a : Type) -> Type where
@@ -32,9 +35,9 @@
      Delete : (id : i) -> Crud i a
    ```
 
-   Implement `Functor` for `Crud i`.
+   `Crud i` に対する `Functor` を実装してください。
 
-6. Here is a sum type for describing responses from a data server:
+6. 以下はデータサーバーからのレスポンスを記述する直和型です：
 
    ```idris
    data Response : (e, i, a : Type) -> Type where
@@ -45,12 +48,13 @@
      Error   : (err : e) -> Response e i a
    ```
 
-   Implement `Functor` for `Repsonse e i`.
+   `Response e i` に対する `Functor` を実装してください。
 
-7. Implement `Functor` for `Validated e`:
+7. `Validated e` に対する `Functor` を実装してください：
 
    ```idris
    data Validated : (e,a : Type) -> Type where
      Invalid : (err : e) -> Validated e a
      Valid   : (val : a) -> Validated e a
    ```
+

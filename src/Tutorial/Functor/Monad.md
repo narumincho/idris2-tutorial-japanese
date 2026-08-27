@@ -1,4 +1,7 @@
-# Monad
+# Monad (モナド)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Monad.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Monad.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functor.Monad
@@ -13,7 +16,7 @@ import Data.Vect
 %default total
 ```
 
-Finally, `Monad`. A lot of ink has been spilled about this one. However, after what we already saw in the chapter about `IO`, there is not much left to discuss here. `Monad` extends `Applicative` and adds two new related functions: The *bind* operator (`(>>=)`) and function `join`. Here is its definition:
+ついに **`Monad`（モナド）** です。モナドについてはこれまで多くの説明や解説が書かれてきましたが、`IO` の章ですでに学んだこと以上の複雑な概念はほとんどありません。`Monad` は `Applicative` を拡張し、関連する2つの新しい関数を追加します：*bind* 演算子（`(>>=)`）と `join` 関数です。以下はその定義です：
 
 ```idris
 interface Applicative' m => Monad' m where
@@ -21,17 +24,17 @@ interface Applicative' m => Monad' m where
   join' : m (m a) -> m a
 ```
 
-Implementers of `Monad` are free to choose to either implement `(>>=)` or `join` or both. You will show in an exercise, how `join` can be implemented in terms of *bind* and vice versa.
+`Monad` の実装者は、`(>>=)` または `join` のいずれか一方（あるいは両方）を自由に実装できます。練習問題で、`join` を *bind* を使って実装する方法、およびその逆を体験します。
 
-The big difference between `Monad` and `Applicative` is, that the former allows a computation to depend on the result of an earlier computation. For instance, we could decide based on a string read from standard input whether to delete a file or play a song. The result of the first `IO` action (reading some user input) will affect, which `IO` action to run next. This is not possible with the *apply* operator:
+`Monad` と `Applicative` の決定的な違いは、**前の計算の結果に依存して次の計算を決定できるかどうか** です。たとえば、標準入力から読み取った文字列に基づいて、ファイルを削除するか音楽を再生するかを決定できます。1つ目の `IO` アクションの結果（ユーザー入力）が、次に実行する `IO` アクションを左右します。これは *apply* 演算子 `(<*>)` では不可能です：
 
 ```repl
 (<*>) : IO (a -> b) -> IO a -> IO b
 ```
 
-The two `IO` actions have already been decided on when they are being passed as arguments to `(<*>)`. The result of the first cannot - in the general case - affect which computation to run in the second. (Actually, with `IO` this would theoretically be possible via side effects: The first action could write some command to a file or overwrite some mutable state, and the second action could read from that file or state, thus deciding on the next thing to do. But this is a speciality of `IO`, not of applicative functors in general. If the functor in question was `Maybe`, `List`, or `Vector`, no such thing would be possible.)
+`(<*>)` に引数として渡された時点で、2つの `IO` アクションはすでに確定しています。一般論として、1つ目の結果が2つ目にどの計算を実行するかに影響を与えることはできません。
 
-Let's demonstrate the difference with an example. Assume we'd like to enhance our CSV-reader with the ability to decode a line of tokens to a sum type. For instance, we'd like to decode CRUD requests from the lines of a CSV-file:
+この違いを具体例で見てみましょう。CSV リーダーを拡張して、トークンの行を直和型（sum type）にデコードできるようにしたいとします。たとえば、CSV ファイルの行から CRUD リクエストをデコードします：
 
 ```idris
 data Crud : (i : Type) -> (a : Type) -> Type where
@@ -41,7 +44,7 @@ data Crud : (i : Type) -> (a : Type) -> Type where
   Delete : (id : i) -> Crud i a
 ```
 
-We need a way to on each line decide, which data constructor to choose for our decoding. One way to do this is to put the name of the data constructor (or some other tag of identification) in the first column of the CSV-file:
+行ごとにどのデータコンストラクタを選択するかを決定する手段が必要です。その1つの方法は、CSV の第1列にデータコンストラクタ名（または識別タグ）を配置することです：
 
 ```idris
 hlift : (a -> b) -> HList [a] -> b
@@ -67,9 +70,9 @@ decodeCRUD l s =
        _        => Left (FieldError l 1 n)
 ```
 
-I added two utility function for helping with type inference and to get slightly nicer syntax. The important thing to note is, how we pattern match on the result of the first parsing function to decide on the data constructor and thus the next parsing function to use.
+重要なのは、1つ目のパース結果に対してパターンマッチを行い、その値に応じて使用するデータコンストラクタ、ひいては次に適用するパース関数を決定している点です。
 
-Here's how this works at the REPL:
+REPL での動作は以下のようになります：
 
 ```repl
 Tutorial.Functor> decodeCRUD {i = Nat} {a = Email} 1 "Create,jon@doe.ch"
@@ -80,39 +83,24 @@ Tutorial.Functor> decodeCRUD {i = Nat} {a = Email} 1 "Delete,jon@doe.ch"
 Left (FieldError 1 2 "jon@doe.ch")
 ```
 
-To conclude, `Monad`, unlike `Applicative`, allows us to chain computations sequentially, where intermediary results can affect the behavior of later computations. So, if you have n unrelated effectful computations and want to combine them under a pure, n-ary function, `Applicative` will be sufficient. If, however, you want to decide based on the result of an effectful computation what computation to run next, you need a `Monad`.
+まとめると、`Monad` は `Applicative` と異なり、中間結果が後続の計算の振る舞いに影響を与えるような順次的な計算チェーンを記述できます。互いに独立した複数のエフェクトフルな計算を純粋な多引数関数で結合したいだけであれば `Applicative` で十分です。しかし、エフェクトフルな計算の結果に基づいて次に実行する計算を分岐・決定したい場合は `Monad` が必要になります。
 
-Note, however, that `Monad` has one important drawback compared to `Applicative`: In general, monads don't compose. For instance, there is no `Monad` instance for `Either e . IO`. We will later learn about monad transformers, which can be composed with other monads.
+ただし、`Monad` には `Applicative` に比べて1つの大きな弱点があります：**一般にモナド同士は合成できない** という点です。たとえば、`Either e . IO` に対する汎用的な `Monad` インスタンスは作れません。後の章で、他のモナドと合成可能なモナド変換子（monad transformers）について学びます。
 
-## Monad Laws
+## モナド則 (Monad Laws)
 
-Without further ado, here are the laws for `Monad`:
+モナドが満たすべき法則は以下の通りです：
 
-- `ma >>= pure = ma` and `pure v >>= f = f v`. These are monad's identity laws. Here they are as concrete examples:
-
-  ```idris
-  id1L : Maybe a -> Maybe a
-  id1L ma = ma >>= pure
-
-  id2L : a -> (a -> Maybe b) -> Maybe b
-  id2L v f = pure v >>= f
-
-  id2R : a -> (a -> Maybe b) -> Maybe b
-  id2R v f = f v
-  ```
-
-  These two laws state that `pure` should behave neutrally w.r.t. *bind*.
-
-- `(m >>= f) >>= g = m >>= (f >=> g)`. This is the law of associativity for monad. You might not have seen the second operator `(>=>)`. It can be used to sequence effectful computations and has the following type:
+- `ma >>= pure = ma` および `pure v >>= f = f v`：モナドの **単位元（Identity）** 則。`pure` が *bind* に関して中立に振る舞うことを要求します。
+- `(m >>= f) >>= g = m >>= (f >=> g)`：モナドの **結合律（Associativity）**。演算子 `(>=>)`（Kleisli 結合）はエフェクトフルな関数同士を合成する演算子です：
 
   ```repl
   Tutorial.Functor> :t (>=>)
   Prelude.>=> : Monad m => (a -> m b) -> (b -> m c) -> a -> m c
   ```
 
-The above are the *official* monad laws. However, we need to consider a third one, given that in Idris (and Haskell) `Monad` extends `Applicative`: As `(<*>)` can be implemented in terms of `(>>=)`, the actual implementation of `(<*>)` must behave the same as the implementation in terms of `(>>=)`:
-
-- `mf <*> ma = mf >>= (\fun => map (fun $) ma)`.
+さらに、Idris や Haskell では `Monad` が `Applicative` を継承しているため、次の整合性の法則も満たす必要があります：
+- `mf <*> ma = mf >>= (\fun => map (fun $) ma)`（`(<*>)` の振る舞いは、`(>>=)` で実装した場合と同一でなければならない）。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

@@ -1,8 +1,11 @@
-# Functor and Friends
+# Functor とその仲間たち
 
-Programming, like mathematics, is about abstraction. We try to model parts of the real world, reusing recurring patterns by abstracting over them.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-In this chapter, we will learn about several related interfaces, which are all about abstraction and therefore can be hard to understand at the beginning. Especially figuring out *why* they are useful and *when* to use them will take time and experience. This chapter therefore comes with tons of exercises, most of which can be solved with only a few short lines of code. Don't skip them. Come back to them several times until these things start feeling natural to you. You will then realize that their initial complexity has vanished.
+プログラミングは数学と同様に、抽象化がすべてです。私たちは現実世界の振る舞いをモデル化し、繰り返し現れるパターンを抽象化して再利用しようとします。
+
+本章では、抽象化に関するいくつかの関連するインターフェースについて学びます。これらは抽象的であるがゆえに、最初は理解しにくいかもしれません。特に、「**なぜ** 有用なのか」「**いつ** 使うべきなのか」を掴むには時間と経験が必要です。そのため本章には多くの練習問題が用意されています（そのほとんどはわずか数行の短いコードで解決できます）。練習問題を飛ばさずに、自然に感じられるようになるまで何度も立ち返ってみてください。次第に最初の難しさが消え去っていくのを実感できるはずです。
 
 ```idris hide
 module Tutorial.Functor

@@ -1,23 +1,26 @@
-# Exercises part 3
+# Functor 練習問題 パート3
 
-1. `Applicative` extends `Functor`, because every `Applicative` is also a `Functor`. Proof this by implementing `map` in terms of `pure` and `(<*>)`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-2. `Monad` extends `Applicative`, because every `Monad` is also an `Applicative`. Proof this by implementing `(<*>)` in terms of `(>>=)` and `pure`.
+1. すべての `Applicative` は `Functor` でもあるため、`Applicative` は `Functor` を継承しています。`map` を `pure` と `(<*>)` を使って実装することで、これを証明してください。
 
-3. Implement `(>>=)` in terms of `join` and other functions in the `Monad` hierarchy.
+2. すべての `Monad` は `Applicative` でもあるため、`Monad` は `Applicative` を継承しています。`(<*>)` を `(>>=)` と `pure` を使って実装することで、これを証明してください。
 
-4. Implement `join` in terms of `(>>=)` and other functions in the `Monad` hierarchy.
+3. `(>>=)` を `join` および `Monad` 階層の他の関数を使って実装してください。
 
-5. There is no lawful `Monad` implementation for `Validated e`. Why?
+4. `join` を `(>>=)` および `Monad` 階層の他の関数を使って実装してください。
 
-6. In this slightly extended exercise, we are going to simulate CRUD operations on a data store. We will use a mutable reference (imported from `Data.IORef` from the *base* library) holding a list of `User`s paired with a unique ID of type `Nat` as our user data base:
+5. `Validated e` に対する正当な（法則を満たす）`Monad` 実装が存在しないのはなぜでしょうか？
+
+6. この少し発展的な練習問題では、データストアに対する CRUD 操作をシミュレートします。ユーザーデータベースとして、一意な `Nat` 型の ID とペアになった `User` のリストを保持する可変参照（*base* ライブラリの `Data.IORef` からインポート）を使用します：
 
    ```idris
    DB : Type
    DB = IORef (List (Nat,User))
    ```
 
-   Most operations on a database come with a risk of failure: When we try to update or delete a user, the entry in question might no longer be there. When we add a new user, a user with the given email address might already exist. Here is a custom error type to deal with this:
+   データベースに対するほとんどの操作には失敗のリスクが伴います：ユーザーの更新や削除を試みたときに対象のエントリがすでに存在しない場合や、新規ユーザーを追加する際に同じメールアドレスのユーザーがすでに存在する場合などです。これらを処理するためのカスタムエラー型を定義します：
 
    ```idris
    data DBError : Type where
@@ -26,13 +29,13 @@
      SizeLimitExceeded : DBError
    ```
 
-   In general, our functions will therefore have a type similar to the following:
+   一般に、作成する関数の型は次のようになります：
 
    ```idris
    someDBProg : arg1 -> arg2 -> DB -> IO (Either DBError a)
    ```
 
-   We'd like to abstract over this, by introducing a new wrapper type:
+   これを抽象化するために、新しいラッパーレコード型を導入します：
 
    ```idris
    record Prog a where
@@ -40,59 +43,55 @@
      runProg : DB -> IO (Either DBError a)
    ```
 
-   We are now ready to write us some utility functions. Make sure to follow the following business rules when implementing the functions below:
+   以下のビジネスルールに従って実装してください：
 
-   - Email addresses in the DB must be unique. (Consider implementing `Eq Email` to verify this).
+   - データベース内のメールアドレスは一意でなければならない（検証のために `Eq Email` の実装を検討してください）。
+   - 1000エントリのサイズ上限を超えてはならない。
+   - ID による検索操作は、エントリが見つからない場合に `UserNotFound` で失敗しなければならない。
 
-   - The size limit of 1000 entries must not be exceeded.
+   可変参照を扱う際には `Data.IORef` の `newIORef`, `readIORef`, `writeIORef` 関数が必要です。また、`Data.List.lookup` や `Data.List.find` も役立ちます。
 
-   - Operations trying to lookup a user by their ID must fail with `UserNotFound` in case no entry was found in the DB.
-
-   You'll need the following functions from `Data.IORef` when working with mutable references: `newIORef`, `readIORef`, and `writeIORef`. In addition, functions `Data.List.lookup` and `Data.List.find` might be useful to implement some of the functions below.
-
-   1. Implement interfaces `Functor`, `Applicative`, and `Monad` for `Prog`.
-
-   2. Implement interface `HasIO` for `Prog`.
-
-   3. Implement the following utility functions:
+   1. `Prog` に対する `Functor`, `Applicative`, `Monad` インターフェースを実装してください。
+   2. `Prog` に対する `HasIO` インターフェースを実装してください。
+   3. 以下のユーティリティ関数を実装してください：
 
       ```idris
       throw : DBError -> Prog a
 
       getUsers : Prog (List (Nat,User))
 
-      -- check the size limit!
+      -- サイズ上限をチェックすること！
       putUsers : List (Nat,User) -> Prog ()
 
-      -- implement this in terms of `getUsers` and `putUsers`
+      -- `getUsers` と `putUsers` を使って実装してください
       modifyDB : (List (Nat,User) -> List (Nat,User)) -> Prog ()
       ```
 
-   4. Implement function `lookupUser`. This should fail with an appropriate error, if a user with the given ID cannot be found.
+   4. `lookupUser` を実装してください。指定された ID のユーザーが見つからない場合は適切なエラーで失敗するようにします。
 
       ```idris
       lookupUser : (id : Nat) -> Prog User
       ```
 
-   5. Implement function `deleteUser`. This should fail with an appropriate error, if a user with the given ID cannot be found. Make use of `lookupUser` in your implementation.
+   5. `deleteUser` を実装してください。指定された ID のユーザーが見つからない場合は適切なエラーで失敗するようにします。実装には `lookupUser` を活用してください。
 
       ```idris
       deleteUser : (id : Nat) -> Prog ()
       ```
 
-   6. Implement function `addUser`. This should fail, if a user with the given `Email` already exists, or if the data banks size limit of 1000 entries is exceeded. In addition, this should create and return a unique ID for the new user entry.
+   6. `addUser` を実装してください。指定された `Email` のユーザーがすでに存在する場合、またはデータベースのサイズ上限（1000件）を超える場合は失敗するようにします。また、新しいユーザーエントリに対して一意の ID を生成して返します。
 
       ```idris
       addUser : (new : User) -> Prog Nat
       ```
 
-   7. Implement function `updateUser`. This should fail, if the user in question cannot be found or a user with the updated user's `Email` already exists. The returned value should be the updated user.
+   7. `updateUser` を実装してください。対象のユーザーが見つからない場合、または更新後の `Email` を持つ他のユーザーがすでに存在する場合は失敗するようにします。戻り値は更新されたユーザーとします。
 
       ```idris
       updateUser : (id : Nat) -> (mod : User -> User) -> Prog User
       ```
 
-   8. Data type `Prog` is actually too specific. We could just as well abstract over the error type and the `DB` environment:
+   8. データ型 `Prog` は少し具体的すぎます。エラー型や `DB` 環境についても抽象化できます：
 
       ```idris
       record Prog' env err a where
@@ -100,4 +99,5 @@
         runProg' : env -> IO (Either err a)
       ```
 
-      Verify, that all interface implementations you wrote for `Prog` can be used verbatim to implement the same interfaces for `Prog' env err`. The same goes for `throw` with only a slight adjustment in the function's type.
+      `Prog` に対して記述したすべてのインターフェース実装が、そのまま `Prog' env err` に対しても適用できることを確認してください。
+
