@@ -1,25 +1,19 @@
-# Exercises part 3
+# シグマ型 練習問題 パート3
 
-The challenges presented here all deal with enhancing our table editor in several interesting ways. Some of them are more a matter of style and less a matter of learning to write dependently typed programs, so feel free to solve these as you please. Exercises 1 to 3 should be considered to be mandatory.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-1. Add support for storing Idris types `Integer` and `Nat` in CSV columns
+ここでの課題は、テーブルエディタを拡張するものです（練習問題 1〜3 は特に重要です）。
 
-2. Add support for `Fin n` to CSV columns. Note: We need runtime access to `n` in order for this to work.
+1. CSV カラムで Idris 型の `Integer` と `Nat` をサポートするように追加してください。
 
-3. Add support for optional types to CSV columns. Since missing values should be encoded by empty strings, it makes no sense to allow for nested optional types, meaning that types like `Maybe Nat` should be allowed while `Maybe (Maybe Nat)` should not.
+2. CSV カラムで `Fin n` をサポートするように追加してください（これが機能するためには実行時に `n` の値が必要です）。
 
-   Hint: There are several ways to encode these, one being to add a boolean index to `ColType`.
+3. CSV カラムでオプショナル（省略可能）な型（`Maybe a`）をサポートするように追加してください。空文字列を欠損値として扱うため、`Maybe (Maybe Nat)` のような入れ子のオプショナル型は許可せず、1 段階のみ許可するようにします（`ColType` に `Bool` インデックスを追加するなどの方法があります）。
 
-4. Add a command for printing the whole table. Bonus points if all columns are properly aligned.
+4. テーブル全体を表示するコマンドを追加してください（カラムの幅を揃えてきれいに配置できればボーナスです）。
 
-5. Add support for simple queries: Given a column number and a value, list all rows where entries match the given value.
+5. 単純な検索クエリのサポートを追加してください：カラム番号と値を指定し、一致する行を一覧表示します。
 
-   This might be a challenge, as the types get pretty interesting.
+6. ディスクからのテーブルの読み込みおよび保存をサポートしてください。テーブルはスキーマ用と CSV 本文用の 2 つのファイルに分けて保存します。
 
-6. Add support for loading and saving tables from and to disk. A table should be stored in two files: One for the schema and one for the CSV content.
-
-   Note: Reading files in a provably total way can be pretty hard and will be a topic for another day. For now, just use function `readFile` exported from `System.File` in base for reading a file as a whole. This function is partial, because it will not terminate when used with an infinite input stream such as `/dev/urandom` or `/dev/zero`. It is important to *not* use `assert_total` here. Using partial functions like `readFile` might well impose a security risk in a real world application, so eventually, we'd have to deal with this and allow for some way to limit the size of accepted input. It is therefore best to make this partiality visible and annotate all downstream functions accordingly.
-
-You can find an implementation of these additions in the solutions. A small example table can be found in folder `resources`.
-
-Note: There are of course tons of projects to pursue from here, such as writing a proper query language, calculating new rows from existing ones, accumulating values in a column, concatenating and zipping tables, and so on. We will stop for now, probably coming back to this in later examples.

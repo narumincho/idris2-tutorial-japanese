@@ -1,21 +1,23 @@
-# Exercises part 2
+# シグマ型 練習問題 パート2
 
-Sharpen your skills in using dependent pairs and dependent records! In exercises 2 to 7 you have to decide yourself, when a function should return a dependent pair or record, when a function requires additional arguments, on which you can pattern match, and what other utility functions might be necessary.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-1. Proof that the three encodings for nucleobases are *isomorphic* (meaning: of the same structure) by writing lossless conversion functions from `Acid1` to `Acid2` and back. Likewise for `Acid1` and `Acid3`.
+依存ペアと依存レコードを扱うスキルを磨きましょう！ 練習問題 2〜7 では、関数が依存ペアやレコードを返すべきか、パターンマッチのための追加引数が必要かなどを自分で判断して設計します。
 
-2. Sequences of nucleobases can be encoded in one of two directions: [*Sense* and *antisense*](<https://en.wikipedia.org/wiki/Sense_(molecular_biology)>). Declare a new data type to describe the sense of a sequence of nucleobases, and add this as an additional parameter to type `Nucleobase` and types `DNA` and `RNA`.
+1. `Acid1` から `Acid2` への可逆な変換関数（およびその逆）を実装して、3 つのエンコーディングが **同型（isomorphic）** であることを証明してください。同様に `Acid1` と `Acid3` についても実装してください。
 
-3. Refine the types of `complement` and `transcribe`, so that they reflect the changing of *sense*. In case of `transcribe`, a strand of antisense DNA is converted to a strand of sense RNA.
+2. 核酸の配列は 2 つの方向（[**センスとアンチセンス**](https://ja.wikipedia.org/wiki/%E3%82%BB%E3%83%B3%E3%82%B9_(%E5%88%86%E5%AD%90%E7%94%9F%E7%89%A9%E5%AD%A6))）のいずれかでエンコードされます。配列の向きを表す新しいデータ型を宣言し、`Nucleobase`、`DNA`、`RNA` の型パラメータに追加してください。
 
-4. Define a dependent record storing the base type and sense together with a sequence of nucleobases.
+3. `complement`（相補鎖）および `transcribe`（転写）の型を洗練し、センスの変化が型に反映されるようにしてください（`transcribe` ではアンチセンス DNA 鎖がセンス RNA 鎖に変換されます）。
 
-5. Adjust `readRNA` and `readDNA` in such a way that the *sense* of a sequence is read from the input string. Sense strands are encoded like so: "5´-CGGTAG-3´". Antisense strands are encoded like so: "3´-CGGTAG-5´".
+4. 塩基型とセンスを配列とともに保持する依存レコードを定義してください。
 
-6. Adjust `encode` in such a way that it includes the sense in its output.
+5. `readRNA` と `readDNA` を拡張し、文字列からセンスを読み取れるようにしてください（センス鎖は `"5´-CGGTAG-3´"`、アンチセンス鎖は `"3´-CGGTAG-5´"` のようにエンコードされます）。
 
-7. Enhance `getNucleicAcid` and `transcribeProg` in such a way that the sense and base type are stored together with the sequence, and that `transcribeProg` always prints the *sense* RNA strand (after transcription, if necessary).
+6. `encode` を拡張し、センスを出力に含めるようにしてください。
 
-8. Enjoy the fruits of your labour and test your program at the REPL.
+7. `getNucleicAcid` と `transcribeProg` を拡張し、センスと塩基型が配列とともに保持され、`transcribeProg` が常に（必要に応じて転写を行った上で）**センス** RNA 鎖を出力するようにしてください。
 
-Note: Instead of using a dependent record, we could again have used a sum type of four constructors to encode the different types of sequences. However, the number of constructors required corresponds to the *product* of the number of values of each type level index. Therefore, this number can grow quickly and sum type encodings can lead to lengthy blocks of pattern matches in these cases.
+8. REPL でプログラムをテストして動作を確認してください。
+
