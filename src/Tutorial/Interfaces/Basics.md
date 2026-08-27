@@ -1,18 +1,21 @@
-# Interface Basics
+# インターフェースの基礎
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Basics.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Basics.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Interfaces.Basics
 ```
 
-While function overloading as described above works well, there are use cases, where this form of overloaded functions leads to a lot of code duplication.
+前述の関数のオーバーロードは便利ですが、この形式のオーバーロードでは大量のコードの重複が発生するユースケースが存在します。
 
-As an example, consider a function `cmp` (short for *compare*, which is already exported by the *Prelude*), for describing an ordering for the values of type `String`:
+例として、`String` 型の値の順序関係を記述する `cmp` 関数（*Prelude* からエクスポートされている `compare` の短縮形）を考えてみましょう：
 
 ```idris
 cmp : String -> String -> Ordering
 ```
 
-We'd also like to have similar functions for many other data types. Function overloading allows us to do just that, but `cmp` is not an isolated piece of functionality. From it, we can derive functions like `greaterThan'`, `lessThan'`, `minimum'`, `maximum'`, and many others:
+他の多くのデータ型に対しても同様の関数を用意したいとします。関数のオーバーロードを使えばそれ自体は可能ですが、`cmp` は単独で完結する機能ではありません。`cmp` からは `greaterThan'`、`lessThan'`、`minimum'`、`maximum'` など、多くの関数を導出できます：
 
 ```idris
 lessThan' : String -> String -> Bool
@@ -34,9 +37,9 @@ maximum' s1 s2 =
     _  => s2
 ```
 
-We'd need to implement all of these again for the other types with a `cmp` function, and most if not all of these implementations would be identical to the ones written above. That's a lot of code repetition.
+`cmp` 関数を持つ他のすべての型に対してもこれらすべてを再実装する必要があり、それらの実装の大部分（あるいはすべて）は上記と全く同じコードになります。これは著しいコードの重複です。
 
-One way to solve this is to use higher-order functions. For instance, we could define function `minimumBy`, which takes a comparison function as its first argument and returns the smaller of the two remaining arguments:
+この問題を解決する1つの方法は、高階関数を使用することです。たとえば、比較関数を第1引数として受け取り、残り2つの引数のうち小さい方を返す関数 `minimumBy` を定義できます：
 
 ```idris
 minimumBy : (a -> a -> Ordering) -> a -> a -> a
@@ -46,9 +49,9 @@ minimumBy f a1 a2 =
     _  => a2
 ```
 
-This solution is another proof of how higher-order functions allow us to reduce code duplication. However, the need to explicitly pass around the comparison function all the time can get tedious as well. It would be nice, if we could teach Idris to come up with such a function on its own.
+この解決策は高階関数によってコードの重複を減らせる良い例ですが、比較関数を常に明示的に引き回さなければならないのは面倒です。Idris がそのような比較関数を自動的に見つけ出してくれると便利です。
 
-Interfaces solve exactly this issue. Here's an example:
+インターフェース（Interfaces）は、まさにこの問題を解決します。例を見てみましょう：
 
 ```idris
 public export
@@ -64,20 +67,20 @@ implementation Comp Bits16 where
   comp = compare
 ```
 
-The code above defines *interface* `Comp` providing function `comp` for calculating the ordering for two values of a type `a`, followed by two *implementations* of this interface for types `Bits8` and `Bits16`. Note, that the `implementation` keyword is optional.
+上記のコードは、型 `a` の2つの値の順序関係を計算する関数 `comp` を提供する **インターフェース** `Comp` を定義し、続いて `Bits8` と `Bits16` に対するこのインターフェースの2つの **実装 (implementation)** を定義しています。なお、`implementation` キーワードは省略可能です。
 
-The `comp` implementations for `Bits8` and `Bits16` both use function `compare`, which is part of a similar interface from the *Prelude* called `Ord`.
+`Bits8` と `Bits16` の `comp` 実装は、どちらも *Prelude* にある `Ord` という同様のインターフェースの一部である `compare` 関数を使用しています。
 
-The next step is to look at the type of `comp` at the REPL:
+次に REPL で `comp` の型を確認してみましょう：
 
 ```repl
 Tutorial.Interfaces> :t comp
 Tutorial.Interfaces.comp : Comp a => a -> a -> Ordering
 ```
 
-The interesting part in the type signature of `comp` is the initial `Comp a =>` argument. Here, `Comp` is a *constraint* on type parameter `a`. This signature can be read as: "For any type `a`, given an implementation of interface `Comp` for `a`, we can compare two values of type `a` and return an `Ordering` for these." Whenever we invoke `comp`, we expect Idris to come up with a value of type `Comp a` on its own, hence the new `=>` arrow. If Idris fails to do so, it will answer with a type error.
+`comp` の型シグネチャで興味深い部分は、先頭の `Comp a =>` 引数です。ここで `Comp` は型パラメータ `a` に対する **制約 (constraint)** です。このシグネチャは、「任意の型 `a` について、`a` に対するインターフェース `Comp` の実装が存在するならば、型 `a` の2つの値を比較して `Ordering` を返すことができる」と読めます。`comp` を呼び出すたびに、Idris が `Comp a` の実装を自動的に解決して渡してくれるため、新しい矢印 `=>` が使われています。Idris が実装を見つけられない場合は、型エラーが発生します。
 
-We can now use `comp` in the implementations of related functions. All we have to do is to also prefix these derived functions with a `Comp` constraint:
+これで、関連する関数の実装において `comp` を利用できるようになりました。必要なのは、導出された関数にも `Comp` 制約を付けることだけです：
 
 ```idris
 lessThan : Comp a => a -> a -> Bool
@@ -99,9 +102,9 @@ maximum s1 s2 =
     _  => s2
 ```
 
-Note, how the definition of `minimum` is almost identical to `minimumBy`. The only difference being that in case of `minimumBy` we had to pass the comparison function as an explicit argument, while for `minimum` it is provided as part of the `Comp` implementation, which is passed around by Idris for us.
+`minimum` の定義が `minimumBy` とほぼ同じであることに注目してください。唯一の違いは、`minimumBy` では比較関数を明示的な引数として渡す必要があったのに対し、`minimum` では Idris が `Comp` の実装の一部として自動的に渡してくれる点です。
 
-Thus, we have defined all these utility functions once and for all for every type with an implementation of interface `Comp`.
+こうして、インターフェース `Comp` の実装を持つあらゆる型に対して、これらすべてのユーティリティ関数を一度の定義で利用できるようになりました。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

@@ -1,4 +1,7 @@
-# More About Interfaces
+# インターフェースの発展的な機能
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/More.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/More.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Interfaces.More
@@ -6,11 +9,11 @@ module Tutorial.Interfaces.More
 import Tutorial.Interfaces.Basics
 ```
 
-In the last section, we learned about the very basics of interfaces: Why they are useful and how to define and implement them. In this section, we will learn about some slightly advanced concepts: Extending interfaces, interfaces with constraints, and default implementations.
+前節では、インターフェースの基本的な概念（なぜ有用なのか、どのように定義・実装するのか）について学びました。本節では、インターフェースの拡張（継承）、制約付きの実装、デフォルト実装といった少し発展的な概念について学びます。
 
-## Extending Interfaces
+## インターフェースの拡張 (Extending Interfaces)
 
-Some interfaces form a kind of hierarchy. For instance, for the `Concat` interface used in exercise 4, there might be a child interface called `Empty`, for those types, which have a neutral element with relation to concatenation. In such a case, we make an implementation of `Concat` a prerequisite for implementing `Empty`:
+インターフェースの中には階層構造を形成するものがあります。たとえば練習問題 4 の `Concat` インターフェースに対して、連結操作に関する単位元を持つ型のための子インターフェース `Empty` を定義したいとします。このような場合、`Concat` の実装を `Empty` を実装するための前提条件とすることができます：
 
 ```idris
 interface Concat a where
@@ -26,7 +29,7 @@ implementation Empty String where
   empty = ""
 ```
 
-`Concat a => Empty a` should be read as: "An implementation of `Concat` for type `a` is a *prerequisite* for there being an implementation of `Empty` for `a`." But this also means that, whenever we have an implementation of interface `Empty`, we *must* also have an implementation of `Concat` and can invoke the corresponding functions:
+`Concat a => Empty a` は、「型 `a` に対する `Concat` の実装が存在することが、`a` に対する `Empty` の実装が存在するための **前提条件** である」と読めます。これは同時に、インターフェース `Empty` の実装がある場合は **必ず** `Concat` の実装も存在し、対応する関数を呼び出せることを意味します：
 
 ```idris
 concatListE : Empty a => List a -> a
@@ -34,11 +37,11 @@ concatListE []        = empty
 concatListE (x :: xs) = concat x (concatListE xs)
 ```
 
-Note, how in the type of `concatListE` we only used an `Empty` constraint, and how in the implementation we were still able to invoke both `empty` and `concat`.
+`concatListE` の型制約には `Empty` のみを指定しているにもかかわらず、実装内では `empty` と `concat` の両方を呼び出せていることに注目してください。
 
-## Constrained Implementations
+## 制約付きの実装 (Constrained Implementations)
 
-Sometimes, it is only possible to implement an interface for a generic type, if its type parameters implement this interface as well. For instance, implementing interface `Comp` for `Maybe a` makes sense only if type `a` itself implements `Comp`. We can constrain interface implementations with the same syntax we use for constrained functions:
+ジェネリックな型に対してインターフェースを実装する際、その型パラメータ自身が同じインターフェースを実装している場合にのみ実装可能となるケースがあります。たとえば、`Maybe a` に対して `Comp` インターフェースを実装することは、型 `a` 自体が `Comp` を実装している場合にのみ意味を持ちます。制約付き関数の場合と同じ構文を使って、インターフェースの実装に制約を付けることができます：
 
 ```idris
 implementation Comp a => Comp (Maybe a) where
@@ -48,20 +51,20 @@ implementation Comp a => Comp (Maybe a) where
   comp (Just x) (Just y) = comp x y
 ```
 
-This is not the same as extending an interface, although the syntax looks very similar. Here, the constraint lies on a *type parameter* instead of the full type. The last line in the implementation of `Comp (Maybe a)` compares the values stored in the two `Just`s. This is only possible, if there is a `Comp` implementation for these values as well. Go ahead, and remove the `Comp a` constraint from the above implementation. Learning to read and understand Idris' type errors is important for fixing them.
+これは構文は似ていますが、インターフェースの拡張とは異なります。ここでは制約が型全体ではなく **型パラメータ** に課されています。`Comp (Maybe a)` の実装の最後の行では、2つの `Just` 内に格納された値を比較しています。これが可能なのは、それらの値に対しても `Comp` の実装が存在する場合に限られます。試しに上記の実装から `Comp a =>` 制約を削除してみてください。Idris の型エラーを読んで理解することは、エラーを修正するために重要です。
 
-The good thing is, that Idris will solve all these constraints for us:
+便利なことに、Idris はこれらすべての制約を自動的に連鎖して解決してくれます：
 
 ```idris
 maxTest : Maybe Bits8 -> Ordering
 maxTest = comp (Just 12)
 ```
 
-Here, Idris tries to find an implementation for `Comp (Maybe Bits8)`. In order to do so, it needs an implementation for `Comp Bits8`. Go ahead, and replace `Bits8` in the type of `maxTest` with `Bits64`, and have a look at the error message Idris produces.
+ここで Idris は `Comp (Maybe Bits8)` の実装を見つけようとします。そのためには `Comp Bits8` の実装が必要です。`maxTest` の型にある `Bits8` を `Bits64` に変更してみて、Idris が出力するエラーメッセージを確認してみてください。
 
-## Default Implementations
+## デフォルト実装 (Default Implementations)
 
-Sometimes, we'd like to pack several related functions in an interface to allow programmers to implement each in the most efficient way, although they *could* be implemented in terms of each other. For instance, consider an interface `Equals` for comparing two values for equality, with functions `eq` returning `True` if two values are equal and `neq` returning `True` if they are not. Surely, we can implement `neq` in terms of `eq`, so most of the time when implementing `Equals`, we will only implement the latter. In this case, we can give an implementation for `neq` already in the definition of `Equals`:
+関連する複数の関数をインターフェースに含め、プログラマが最も効率的な方法で各関数を実装できるようにしたい場合があります（たとえそれらがお互いを使って実装可能であるとしても）。たとえば、2つの値の等値性を比較する `Equals` インターフェースを考えます。等しい場合に `True` を返す `eq` と、等しくない場合に `True` を返す `neq` があるとします。明らかに `neq` は `eq` を使って実装できるため、`Equals` を実装する際はほとんどの場合 `eq` のみを実装すれば十分です。このような場合、`Equals` の定義内で `neq` のデフォルト実装を提供できます：
 
 ```idris
 interface Equals a where
@@ -71,14 +74,14 @@ interface Equals a where
   neq a1 a2 = not (eq a1 a2)
 ```
 
-If in an implementation of `Equals` we only implement `eq`, Idris will use the default implementation for `neq` as shown above:
+`Equals` の実装で `eq` のみを実装した場合、Idris は上記で定義された `neq` のデフォルト実装を使用します：
 
 ```idris
 Equals String where
   eq = (==)
 ```
 
-If on the other hand we'd like to provide explicit implementations for both functions, we can do so as well:
+一方で、両方の関数に明示的な実装を提供したい場合は、そのように記述することも可能です：
 
 ```idris
 Equals Bool where

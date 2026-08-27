@@ -1,16 +1,19 @@
-# Exercises part 3
+# インターフェース 練習問題 パート3
 
-These exercises are meant to make you comfortable with implementing interfaces for your own data types, as you will have to do so regularly when writing Idris code.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are useful, the usability of `Semigroup` and `Monoid` may be harder to appreciate at first. Therefore, there are several exercises where you'll implement different instances for these.
+これらの練習問題は、Idris コードを書く際に頻繁に行うことになる「独自のデータ型に対するインターフェースの実装」に慣れるためのものです。
 
-01. Define a record type `Complex` for complex numbers, by pairing two values of type `Double`. Implement interfaces `Eq`, `Num`, `Neg`, and `Fractional` for `Complex`.
+`Eq`、`Ord`、`Num` などのインターフェースがなぜ有用であるかは直感的に分かりやすいですが、`Semigroup` や `Monoid` の有用性は最初は実感しにくいかもしれません。そのため、これらに対する様々なインスタンスを実装する練習問題をいくつか用意しました。
 
-02. Implement interface `Show` for `Complex`. Have a look at data type `Prec` and function `showPrec` and how these are used in the *Prelude* to implement instances for `Either` and `Maybe`.
+01. 2つの `Double` 型の値をペアにした複素数を表すレコード型 `Complex` を定義してください。`Complex` に対してインターフェース `Eq`、`Num`、`Neg`、および `Fractional` を実装してください。
 
-    Verify the correct behavior of your implementation by wrapping a value of type `Complex` in a `Just` and `show` the result at the REPL.
+02. `Complex` に対して `Show` インターフェースを実装してください。データ型 `Prec` と関数 `showPrec`、およびこれらが *Prelude* において `Either` や `Maybe` のインスタンスを実装するためにどのように使われているかを調べてみてください。
 
-03. Consider the following wrapper for optional values:
+    `Complex` 型の値を `Just` でラップし、REPL で `show` を実行して、実装が正しく動作することを確認してください。
+
+03. オプショナルな値のための以下のラッパーレコードを考えます：
 
     ```idris
     record First a where
@@ -18,7 +21,7 @@ While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are usef
       value : Maybe a
     ```
 
-    Implement interfaces `Eq`, `Ord`, `Show`, `FromString`, `FromChar`, `FromDouble`, `Num`, `Neg`, `Integral`, and `Fractional` for `First a`. All of these will require corresponding constraints on type parameter `a`. Consider implementing and using the following utility functions where they make sense:
+    `First a` に対してインターフェース `Eq`, `Ord`, `Show`, `FromString`, `FromChar`, `FromDouble`, `Num`, `Neg`, `Integral`, `Fractional` を実装してください。これらすべてにおいて、型パラメータ `a` に対する適切な制約が必要になります。適宜、以下のユーティリティ関数を実装して使用することを検討してください：
 
     ```idris
     pureFirst : a -> First a
@@ -28,9 +31,9 @@ While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are usef
     mapFirst2 : (a -> b -> c) -> First a -> First b -> First c
     ```
 
-04. Implement interfaces `Semigroup` and `Monoid` for `First a` in such a way, that `(<+>)` will return the first non-nothing argument and `neutral` is the corresponding neutral element. There must be no constraints on type parameter `a` in these implementations.
+04. `First a` に対して `Semigroup` と `Monoid` インターフェースを実装してください。`(<+>)` は最初の `Nothing` でない引数を返し、`neutral` がそれに対応する単位元となるようにします。これらの実装では型パラメータ `a` に制約を付けてはいけません。
 
-05. Repeat exercises 3 and 4 for record `Last`. The `Semigroup` implementation should return the last non-nothing value.
+05. レコード `Last` に対して練習問題 3 と 4 を繰り返してください。`Semigroup` 実装は最後の `Nothing` でない値を返すようにします。
 
     ```idris
     record Last a where
@@ -38,11 +41,11 @@ While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are usef
       value : Maybe a
     ```
 
-06. Function `foldMap` allows us to map a function returning a `Monoid` over a list of values and accumulate the result using `(<+>)` at the same time. This is a very powerful way to accumulate the values stored in a list. Use `foldMap` and `Last` to extract the last element (if any) from a list.
+06. 関数 `foldMap` を使用すると、`Monoid` を返す関数をリストの要素にマップしながら、同時に `(<+>)` を使って結果を集約（累積）できます。これはリスト内の値を集計する非常に強力な方法です。`foldMap` と `Last` を使用して、リストから（存在すれば）末尾の要素を取り出す関数を実装してください。
 
-    Note, that the type of `foldMap` is more general and not specialized to lists only. It works also for `Maybe`, `Either` and other container types we haven't looked at so far. We will learn about interface `Foldable` in a later section.
+    なお、`foldMap` の型はより一般的であり、リスト専用ではありません。`Maybe` や `Either`、その他まだ触れていないコンテナ型に対しても機能します。`Foldable` インターフェースについては後のセクションで学びます。
 
-07. Consider record wrappers `Any` and `All` for boolean values:
+07. ブール値のためのラッパーレコード `Any` と `All` を考えます：
 
     ```idris
     record Any where
@@ -54,21 +57,21 @@ While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are usef
       all : Bool
     ```
 
-    Implement `Semigroup` and `Monoid` for `Any`, so that the result of `(<+>)` is `True`, if and only if at least one of the arguments is `True`. Make sure that `neutral` is indeed the neutral element for this operation.
+    `Any` に対して `Semigroup` と `Monoid` を実装してください。引数の少なくとも一方が `True` である場合にのみ `(<+>)` の結果が `True` になるようにします。`neutral` がこの操作の正しい単位元であることを確認してください。
 
-    Likewise, implement `Semigroup` and `Monoid` for `All`, so that the result of `(<+>)` is `True`, if and only if both of the arguments are `True`. Make sure that `neutral` is indeed the neutral element for this operation.
+    同様に、`All` に対して `Semigroup` と `Monoid` を実装してください。両方の引数が `True` である場合にのみ `(<+>)` の結果が `True` になるようにします。`neutral` がこの操作の正しい単位元であることを確認してください。
 
-08. Implement functions `anyElem` and `allElems` using `foldMap` and `Any` or `All`, respectively:
+08. `foldMap` と `Any` または `All` をそれぞれ使用して、関数 `anyElem` と `allElems` を実装してください：
 
     ```idris
-    -- True, if the predicate holds for at least one element
+    -- 少なくとも1つの要素に対して述語が成り立つ場合に True
     anyElem : (a -> Bool) -> List a -> Bool
 
-    -- True, if the predicate holds for all elements
+    -- すべての要素に対して述語が成り立つ場合に True
     allElems : (a -> Bool) -> List a -> Bool
     ```
 
-09. Record wrappers `Sum` and `Product` are mainly used to hold numeric types.
+09. ラッパーレコード `Sum` と `Product` は主に数値型を保持するために使用されます。
 
     ```idris
     record Sum a where
@@ -80,13 +83,13 @@ While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are usef
       value : a
     ```
 
-    Given an implementation of `Num a`, implement `Semigroup (Sum a)` and `Monoid (Sum a)`, so that `(<+>)` corresponds to addition.
+    `Num a` の実装が与えられたとき、`(<+>)` が加算に対応するように `Semigroup (Sum a)` と `Monoid (Sum a)` を実装してください。
 
-    Likewise, implement `Semigroup (Product a)` and `Monoid (Product a)`, so that `(<+>)` corresponds to multiplication.
+    同様に、`(<+>)` が乗算に対応するように `Semigroup (Product a)` と `Monoid (Product a)` を実装してください。
 
-    When implementing `neutral`, remember that you can use integer literals when working with numeric types.
+    `neutral` を実装する際、数値型を扱うときは整数リテラルを使用できることを思い出してください。
 
-10. Implement `sumList` and `productList` by using `foldMap` together with the wrappers from Exercise 9:
+10. 練習問題 9 のラッパーと `foldMap` を組み合わせて、`sumList` と `productList` を実装してください：
 
     ```idris
     sumList : Num a => List a -> a
@@ -94,19 +97,20 @@ While it is immediately clear why interfaces like `Eq`, `Ord`, or `Num` are usef
     productList : Num a => List a -> a
     ```
 
-11. To appreciate the power and versatility of `foldMap`, after solving exercises 6 to 10 (or by loading `Solutions.Inderfaces` in a REPL session), run the following at the REPL, which will - in a single list traversal! - calculate the first and last element of the list as well as the sum and product of all values.
+11. `foldMap` の強力さと汎用性を実感するために、練習問題 6〜10 を解いた後（または REPL セッションで `Solutions.Interfaces` をロードした後）、REPL で以下を実行してみてください。これは **リストの1回の走査だけで**、リストの先頭と末尾の要素、および全要素の合計と積を同時に計算します！
 
     ```repl
     > foldMap (\x => (pureFirst x, pureLast x, MkSum x, MkProduct x)) [3,7,4,12]
     (MkFirst (Just 3), (MkLast (Just 12), (MkSum 26, MkProduct 1008)))
     ```
 
-    Note, that there are also `Semigroup` implementations for types with an `Ord` implementation, which will return the smaller or larger of two values. In case of types with an absolute minimum or maximum (for instance, 0 for natural numbers, or 0 and 255 for `Bits8`), these can even be extended to `Monoid`.
+    なお、`Ord` の実装を持つ型に対しても `Semigroup` 実装が存在し、2つの値のうち小さい方または大きい方を返すことができます。絶対的な最小値または最大値を持つ型（たとえば自然数の 0、`Bits8` の 0 と 255 など）の場合は、`Monoid` に拡張することも可能です。
 
-12. In an earlier exercise, you implemented a data type representing chemical elements and wrote a function for calculating their atomic masses. Define a new single field record type for representing atomic masses, and implement interfaces `Eq`, `Ord`, `Show`, `FromDouble`, `Semigroup`, and `Monoid` for this.
+12. 前の練習問題で化学元素を表すデータ型を実装し、その原子量を計算する関数を書きました。原子量を表す新しい単一フィールドのレコード型を定義し、それに対して `Eq`, `Ord`, `Show`, `FromDouble`, `Semigroup`, `Monoid` インターフェースを実装してください。
 
-13. Use the new data type from exercise 12 to calculate the atomic mass of an element and compute the molecular mass of a molecule given by its formula.
+13. 練習問題 12 の新しいデータ型を使用して元素の原子量を計算し、化学式で与えられた分子の分子量を計算してください。
 
-    Hint: With a suitable utility function, you can use `foldMap` once again for this.
+    ヒント: 適切なユーティリティ関数を用意すれば、ここでも `foldMap` を活用できます。
 
-Final notes: If you are new to functional programming, make sure to give your implementations of exercises 6 to 10 a try at the REPL. Note, how we can implement all of these functions with a minimal amount of code and how, as shown in exercise 11, these behaviors can be combined in a single list traversal.
+補足: 関数型プログラミングが初めての方は、練習問題 6〜10 の実装をぜひ REPL で試してみてください。これらの関数をいかに最小限のコードで実装できるか、そして練習問題 11 に示したように、これらの振る舞いをリストの1回の走査でいかに合成できるかに注目してください。
+

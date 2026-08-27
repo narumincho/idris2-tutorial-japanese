@@ -1,14 +1,18 @@
-# Conclusion
+# おわりに
 
-- Interfaces allow us to implement the same function with different behavior for different types.
-- Functions taking one or more interface implementations as arguments are called *constrained functions*.
-- Interfaces can be organized hierarchically by *extending* other interfaces.
-- Interfaces implementations can themselves be *constrained* requiring other implementations to be available.
-- Interface functions can be given a *default implementation*, which can be overridden by implementers, for instance for reasons of efficiency.
-- Certain interfaces allow us to use literal values such as string or integer literals for our own data types.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-Note, that I did not yet tell the whole story about literal values in this section. More details for using literals with types that accept only a restricted set of values can be found in the chapter about primitives.
+- インターフェースを使用すると、異なる型に対して異なる振る舞いを持つ同じ関数を実装できます。
+- 1つ以上のインターフェース実装を引数（制約）として受け取る関数は **制約付き関数 (constrained functions)** と呼ばれます。
+- 他のインターフェースを **拡張** することで、インターフェースを階層的に構造化できます。
+- インターフェースの実装自体にも **制約** を付けることができ、他の実装が利用可能であることを要求できます。
+- インターフェースの関数には **デフォルト実装** を提供でき、効率性などの理由から実装側でオーバーライドすることが可能です。
+- 特定のインターフェースを実装することで、独自のデータ型に対して文字列や整数などのリテラル値を使用できるようになります。
 
-## What's next
+なお、本節ではリテラル値の機能のすべてを説明し尽くしたわけではありません。制限された値のセットのみを受け入れる型でリテラルを使用するための詳細については、プリミティブに関する章で説明します。
 
-In the next chapter, we have a closer look at functions and their types. We will learn about named arguments, implicit arguments, and erased arguments as well as some constructors for implementing more complex functions.
+## 次のステップ
+
+次の章では、関数とその型についてより詳しく掘り下げます。名前付き引数、暗黙の引数、消去される引数のほか、より複雑な関数を実装するための構文について学びます。
+

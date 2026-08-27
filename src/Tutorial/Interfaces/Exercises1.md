@@ -1,11 +1,15 @@
-# Exercises Part 1
+# インターフェース 練習問題 パート1
 
-1. Implement function `anyLarger`, which should return `True`, if and only if a list of values contains at least one element larger than a given reference value. Use interface `Comp` in your implementation.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-2. Implement function `allLarger`, which should return `True`, if and only if a list of values contains *only* elements larger than a given reference value. Note, that this is trivially true for the empty list. Use interface `Comp` in your implementation.
+1. 値のリストの中に、指定された基準値よりも大きい要素が少なくとも1つ含まれている場合にのみ `True` を返す関数 `anyLarger` を実装してください。実装にはインターフェース `Comp` を使用してください。
 
-3. Implement function `maxElem`, which tries to extract the largest element from a list of values with a `Comp` implementation. Likewise for `minElem`, which tries to extract the smallest element. Note, that the possibility of the list being empty must be considered when deciding on the output type.
+2. 値のリストの中に、指定された基準値よりも大きい要素 **のみ** が含まれている場合にのみ `True` を返す関数 `allLarger` を実装してください。空リストの場合は自明に True となることに注意してください。実装にはインターフェース `Comp` を使用してください。
 
-4. Define an interface `Concat` for values like lists or strings, which can be concatenated. Provide implementations for lists and strings.
+3. `Comp` の実装を持つ値のリストから最大の要素を取り出そうとする関数 `maxElem` を実装してください。同様に、最小の要素を取り出そうとする `minElem` も実装してください。戻り値の型を決定する際は、リストが空である可能性を考慮する必要があります。
 
-5. Implement function `concatList` for concatenating the values in a list holding values with a `Concat` implementation. Make sure to reflect the possibility of the list being empty in your output type.
+4. リストや文字列のように連結可能な値のためのインターフェース `Concat` を定義してください。リストと文字列に対する実装を提供してください。
+
+5. `Concat` の実装を持つ要素のリスト内のすべての値を連結する関数 `concatList` を実装してください。戻り値の型にリストが空である可能性を反映させてください。
+

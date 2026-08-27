@@ -1,6 +1,9 @@
-# Interfaces
+# インターフェース
 
-Function overloading - the definition of functions with the same name but different implementations - is a concept found in many programming languages. Idris natively supports overloading of functions: Two functions with the same name can be defined in different modules or namespaces, and Idris will try to disambiguate between these based on the types involved. Here is an example:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+関数のオーバーロード（同じ名前でありながら異なる実装を持つ関数の定義）は、多くのプログラミング言語に見られる概念です。Idris は関数のオーバーロードをネイティブにサポートしています。異なるモジュールや名前空間で同名の2つの関数を定義でき、Idris は関連する型に基づいてそれらの曖昧さを解消しようと試みます。以下に例を示します：
 
 ```idris
 module Tutorial.Interfaces
@@ -24,21 +27,21 @@ namespace List
   size = cast . length
 ```
 
-Here, we defined three different functions called `size`, each in its own namespace. We can disambiguate between these by prefixing them with their namespace:
+ここでは、それぞれ独自の名前空間に `size` という名前の3つの異なる関数を定義しました。名前空間をプレフィックスとして付けることで、これらを明示的に区別できます：
 
 ```repl
 Tutorial.Interfaces> :t Bool.size
 Tutorial.Interfaces.Bool.size : Bool -> Integer
 ```
 
-However, this is usually not necessary:
+しかし、通常はその必要はありません：
 
 ```idris
 mean : List Integer -> Integer
 mean xs = sum xs `div` size xs
 ```
 
-As you can see, Idris can disambiguate between the different `size` functions, since `xs` is of type `List Integer`, which unifies only with `List a`, the argument type of `List.size`.
+このように、`xs` の型が `List Integer` であり、これは `List.size` の引数の型 `List a` にのみ単一化（ユニフィケーション）されるため、Idris は異なる `size` 関数の曖昧さを自動的に解消できます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->
