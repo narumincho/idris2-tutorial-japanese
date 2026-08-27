@@ -1,4 +1,7 @@
-# Programming with Holes
+# ホール（Hole）を用いたプログラミング
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/Holes.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/Holes.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions2.Holes
@@ -6,11 +9,11 @@ module Tutorial.Functions2.Holes
 %default total
 ```
 
-Solved all the exercises so far? Got angry at the type checker for always complaining and never being really helpful? It's time to change that. Idris comes with several highly useful interactive editing features. Sometimes, the compiler is able to implement complete functions for us (if the types are specific enough). Even if that's not possible, there's an incredibly useful and important feature which can help us when the types are getting too complicated: holes. Holes are variables prefixed with a question mark. We can use them as placeholders whenever we plan to implement a piece of functionality at a later time. In addition, their types and the types and quantities of all other variables in scope can be inspected at the REPL (or in your editor, if you setup the necessary plugin). Let's see them holes in action.
+ここまでの練習問題はすべて解けましたか？ 型チェッカーがエラーばかり出して全然助けてくれないと憤りを感じていませんか？ そろそろその見方を変える時です。Idris には非常に強力な対話的編集機能が備わっています。型が十分に具体的であれば、コンパイラが完全な関数実装を自動生成してくれることさえあります。それができない場合でも、型が複雑になりすぎたときに大いに助けとなってくれる重要で便利な機能があります。それが **ホール (Hole)** です。ホールとは、クエスチョンマーク `?` で始まる変数名のことです。後で実装する予定のコードのプレースホルダー（未実装箇所）として使用できます。さらに、ホールの型や、スコープ内にある他のすべての変数の型・数量を REPL（またはプラグインをセットアップしたエディタ）で確認できます。実際にホールを使ってみましょう。
 
-Remember the `traverseList` example from an Exercise earlier in this section? If this was your first encounter with applicative list traversals, this might have been a nasty bit of work. Well, let's just make it a wee bit harder still. We'd like to implement the same piece of functionality for functions returning `Either e`, where `e` is a type with a `Semigroup` implementation, and we'd like to accumulate the values in all `Left`s we meet along the way.
+先ほどの練習問題の `traverseList` の例を覚えていますか？ アプリカティブなリストのトラバース（走査）に初めて触れた場合、かなり難しく感じたかもしれません。ここではそれをもう少し発展させてみましょう。`Semigroup` の実装を持つ型 `e` を使って `Either e` を返す関数に対して同じ機能を実装し、途中で遭遇したすべての `Left` 内の値を集約（累積）できるようにします。
 
-Here's the type of the function:
+関数の型は以下の通りです：
 
 ```idris
 traverseEither :  Semigroup e
@@ -19,21 +22,21 @@ traverseEither :  Semigroup e
                -> Either e (List b)
 ```
 
-As an optional exercise, you may wish to attempt this yourself first. You've seen everything you need. Consider:
+任意の練習として、まずは自力で実装に挑戦してみるのも良いでしょう。必要な知識はすべて学びました：
 
-- semigroups have an append operation `<+> : e -> e -> e` that combines two values into one
-- the empty list will succeed vacuously
-- if any of the function applications fail, you'll return a consolidation of all of the errors `e`
-- if all of the function applications succeed, you'll return a list with all of the results `b`
-- if you get it to compile, there are some test functions and variables at the bottom of this section for you to confirm that it's working as intended
+- 半群（Semigroup）は、2つの値を1つに結合する演算 `<+> : e -> e -> e` を持っています。
+- 空リストの場合は自明に成功（`Right []`）します。
+- 関数の適用のいずれかが失敗した場合、すべてのエラー `e` を統合して返します。
+- すべての関数の適用が成功した場合、すべての結果 `b` を含むリストを返します。
+- コンパイルが通ったら、本節の末尾にあるテスト関数と変数を使って意図通りに動作することを確認できます。
 
-Now, in order to follow along, you might want to start your own Idris source file, load it into a REPL session and adjust the code as described here. The first thing we'll do, is write a skeleton implementation with a hole on the right hand side:
+さて、解説に沿って進めるために、Idris ソースファイルを新しく作成して REPL セッションにロードし、以下のようにコードを書き進めてみてください。最初に行うのは、右辺にホールを置いた骨格の実装を書くことです：
 
 ```repl
 traverseEither fun as = ?impl
 ```
 
-When you now go to the REPL and reload the file using command `:r`, you can enter `:m` to list all the *metavariables*:
+REPL に戻って `:r` コマンドでファイルを再読み込みすると、`:m` コマンドですべての **メタ変数 (metavariables / holes)** を一覧表示できます：
 
 ```repl
 Tutorial.Functions2> :m
@@ -41,7 +44,7 @@ Tutorial.Functions2> :m
   Tutorial.Functions2.impl : Either e (List b)
 ```
 
-Next, we'd like to display the hole's type (including all variables in the surrounding context plus their types):
+次に、ホールの型（周囲のコンテキストにあるすべての変数とその型を含む）を確認します：
 
 ```repl
 Tutorial.Functions2> :t impl
@@ -54,16 +57,16 @@ Tutorial.Functions2> :t impl
 impl : Either e (List b)
 ```
 
-So, we have some erased type parameters (`a`, `b`, and `e`), a value of type `List a` called `as`, and a function from `a` to `Either e b` called `fun`. Our goal is to come up with a value of type `Either a (List b)`.
+このように、消去される型パラメータ（`a`, `b`, `e`）、`List a` 型の値 `as`、そして `a -> Either e b` 型の関数 `fun` がスコープ内に存在します。私たちの目標は、`Either e (List b)` 型の値を作り出すことです。
 
-We *could* just return a `Right []`, but that only make sense if our input list is indeed the empty list. We therefore should start with a pattern match on the list:
+単に `Right []` を返すこともできますが、それは入力リストが実際に空リストである場合にしか意味を成しません。したがって、まずはリストに対するパターンマッチから始めます：
 
 ```repl
 traverseEither fun []        = ?impl_0
 traverseEither fun (x :: xs) = ?impl_1
 ```
 
-The result is two holes, which must be given distinct names. When inspecting `impl_0`, we get the following result:
+これにより2つのホールが生成され、それぞれに一意の名前を付ける必要があります。`impl_0` を調べると、以下の結果が得られます：
 
 ```repl
 Tutorial.Functions2> :t impl_0
@@ -75,13 +78,13 @@ Tutorial.Functions2> :t impl_0
 impl_0 : Either e (List b)
 ```
 
-Now, this is an interesting situation. We are supposed to come up with a value of type `Either e (List b)` with nothing to work with. We know nothing about `a`, so we can't provide an argument with which to invoke `fun`. Likewise, we know nothing about `e` or `b` either, so we can't produce any values of these either. The *only* option we have is to replace `impl_0` with an empty list wrapped in a `Right`:
+これは興味深い状況です。手元に利用できる値が何もない状態で、`Either e (List b)` 型の値を作り出さなければなりません。`a` については何も知らないため、`fun` を呼び出すための引数を用意できません。同様に `e` や `b` についても何も知らないため、それらの値を新しく作り出すこともできません。唯一可能な選択肢は、`impl_0` を `Right` でラップされた空リストに置き換えることだけです：
 
 ```idris
 traverseEither fun []        = Right []
 ```
 
-The non-empty case is of course slightly more involved. Here's the context of `?impl_1`:
+空でないリストの場合はもう少し複雑です。`?impl_1` のコンテキストは以下のようになります：
 
 ```repl
 Tutorial.Functions2> :t impl_1
@@ -95,7 +98,7 @@ Tutorial.Functions2> :t impl_1
 impl_1 : Either e (List b)
 ```
 
-Since `x` is of type `a`, we can either use it as an argument to `fun` or drop and ignore it. `xs`, on the other hand, is the remainder of the list of type `List a`. We could again drop it or process it further by invoking `traverseEither` recursively. Since the goal is to try and convert *all* values, we should drop neither. Since in the case of two `Left`s we are supposed to accumulate the values, we eventually need to run both computations anyway (invoking `fun`, and recursively calling `traverseEither`). We therefore can do both at the same time and analyze the results in a single pattern match by wrapping both in a `Pair`:
+`x` は `a` 型なので、`fun` の引数として渡すか、無視するかのどちらかです。一方 `xs` は残りのリストで `List a` 型です。これも無視するか、`traverseEither` を再帰的に呼び出して処理を続行するかのどちらかです。目標は **すべての** 値を変換することなので、どちらも無視すべきではありません。また、2つの `Left` が発生した場合は値を集約する必要があるため、最終的に両方の計算（`fun` の呼び出しと `traverseEither` の再帰呼び出し）を実行する必要があります。したがって、両方をペア（`Pair`）にまとめて同時に実行し、1つのパターンマッチで結果を分析します：
 
 ```repl
 traverseEither fun (x :: xs) =
@@ -103,7 +106,7 @@ traverseEither fun (x :: xs) =
    p => ?impl_2
 ```
 
-Once again, we inspect the context:
+再びコンテキストを確認します：
 
 ```repl
 Tutorial.Functions2> :t impl_2
@@ -118,7 +121,7 @@ Tutorial.Functions2> :t impl_2
 impl_2 : Either e (List b)
 ```
 
-We'll definitely need to pattern match on pair `p` next to figure out, which of the two computations succeeded:
+次に、ペア `p` に対してパターンマッチを行い、2つの計算のうちどちらが成功したかを判別する必要があります：
 
 ```repl
 traverseEither fun (x :: xs) =
@@ -129,7 +132,7 @@ traverseEither fun (x :: xs) =
     (Right y, Right z) => ?impl_9
 ```
 
-At this point we might have forgotten what we actually wanted to do (at least to me, this happens annoyingly often), so we'll just quickly check what our goal is:
+この段階で、元々何をしたかったのか忘れてしまうことがあるかもしれません。その場合もゴールを確認できます：
 
 ```repl
 Tutorial.Functions2> :t impl_6
@@ -145,7 +148,7 @@ Tutorial.Functions2> :t impl_6
 impl_6 : Either e (List b)
 ```
 
-So, we are still looking for a value of type `Either e (List b)`, and we have two values of type `e` in scope. According to the spec we want to accumulate these using `e`s `Semigroup` implementation. We can proceed for the other cases in a similar manner, remembering that we should return a `Right`, if and only if all conversions where successful:
+目標は依然として `Either e (List b)` 型の値であり、スコープ内には `e` 型の2つの値があります。仕様に従い、`e` の `Semigroup` 実装を使ってこれらを `<+>` で結合します。他のケースについても同様に進め、すべての変換が成功した場合にのみ `Right` を返すようにします：
 
 ```idris
 traverseEither fun (x :: xs) =
@@ -156,7 +159,7 @@ traverseEither fun (x :: xs) =
     (Right y, Right z) => Right (y :: z)
 ```
 
-To reap the fruits of our labour, let's show off with a small example:
+完成した関数の動作を、小さな例で確認してみましょう：
 
 ```idris
 data Nucleobase = Adenine | Cytosine | Guanine | Thymine
@@ -175,7 +178,7 @@ readDNA : String -> Either (List String) DNA
 readDNA = traverseEither readNucleobase . unpack
 ```
 
-Let's try this at the REPL:
+REPL で試してみましょう：
 
 ```repl
 Tutorial.Functions2> readDNA "CGTTA"
@@ -184,11 +187,11 @@ Tutorial.Functions2> readDNA "CGFTAQ"
 Left ["Unknown nucleobase: 'F'", "Unknown nucleobase: 'Q'"]
 ```
 
-## Interactive Editing
+## 対話的編集 (Interactive Editing)
 
-There are plugins available for several editors and programming environments which facilitate interacting with the Idris compiler when implementing your functions. One editor, which is well supported in the Idris community, is Neovim. Since I am a Neovim user myself, I added some examples of what's possible to the [appendix](../../Appendices/Neovim.md). Now would be a good time to start using the utilities discussed there.
+関数を実装する際に Idris コンパイラとの対話を容易にするプラグインが、いくつかのエディタ向けに提供されています。Idris コミュニティでよく使われているエディタの1つが Neovim です。[付録](../../Appendices/Neovim.md) に Neovim で利用可能な機能の例を記載しています。
 
-If you use a different editor, probably with less support for the Idris programming language, you should at the very least have a REPL session open all the time, where the source file you are currently working on is loaded. This allows you to introduce new metavariables and inspect their types and context as you develop your code.
+他のエディタを使用している場合でも、現在作業中のソースファイルを読み込んだ REPL セッションを常に開いておくことをお勧めします。これにより、コードを書きながらメタ変数を導入し、その型やコンテキストを確認しながら開発を進めることができます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

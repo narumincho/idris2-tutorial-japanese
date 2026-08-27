@@ -1,12 +1,15 @@
-# Exercises
+# 練習問題
 
-The exercises in this section are supposed to increase you experience in writing purely functional code. In some cases it might be useful to use `let` expressions or `where` blocks, but this will not always be required.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-Exercise 3 is again of utmost importance. `traverseList` is a specialized version of the more general `traverse`, one of the most powerful and versatile functions available in the *Prelude* (check out its type!).
+本節の練習問題は、純粋関数型コードを書く経験を深めるためのものです。場合によっては `let` 式や `where` ブロックを使用すると便利ですが、必ずしも必須ではありません。
 
-1. Module `Data.List` in *base* exports functions `find` and `elem`. Inspect their types and use these in the implementation of `handleRequest`. This should allow you to completely get rid of the `where` block.
+練習問題 4 は極めて重要です。`traverseList` は、*Prelude* で利用可能な最も強力で汎用性の高い関数の1つである `traverse`（型を調べてみてください！）の特化バージョンです。
 
-2. Refactor `handleRequest` to use `Either`, such that `handleRequest : DB -> Request -> Either Failure Album`, where
+1. *base* の `Data.List` モジュールは `find` および `elem` 関数をエクスポートしています。それらの型を調べ、`handleRequest` の実装で使用してください。これにより `where` ブロックを完全に排除できるはずです。
+
+2. `handleRequest` をリファクタリングして `Either` を使用し、`handleRequest : DB -> Request -> Either Failure Album` となるようにしてください。ここで `Failure` は以下のように定義されます：
 
    ```idris
    data Failure : Type where
@@ -15,18 +18,19 @@ Exercise 3 is again of utmost importance. `traverseList` is a specialized versio
      AccessDenied : Email -> Album -> Failure
    ```
 
-   Hint: You may find nested `case` statements helpful.
+   ヒント: ネストした `case` 式が役立つかもしれません。
 
-3. Define an enumeration type listing the four [nucleobases](https://en.wikipedia.org/wiki/Nucleobase) occurring in DNA strands. Define also a type alias `DNA` for lists of nucleobases. Declare and implement function `readBase` for converting a single character (type `Char`) to a nucleobase. You can use character literals in your implementation like so: `'A'`, `'a'`. Note, that this function might fail, so adjust the result type accordingly.
+3. DNA 鎖に現れる4つの [核酸塩基](https://ja.wikipedia.org/wiki/%E5%A1%A9%E5%9F%BA_(%E5%8C%96%E5%AD%A6)) を列挙する列挙型を定義してください。また、塩基のリストに対する型エイリアス `DNA` を定義してください。1つの文字（`Char` 型）を塩基に変換する関数 `readBase` を宣言・実装してください。実装では `'A'`, `'a'` のような文字リテラルを使用できます。この関数はパースに失敗する可能性があるため、結果の型を適切に設定してください。
 
-4. Implement the following function, which tries to convert all values in a list with a function, which might fail. The result should be a `Just` holding the list of converted values in unmodified order, if and only if every single conversion was successful.
+4. 失敗する可能性のある関数を用いて、リスト内のすべての値を変換しようとする以下の関数を実装してください。すべての変換が成功した場合にのみ、変換された値のリストを元の順序で保持する `Just` を返すようにします。
 
    ```idris
    traverseList : (a -> Maybe b) -> List a -> Maybe (List b)
    ```
 
-   You can verify, that the function behaves correctly with the following test: `traverseList Just [1,2,3] = Just [1,2,3]`.
+   関数が正しく動作することは、次のテストで確認できます: `traverseList Just [1,2,3] = Just [1,2,3]`。
 
-5. Implement function `readDNA : String -> Maybe DNA` using the functions and types defined in exercises 2 and 3. You will also need function `unpack` from the *Prelude*.
+5. 練習問題 3 と 4 で定義した関数や型を使用して、関数 `readDNA : String -> Maybe DNA` を実装してください。*Prelude* の `unpack` 関数も必要になります。
 
-6. Implement function `complement : DNA -> DNA` to calculate the complement of a strand of DNA.
+6. DNA 鎖の相補鎖を計算する関数 `complement : DNA -> DNA` を実装してください。
+

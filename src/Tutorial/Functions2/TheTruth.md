@@ -1,4 +1,7 @@
-# The Truth about Function Arguments
+# 関数の引数の真実
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/TheTruth.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/TheTruth.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions2.TheTruth
@@ -6,7 +9,7 @@ module Tutorial.Functions2.TheTruth
 %default total
 ```
 
-So far, when we defined a top level function, it looked something like the following:
+これまでトップレベル関数を定義する際、以下のようなコードを書いてきました：
 
 ```idris
 zipEitherWith : (a -> b -> c) -> Either e a -> Either e b -> Either e c
@@ -15,9 +18,9 @@ zipEitherWith f (Left e)   _          = Left e
 zipEitherWith f _          (Left e)   = Left e
 ```
 
-Function `zipEitherWith` is a generic higher-order function combining the values stored in two `Either`s via a binary function. If either of the `Either` arguments is a `Left`, the result is also a `Left`.
+関数 `zipEitherWith` は、2つの `Either` 内に格納された値を二項関数で結合するジェネリックな高階関数です。いずれかの `Either` 引数が `Left` である場合、結果も `Left` になります。
 
-This is a *generic function* with *type parameters* `a`, `b`, `c`, and `e`. However, there is a more verbose type for `zipEitherWith`, which is visible in the REPL when entering `:ti zipEitherWith` (the `i` here tells Idris to include `implicit` arguments). You will get a type similar to this:
+これは型パラメータ `a`, `b`, `c`, `e` を持つ **ジェネリック関数** です。しかし、REPL で `:ti zipEitherWith` と入力すると（ここでの `i` は暗黙の引数 `implicit` を含めるよう Idris に指示します）、`zipEitherWith` のより詳細な型シグネチャが表示されます：
 
 ```idris
 zipEitherWith' :  {0 a : Type}
@@ -30,11 +33,11 @@ zipEitherWith' :  {0 a : Type}
                -> Either e c
 ```
 
-In order to understand what's going on here, we will have to talk about named arguments, implicit arguments, and quantities.
+ここで何が起きているのかを理解するために、名前付き引数、暗黙の引数、および多重度（数量）について説明します。
 
-## Named Arguments
+## 名前付き引数 (Named Arguments)
 
-In a function type, we can give each argument a name. Like so:
+関数の型シグネチャにおいて、各引数に名前を付けることができます：
 
 ```idris
 fromMaybe : (deflt : a) -> (ma : Maybe a) -> a
@@ -42,21 +45,21 @@ fromMaybe deflt Nothing = deflt
 fromMaybe _    (Just x) = x
 ```
 
-Here, the first argument is given name `deflt`, the second `ma`. These names can be reused in a function's implementation, as was done for `deflt`, but this is not mandatory: We are free to use different names in the implementation. There are several reasons, why we'd choose to name our arguments: It can serve as documentation, but it also allows us to pass the arguments to a function in arbitrary order when using the following syntax:
+ここでは第1引数に `deflt`、第2引数に `ma` という名前を付けています。これらの名前は、`deflt` のように関数の実装内で再利用できますが、必須ではありません（実装側で別の名前を使っても構いません）。引数に名前を付ける理由はいくつかあります。ドキュメントとしての役割を果たすだけでなく、以下の構文を使って引数を任意の順序で渡すことができるようになります：
 
 ```idris
 extractBool : Maybe Bool -> Bool
 extractBool v = fromMaybe { ma = v, deflt = False }
 ```
 
-Or even :
+あるいは部分適用として以下のように書くこともできます：
 
 ```idris
 extractBool2 : Maybe Bool -> Bool
 extractBool2 = fromMaybe { deflt = False }
 ```
 
-The arguments in a record's constructor are automatically named in accordance with the field names:
+レコードコンストラクタの引数は、フィールド名に従って自動的に名前が付けられます：
 
 ```idris
 record Dragon where
@@ -69,7 +72,7 @@ gorgar : Dragon
 gorgar = MkDragon { strength = 150, name = "Gorgar", hitPoints = 10000 }
 ```
 
-For the use cases described above, named arguments are merely a convenience and completely optional. However, Idris is a *dependently typed* programming language: Types can be calculated from and depend on values. For instance, the *result type* of a function can *depend* on the *value* of one of its arguments. Here's a contrived example:
+上記のユースケースにおいて、名前付き引数は単なる便利な機能であり、完全に任意です。しかし、Idris は **依存型 (dependently typed)** プログラミング言語です。型は値から計算でき、値に依存することができます。たとえば、関数の **戻り値の型** が引数の **値** に **依存** することができます。以下に例を示します：
 
 ```idris
 IntOrString : Bool -> Type
@@ -81,86 +84,85 @@ intOrString False = "I'm a String"
 intOrString True  = 1000
 ```
 
-If you see such a thing for the first time, it can be hard to understand what's going on here. First, function `IntOrString` computes a `Type` from a `Bool` value: If the argument is `True`, it returns type `Integer`, if the argument is `False` it returns `String`. We use this to calculate the return type of function `intOrString` based on its boolean argument `v`: If `v` is `True`, the return type is (in accordance with `IntOrString True = Integer`) `Integer`, otherwise it is `String`.
+このようなコードを初めて目にする場合、理解するのが難しいかもしれません。まず、関数 `IntOrString` は `Bool` 値から `Type` を計算します。引数が `True` ならば `Integer` 型を返し、`False` ならば `String` 型を返します。これを利用して、関数 `intOrString` の戻り値の型をブール引数 `v` に基づいて計算しています。`v` が `True` の場合、戻り値の型は（`IntOrString True = Integer` に従って）`Integer` になり、それ以外の場合は `String` になります。
 
-Note, how in the type signature of `intOrString`, we *must* give the argument of type `Bool` a name (`v`) in order to reference it in the result type `IntOrString v`.
+`intOrString` の型シグネチャにおいて、戻り値の型 `IntOrString v` で参照するために、`Bool` 型の引数に名前（`v`）を **付けなければならない** 点に注目してください。
 
-You might wonder why this is useful and why we would ever want to define a function with such a strange type. We will see lots of very useful examples in due time! For now, suffice to say that in order to express dependent function types, we need to name at least some of the function's arguments and refer to them by name in the types of other arguments.
+なぜこのような機能が有用なのか、なぜこのような一見奇妙な型の関数を定義したいのか疑問に思うかもしれません。これについては後ほど非常に有用な例がたくさん登場します！ 現時点では、依存関数型を表現するためには、関数の引数に名前を付け、他の引数や戻り値の型の中でそれらを参照する必要がある、ということだけ理解しておけば十分です。
 
-## Implicit Arguments
+## 暗黙の引数 (Implicit Arguments)
 
-Implicit arguments are arguments whose values the compiler should infer and fill in for us automatically. For instance, in the following function signature, we expect the compiler to infer the value of type parameter `a` automatically from the types of the other arguments (ignore the 0 quantity for the moment; I'll explain it in the next subsection):
+暗黙の引数（Implicit arguments）とは、コンパイラが自動的に推論して補完すべき引数のことです。たとえば以下の関数シグネチャにおいて、型パラメータ `a` の値は他の引数の型からコンパイラが自動的に推論することを期待しています（`0` の多重度については次のサブセクションで解説するので、一旦無視してください）：
 
 ```idris
 maybeToEither : {0 a : Type} -> Maybe a -> Either String a
 maybeToEither Nothing  = Left "Nope"
 maybeToEither (Just x) = Right x
 
--- Please remember, that the above is
--- equivalent to the following:
+-- 上記は以下と等価であることを思い出してください:
 maybeToEither' : Maybe a -> Either String a
 maybeToEither' Nothing  = Left "Nope"
 maybeToEither' (Just x) = Right x
 ```
 
-As you can see, implicit arguments are wrapped in curly braces, unlike explicit named arguments, which are wrapped in parentheses. Inferring the value of an implicit argument is not always possible. For instance, if we enter the following at the REPL, Idris will fail with an error:
+括弧 `()` で囲む明示的な名前付き引数とは異なり、暗黙の引数は波括弧 `{}` で囲まれます。暗黙の引数の値を常に推論できるとは限りません。たとえば REPL で以下のように入力すると、Idris はエラーを出力します：
 
 ```repl
 Tutorial.Functions2> show (maybeToEither Nothing)
 Error: Can't find an implementation for Show (Either String ?a).
 ```
 
-Idris is unable to find an implementation of `Show (Either String a)` without knowing what `a` actually is. Note the question mark in front of the type parameter: `?a`. If this happens, there are several ways to help the type checker. We could, for instance, pass a value for the implicit argument explicitly. Here's the syntax to do this:
+Idris は、`a` が具体的に何であるかわからないため、`Show (Either String a)` の実装を見つけることができません。型パラメータの前のクエスチョンマーク `?a` に注目してください。このような場合、型チェッカーを助ける方法がいくつかあります。1つの方法は、暗黙の引数に対して明示的に値を渡すことです：
 
 ```repl
 Tutorial.Functions2> show (maybeToEither {a = Int8} Nothing)
-"Left "Nope""
+"Left \"Nope\""
 ```
 
-As you can see, we use the same syntax as shown above for explicit named arguments and the two forms of argument passing can be mixed.
+このように、明示的な名前付き引数と同じ構文を使用し、2つの引数渡し形式を混在させることができます。
 
-We could also specify the type of the whole expression using utility function `the` from the *Prelude*:
+また、*Prelude* のユーティリティ関数 `the` を使用して式全体の型を明示的に指定することもできます：
 
 ```repl
 Tutorial.Functions2> show (the (Either String Int8) (maybeToEither Nothing))
-"Left "Nope""
+"Left \"Nope\""
 ```
 
-It is instructive to have a look at the type of `the`:
+`the` の型シグネチャを確認してみると有益です：
 
 ```repl
 Tutorial.Functions2> :ti the
 Prelude.the : (0 a : Type) -> a -> a
 ```
 
-Compare this with the identity function `id`:
+これを恒等関数 `id` と比較してみてください：
 
 ```repl
 Tutorial.Functions2> :ti id
 Prelude.id : {0 a : Type} -> a -> a
 ```
 
-The only difference between the two: In case of `the`, the type parameter `a` is an *explicit* argument, while in case of `id`, it is an *implicit* argument. Although the two functions have almost identical types (and implementations!), they serve quite different purposes: `the` is used to help type inference, while `id` is used whenever we'd like to return an argument without modifying it at all (which, in the presence of higher-order functions, happens surprisingly often).
+2つの関数の唯一の違いは、`the` では型パラメータ `a` が **明示的** な引数であるのに対し、`id` では **暗黙的** な引数である点です。これら2つの関数はほぼ同一の型（および実装！）を持っていますが、用途は全く異なります。`the` は型推論を補助するために使われ、`id` は引数を一切変更せずにそのまま返したい場合に使われます。
 
-Both ways to improve type inference shown above are used quite often, and must be understood by Idris programmers.
+型推論を補助する上記2つの方法はどちらも頻繁に使われるため、Idris プログラマにとって必須の知識です。
 
-## Multiplicities
+## 多重度・数量 (Multiplicities / Quantities)
 
-Finally, we need to talk about the zero multiplicity, which appeared in several of the type signatures in this section. Idris 2, unlike its predecessor Idris 1, is based on a core language called *quantitative type theory* (QTT): Every variable in Idris 2 is associated with one of three possible multiplicities:
+最後に、本節のいくつかの型シグネチャに現れた多重度 `0` について説明します。Idris 2 は前身の Idris 1 とは異なり、**定量的型理論 (Quantitative Type Theory; QTT)** と呼ばれるコア言語に基づいています。Idris 2 のすべての変数には、以下の3つの多重度のいずれかが関連付けられています：
 
-- `0`, meaning that the variable is *erased* at runtime.
-- `1`, meaning that the variable is used *exactly once* at runtime.
-- *Unrestricted* (the default), meaning that the variable is used an arbitrary number of times at runtime.
+- `0`: その変数が実行時に **消去 (erased)** されることを意味します。
+- `1`: その変数が実行時に **ちょうど1回** 使用される（線形性を持つ）ことを意味します。
+- **無制限 (Unrestricted; デフォルト)**: その変数が実行時に任意の回数使用されることを意味します。
 
-We will not talk about the most complex of the three, multiplicity `1`, here. We are, however, often interested in multiplicity `0`: A variable with multiplicity `0` is only relevant at *compile time*. It will not make any appearance at runtime, and the computation of such a variable will never affect a program's runtime performance.
+多重度 `1` についてはここでは扱いません。しかし、多重度 `0` は頻繁に使用されます。多重度 `0` の変数は **コンパイル時にのみ** 関連します。実行時には一切存在せず、そのような変数の計算がプログラムの実行時パフォーマンスに影響を与えることはありません。
 
-In the type signature of `maybeToEither` we see that type parameter `a` has multiplicity `0`, and will therefore be erased and is only relevant at compile time, while the `Maybe a` argument has *unrestricted* multiplicity.
+`maybeToEither` の型シグネチャでは、型パラメータ `a` が多重度 `0` を持っているため、実行時には消去されてコンパイル時のみに関与し、`Maybe a` 引数は無制限の多重度を持っています。
 
-It is also possible to annotate explicit arguments with multiplicities, in which case the argument must again be put in parentheses. For an example, look again at the type signature of `the`.
+明示的な引数に多重度を注釈することも可能です。その場合、引数は括弧 `()` で囲む必要があります。例として先ほどの `the` の型シグネチャを思い出してください。
 
-## Underscores
+## アンダースコア `_` の活用
 
-It is often desirable to write as little code as necessary and let Idris figure out the rest. We have already learned about one such occasion: Catch-all patterns. If a variable in a pattern match is not used on the right hand side, we can't just drop it, as this would make it impossible for Idris to know which of several arguments we were planning to drop, but we can use an underscore as a placeholder instead:
+必要最小限のコードだけを書き、残りは Idris に推論させることが望ましい場合が多くあります。パターンマッチのキャッチオールパターンでその一例を見ました。パターンマッチ内の変数が右辺で使われない場合、単に省略することはできませんが、プレースホルダーとしてアンダースコア `_` を使用できます：
 
 ```idris
 isRight : Either a b -> Bool
@@ -168,7 +170,7 @@ isRight (Right _) = True
 isRight _         = False
 ```
 
-But when we look at the type signature of `isRight`, we will note that type parameters `a` and `b` are also only used once, and are therefore of no importance. Let's get rid of them:
+しかし、`isRight` の型シグネチャを見ると、型パラメータ `a` と `b` も1度しか使われておらず、名前自体には重要性がないことがわかります。これらも省略してみましょう：
 
 ```idris
 isRight' : Either _ _ -> Bool
@@ -176,7 +178,7 @@ isRight' (Right _) = True
 isRight' _         = False
 ```
 
-In the detailed type signature of `zipEitherWith`, it should be obvious to Idris that the implicit arguments are of type `Type`. After all, all of them are later on applied to the `Either` type constructor, which is of type `Type -> Type -> Type`. Let's get rid of them:
+`zipEitherWith` の詳細な型シグネチャにおいて、暗黙の引数が `Type` 型であることは Idris にとって明白です。これらはすべて後で `Type -> Type -> Type` 型の `Either` 型コンストラクタに適用されるためです。これもアンダースコアに置き換えることができます：
 
 ```idris
 zipEitherWith'' :  {0 a : _}
@@ -189,21 +191,21 @@ zipEitherWith'' :  {0 a : _}
                 -> Either e c
 ```
 
-Consider the following contrived example:
+以下の例を考えてみましょう：
 
 ```idris
 foo : Integer -> String
 foo n = show (the (Either String Integer) (Right n))
 ```
 
-Since we wrap an `Integer` in a `Right`, it is obvious that the second argument in `Either String Integer` is `Integer`. Only the `String` argument can't be inferred by Idris. Even better, the `Either` itself is obvious! Let's get rid of the unnecessary noise:
+`Integer` を `Right` でラップしているため、`Either String Integer` の第2引数が `Integer` であることは自明です。Idris が推論できないのは `String` 引数だけです。さらに、`Either` 自体も自明です！ 不要な冗長さを取り除いてみましょう：
 
 ```idris
 foo' : Integer -> String
 foo' n = show (the (_ String _) (Right n))
 ```
 
-Please note that using underscores as in `foo'` is not always desirable, as it can quite drastically obfuscate the written code. Always use a syntactic convenience to make code more readable, and not to show people how clever you are.
+ただし、`foo'` のようにアンダースコアを過度に使用するとコードが難読化する可能性があるため、常に好ましいとは限らないことに注意してください。コードをより読みやすくするために糖衣構文を使い、単に賢く見せるためだけに使わないようにしましょう。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

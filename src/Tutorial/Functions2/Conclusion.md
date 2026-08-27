@@ -1,21 +1,19 @@
-# Conclusion
+# おわりに
 
-We again covered a lot of ground in this section. I can't stress enough that you should get yourselves accustomed to programming with holes and let the type checker help you figure out what to do next.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-- When in need of local utility functions, consider defining them as local definitions in a *where block*.
+本章でも多くの重要なトピックを扱いました。ホール（Hole）を用いたプログラミングに慣れ、次に何をすべきかを型チェッカーに教えてもらう手法は、Idris において非常に重要です。
 
-- Use *let expressions* to define and reuse local variables.
+- ローカルなユーティリティ関数が必要な場合は、**where ブロック** 内でローカル定義することを検討してください。
+- ローカル変数を定義して再利用するには **let 式** を使用します。
+- 関数の引数には名前を付けることができます。これはドキュメントとしての役割を果たし、任意の順序で引数を渡すことを可能にし、依存型において引数を参照するためにも使用されます。
+- 暗黙の引数は波括弧 `{}` で囲まれます。コンパイラが文脈から推論することを想定していますが、不可能な場合は名前付き引数として明示的に渡すことができます。
+- 可能な限り、Idris はすべての型パラメータに対して暗黙の消去引数を自動的に追加します。
+- 数量（多重度）により、関数の引数が何回使用されるかを追跡できます。数量 0 は、その引数が実行時に消去されることを意味します。
+- 後から実装する予定のコードのプレースホルダーとして **ホール** を使用してください。REPL（またはエディタ）を使用して、ホールの型とそのコンテキストにあるすべての変数の名前・型・数量を確認できます。
 
-- Function arguments can be given a name, which can serve as documentation, can be used to pass arguments in any order, and is used to refer to them in dependent types.
+## 次のステップ
 
-- Implicit arguments are wrapped in curly braces. The compiler is supposed to infer them from the context. If that's not possible, they can be passed explicitly as named arguments.
+次の章では、正しさが証明可能なコードを書くために依存型を本格的に使い始めます。そこでは、Idris の型シグネチャを正確に読む理解力が極めて重要になります。道に迷ったら、1つ以上のホールを置いてコンテキストを調べ、次に何をすべきかを判断しましょう。
 
-- Whenever possible, Idris adds implicit erased arguments for all type parameters automatically.
-
-- Quantities allow us to track how often a function argument is used. Quantity 0 means the argument is erased at runtime.
-
-- Use *holes* as placeholders for pieces of code you plan to fill in at a later time. Use the REPL (or your editor) to inspect the types of holes together with the names, types, and quantities of all variables in their context.
-
-## What's next
-
-In the next chapter we'll start using dependent types to help us write provably correct code. Having a good understanding of how to read Idris' type signatures will be of paramount importance there. Whenever you feel lost, add one or more holes and inspect their context to decide what to do next.

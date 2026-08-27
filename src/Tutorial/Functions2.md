@@ -1,8 +1,11 @@
-# Functions Part 2
+# 関数 パート2
 
-So far, we learned about the core features of the Idris language, which it has in common with several other pure, strongly typed programming languages like Haskell: (Higher-order) Functions, algebraic data types, pattern matching, parametric polymorphism (generic types and functions), and ad hoc polymorphism (interfaces and constrained functions).
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-In this chapter, we start to dissect Idris functions and their types for real. We learn about implicit arguments, named arguments, as well as erasure and quantities. But first, we'll look at `let` bindings and `where` blocks, which help us implement functions too complex to fit on a single line of code. Let's get started!
+ここまで、Haskell などの純粋で強い静的型付けを持つ関数型言語と共通する Idris のコア機能について学んできました：（高階）関数、代数的データ型、パターンマッチ、パラメータ多相（ジェネリックな型と関数）、アドホック多相（インターフェースと制約付き関数）。
+
+本章では、Idris の関数とその型を本格的に解き明かしていきます。暗黙の引数、名前付き引数、消去（erasure）と多重度（quantities）について学びます。しかしその前に、1行には収まらない複雑な関数を実装するのに役立つ `let` 束縛と `where` ブロックについて見ていきましょう。それでは始めましょう！
 
 ```idris
 module Tutorial.Functions2

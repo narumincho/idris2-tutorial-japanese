@@ -1,4 +1,7 @@
-# Let Bindings and Local Definitions
+# Let 束縛とローカル定義
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/LetBindings.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/LetBindings.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions2.LetBindings
@@ -6,40 +9,40 @@ module Tutorial.Functions2.LetBindings
 %default total
 ```
 
-The functions we looked at so far were simple enough to be implemented directly via pattern matching without the need of additional auxiliary functions or variables. This is not always the case, and there are two important language constructs for introducing and reusing new local variables and functions. We'll look at these in two case studies.
+これまで見てきた関数は、追加の補助関数やローカル変数を必要とせず、パターンマッチだけで直接実装できるシンプルなものでした。しかし常にそうとは限りません。新しいローカル変数や関数を導入・再利用するための重要な言語機能が2つ存在します。2つのケーススタディを通してこれらを見ていきましょう。
 
-## Use Case 1: Arithmetic Mean and Standard Deviation
+## ユースケース 1: 算術平均と標準偏差
 
-In this example, we'd like to calculate the arithmetic mean and the standard deviation of a list of floating point values. There are several things we need to consider.
+この例では、浮動小数点数のリストの算術平均（相加平均）と標準偏差を計算します。考慮すべき点がいくつかあります。
 
-First, we need a function for calculating the sum of a list of numeric values. The *Prelude* exports function `sum` for this:
+まず、数値のリストの合計を計算する関数が必要です。*Prelude* はそのための関数 `sum` をエクスポートしています：
 
 ```repl
 Main> :t sum
 Prelude.sum : Num a => Foldable t => t a -> a
 ```
 
-This is - of course - similar to `sumList` from Exercise 10 of the last section, but generalized to all container types with a `Foldable` implementation. We will learn about interface `Foldable` in a later section.
+これは前章の練習問題 10 で作成した `sumList` に似ていますが、`Foldable` の実装を持つすべてのコンテナ型に一般化されています。`Foldable` インターフェースについては後のセクションで学びます。
 
-In order to also calculate the variance, we need to convert every value in the list to a new value, as we have to subtract the mean from every value in the list and square the result. In the previous section's exercises, we defined function `mapList` for this. The *Prelude* - of course - already exports a similar function called `map`, which is again more general and works also like our `mapMaybe` for `Maybe` and `mapEither` for `Either e`. Here's its type:
+また分散を計算するためには、リスト内の各値から平均値を引いて2乗する必要があるため、リスト内のすべての要素を新しい値に変換する必要があります。前章の練習問題ではこのために `mapList` を定義しました。*Prelude* にも同様の関数 `map` がエクスポートされており、これはより一般的で `Maybe` に対する `mapMaybe` や `Either e` に対する `mapEither` としても機能します：
 
 ```repl
 Main> :t map
 Prelude.map : Functor f => (a -> b) -> f a -> f b
 ```
 
-Interface `Functor` is another one we'll talk about in a later section.
+`Functor` インターフェースについても後のセクションで解説します。
 
-Finally, we need a way to calculate the length of a list of values. We use function `length` for this:
+最後に、リストの長さを計算する方法が必要です。これには `length` 関数を使用します：
 
 ```repl
 Main> :t List.length
 Prelude.List.length : List a -> Nat
 ```
 
-Here, `Nat` is the type of natural numbers (unbounded, unsigned integers). `Nat` is actually not a primitive data type but a sum type defined in the *Prelude* with data constructors `Z : Nat` (for zero) and `S : Nat -> Nat` (for successor). It might seem highly inefficient to define natural numbers this way, but the Idris compiler treats these and several other *number-like* types specially, and replaces them with primitive integers during code generation.
+ここで `Nat` は自然数（無制限の非負整数）の型です。`Nat` はプリミティブなデータ型ではなく、データコンストラクタ `Z : Nat`（0用）と `S : Nat -> Nat`（後続者用）を持つ *Prelude* で定義された直和型です。このように自然数を定義するのは非常に非効率に見えるかもしれませんが、Idris コンパイラはこれらやその他の「数値風」の型を特別扱いし、コード生成時にプリミティブな整数に最適化して置き換えます。
 
-We are now ready to give the implementation of `mean` a go. Since this is Idris, and we care about clear semantics, we will quickly define a custom record type instead of just returning a tuple of `Double`s. This makes it clear which floating point number corresponds to which statistic:
+これで `mean` を実装する準備が整いました。Idris では明確なセマンティクスを重視するため、単に `Double` のタプルを返すのではなく、専用のレコード型を素早く定義します。これにより、どの浮動小数点数がどの統計値に対応するかが明確になります：
 
 ```idris
 square : Double -> Double
@@ -59,24 +62,24 @@ stats xs =
    in MkStats mean variance (sqrt variance)
 ```
 
-As usual, we first try this at the REPL:
+REPL で試してみましょう：
 
 ```repl
 Tutorial.Functions2> stats [2,4,4,4,5,5,7,9]
 MkStats 5.0 4.0 2.0
 ```
 
-Seems to work, so let's digest this step by step. We introduce several new local variables (`len`, `mean`, and `variance`), which all will be used more than once in the remainder of the implementation. To do so, we use a `let` binding. This consists of the `let` keyword, followed by one or more variable assignments, followed by the final expression, which has to be prefixed by `in`. Note, that whitespace is significant again: We need to properly align the three variable names. Go ahead, and try out what happens if you remove a space in front of `mean` or `variance`. Note also, that the alignment of assignment operators `:=` is optional. I do so here to improve readability.
+正常に動作しているようです。ステップごとに確認していきましょう。実装の後半で複数回使用するローカル変数（`len`, `mean`, `variance`）を導入しています。これには **let 束縛 (let binding)** を使用します。これは `let` キーワードに続き、1つ以上の変数への代入、そして `in` で始まる最終的な式で構成されます。ここでもインデント（空白）が意味を持つことに注意してください。3つの変数名は揃えて記述する必要があります。代入演算子 `:=` の位置を揃えるかどうかは任意ですが、可読性を高めるために揃えるのが一般的です。
 
-Let's also quickly look at the different variables and their types. `len` is the length of the list cast to a `Double`, since this is what's needed later on, where we divide other values of type `Double` by the length. Idris is very strict about this: We are not allowed to mix up numeric types without explicit casts. Please note, that in this case Idris is able to *infer* the type of `len` from the surrounding context. `mean` is straight forward: We `sum` up the values stored in the list and divide by the list's length. `variance` is the most involved of the three: We map each item in the list to a new value using an anonymous function to subtract the mean and square the result. We then sum up the new terms and divide again by the number of values.
+各変数とその型についても見てみましょう。`len` はリストの長さを `Double` にキャストしたものです（後で他の `Double` の値をリストの長さで除算するため）。Idris はこれに関して非常に厳格であり、明示的なキャストなしに異なる数値型を混在させることはできません。この場合、Idris は周囲の文脈から `len` の型を推論できます。`mean` は単純で、リストの要素を `sum` してリストの長さで割ります。`variance` はこの中で最も複雑で、無名関数を使って各要素から平均値を引いて2乗し、それらを合計して要素数で割っています。
 
-## Use Case 2: Simulating a Simple Web Server
+## ユースケース 2: シンプルな Web サーバーのシミュレーション
 
-In the second use case, we are going to write a slightly larger application. This should give you an idea about how to design data types and functions around some business logic you'd like to implement.
+2つ目のユースケースでは、もう少し大きめのアプリケーションを作成します。これにより、実装したいビジネスロジックを中心にデータ型や関数をどのように設計するかの感覚を掴むことができます。
 
-Assume we run a music streaming web server, where users can buy whole albums and listen to them online. We'd like to simulate a user connecting to the server and getting access to one of the albums they bought.
+ユーザーがアルバムを購入してオンラインで聴くことができる音楽ストリーミング Web サーバーを運用していると仮定します。ユーザーがサーバーに接続し、購入したアルバムの1つにアクセスする処理をシミュレートします。
 
-We first define a bunch of record types:
+まずいくつかのレコード型を定義します：
 
 ```idris
 record Artist where
@@ -104,7 +107,7 @@ record User where
   albums   : List Album
 ```
 
-Note that in several cases (`Email`, `Artist`, `Password`) we wrap a single value in a new record type. Of course, we *could* have used the unwrapped `String` type instead, but we'd have ended up with many `String` fields, which can be hard to disambiguate. In order not to confuse an email string with a password string, it can therefore be helpful to wrap both of them in a new record type to drastically increase type safety at the cost of having to reimplement some interfaces. The utility function `on` from the *Prelude* is very useful for this. Don't forget to inspect its type at the REPL, and try to understand what's going on here.
+いくつかのケース（`Email`, `Artist`, `Password`）では、単一の値を新しいレコード型でラップしている点に注目してください。もちろん生の `String` を使うこともできましたが、それでは多数の `String` フィールドができてしまい、区別がつきにくくなります。メールアドレスの文字列とパスワードの文字列を混同しないように、両方を新しいレコード型でラップすることで、いくつかのインターフェースを再実装する手間の代わりに型安全性を劇的に高めることができます。これには *Prelude* のユーティリティ関数 `on` が非常に便利です：
 
 ```idris
 Eq Artist where (==) = (==) `on` name
@@ -116,9 +119,9 @@ Eq Password where (==) = (==) `on` value
 Eq Album where (==) = (==) `on` \a => (a.name, a.artist)
 ```
 
-In case of `Album`, we wrap the two fields of the record in a `Pair`, which already comes with an implementation of `Eq`. This allows us to again use function `on`, which is very convenient.
+`Album` の場合、レコードの2つのフィールドをペア（`Pair`）にラップしており、ペアにはすでに `Eq` の実装が存在します。これにより、ここでも `on` 関数を便利に利用できます。
 
-Next, we have to define the data types representing server requests and responses:
+次に、サーバーのリクエストとレスポンスを表すデータ型を定義します：
 
 ```idris
 record Credentials where
@@ -138,9 +141,9 @@ data Response : Type where
   Success         : Album -> Response
 ```
 
-For server responses, we use a custom sum type encoding the possible outcomes of a client request. In practice, the `Success` case would return some kind of connection to start the actual album stream, but we just wrap up the album we found to simulate this behavior.
+サーバーのレスポンスには、クライアントリクエストの取り得る結果を表現する独自の直和型を使用します。実際のシステムでは `Success` の場合は実際のアルバムストリームを開始するための接続情報などを返しますが、ここでは見つかったアルバムをラップしてこの挙動をシミュレートします。
 
-We can now go ahead and simulate the handling of a request at the server. To emulate our user data base, a simple list of users will do. Here's the type of the function we'd like to implement:
+これで、サーバーでのリクエスト処理をシミュレートする準備ができました。ユーザーデータベースのエミュレーションには、ユーザーのシンプルなリストを使用します。実装する関数の型は以下の通りです：
 
 ```idris
 DB : Type
@@ -149,11 +152,11 @@ DB = List User
 handleRequest : DB -> Request -> Response
 ```
 
-Note, how we defined a short alias for `List User` called `DB`. This is often useful to make lengthy type signatures more readable and communicate the meaning of a type in the given context. However, this will *not* introduce a new type, nor will it increase type safety: `DB` is *identical* to `List User`, and as such, a value of type `DB` can be used wherever a `List User` is expected and vice versa. In more complex programs it is therefore usually preferable to define new types by wrapping values in single-field records.
+`List User` の短いエイリアスとして `DB` を定義した点に注目してください。これは長い型シグネチャを読みやすくし、その文脈での型の意味を明確にするのに役立ちます。ただし、これは新しい型を導入するわけではなく、型安全性を高めるものでもありません。`DB` は `List User` と **完全に同一** であり、`List User` が期待される場所で `DB` を使用でき、その逆も同様です。そのため、より複雑なプログラムでは、値を単一フィールドのレコードでラップして新しい型を定義することが推奨されます。
 
-The implementation will proceed as follows: It will first try and lookup a `User` by is email address in the database. If this is successful, it will compare the provided password with the user's actual password. If the two match, it will lookup the requested album in the user's list of albums. If all of these steps succeed, the result will be an `Album` wrapped in a `Success`. If any of the steps fails, the result will describe exactly what went wrong.
+処理の流れは次のようになります：まずデータベースからメールアドレスで `User` を検索します。見つかった場合は、指定されたパスワードとユーザーの実際のパスワードを比較します。一致した場合は、ユーザーのアルバム一覧から要求されたアルバムを検索します。これらすべてのステップが成功した場合、結果は `Success` にラップされた `Album` になります。いずれかのステップが失敗した場合、結果には何が失敗したのかが正確に示されます。
 
-Here's a possible implementation:
+以下に実装例を示します：
 
 ```idris
 handleRequest db (MkRequest (MkCredentials email pw) album) =
@@ -174,11 +177,11 @@ handleRequest db (MkRequest (MkCredentials email pw) album) =
           if x == album then Success album else lookupAlbum xs
 ```
 
-I'd like to point out several things in this example. First, note how we can extract values from nested records in a single pattern match. Second, we defined two *local* functions in a `where` block: `lookupUser`, and `lookupAlbum`. Both of these have access to all variables in the surrounding scope. For instance, `lookupUser` uses the `email` variable from the pattern match in the implementation's first line. Likewise, `lookupAlbum` makes use of the `album` variable.
+この例でいくつか注目してほしい点があります。まず、1つのパターンマッチでネストしたレコードから値を抽出できている点です。次に、`where` ブロック内に `lookupUser` と `lookupAlbum` という2つの **ローカル関数** を定義している点です。これらは両方とも、外側のスコープ内のすべての変数にアクセスできます。たとえば `lookupUser` は実装の1行目のパターンマッチから `email` 変数を使用しており、`lookupAlbum` は `album` 変数を使用しています。
 
-A `where` block introduces new local definitions, accessible only from the surrounding scope and from other functions defined later in the same `where` block. These need to be explicitly typed and indented by the same amount of whitespace.
+`where` ブロックは、外側のスコープおよび同じ `where` ブロック内で後から定義された他の関数からのみアクセス可能な新しいローカル定義を導入します。これらには明示的な型シグネチャが必要であり、同じインデント幅で整列させる必要があります。
 
-Local definitions can also be introduced *before* a function's implementation by using the `let` keyword. This usage of `let` is not to be confused with *let bindings* described above, which are used to bind and reuse the results of intermediate computations. Below is how we could have implemented `handleRequest` with local definitions introduced by the `let` keyword. Again, all definitions have to be properly typed and indented:
+ローカル定義は、`let` キーワードを使用して関数の実装の **前** に導入することもできます。この `let` の使い方は、中間計算の結果を束縛して再利用する先ほどの *let 束縛* と混同しないようにしてください。以下は、`let` キーワードによってローカル定義を導入して `handleRequest` を実装した例です：
 
 ```idris
 handleRequest' : DB -> Request -> Response
