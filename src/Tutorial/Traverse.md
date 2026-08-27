@@ -1,8 +1,11 @@
-# Effectful Traversals
+# エフェクトを伴う走査 (Effectful Traversals)
 
-In this chapter, we are going to bring our treatment of the higher-kinded interfaces in the *Prelude* to an end. In order to do so, we will continue developing the CSV reader we started implementing in chapter Functor and Friends. I moved some of the data types and interfaces from that chapter to their own modules, so we can import them here without the need to start from scratch.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-Note that unlike in our original CSV reader, we will use `Validated` instead of `Either` for handling exceptions, since this will allow us to accumulate all errors when reading a CSV file.
+本章では、*Prelude* における高階カインド（higher-kinded）インターフェースの解説を締めくくります。そのために、「Functor とその仲間たち」の章で作成し始めた CSV リーダーの開発をさらに進めていきます。前章のデータ型やインターフェースの一部は専用のモジュールに切り出されているため、最初から書き直すことなくインポートして利用できます。
+
+なお、当初の CSV リーダーとは異なり、例外処理には `Either` ではなく `Validated` を使用します。これにより、CSV ファイルの読み込み時に発生したすべてのエラーを蓄積・集約できるようになります。
 
 ```idris hide
 module Tutorial.Traverse

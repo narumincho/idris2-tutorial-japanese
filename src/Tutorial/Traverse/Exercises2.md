@@ -1,8 +1,11 @@
-# Exercises part 2
+# エフェクトを伴う走査 練習問題 パート2
 
-This sections consists of two extended exercise, the aim of which is to increase your understanding of the state monad. In the first exercise, we will look at random value generation, a classical application of stateful computations. In the second exercise, we will look at an indexed version of a state monad, which allows us to not only change the state's value but also its *type* during computations.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-1. Below is the implementation of a simple pseudo-random number generator. We call this a *pseudo-random* number generator, because the numbers look pretty random but are generated predictably. If we initialize a series of such computations with a truly random seed, most users of our library will not be able to predict the outcome of our computations.
+本節は、State モナドへの理解を深めるための 2 つの発展的な練習問題で構成されています。第 1 問では状態付き計算の典型例である擬似乱数生成を扱い、第 2 問では状態の値だけでなく状態の **型** も変化させることができるインデックス付き State モナドを扱います。
+
+1. 以下は単純な擬似乱数生成器の実装です：
 
    ```idris
    rnd : Bits64 -> Bits64
@@ -10,55 +13,40 @@ This sections consists of two extended exercise, the aim of which is to increase
             $ (437799614237992725 * cast seed) `mod` 2305843009213693951
    ```
 
-   The idea here is that the next pseudo-random number gets calculated from the previous one. But once we think about how we can use these numbers as seeds for computing random values of other types, we realize that these are just stateful computations. We can therefore write down an alias for random value generators as stateful computations:
+   前の乱数から次の乱数を計算していくため、これは状態付き計算そのものです：
 
    ```idris
    Gen : Type -> Type
    Gen = State Bits64
    ```
 
-   Before we begin, please note that `rnd` is not a very strong pseudo-random number generator. It will not generate values in the full 64bit range, nor is it safe to use in cryptographic applications. It is sufficient for our purposes in this chapter, however. Note also, that we could replace `rnd` with a stronger generator without any changes to the functions you will implement as part of this exercise.
-
-   01. Implement `bits64` in terms of `rnd`. This should return the current state, updating it afterwards by invoking function `rnd`. Make sure the state is properly updated, otherwise this won't behave as expected.
+   01. `rnd` を使って `bits64` を実装してください。現在の状態を返し、その後 `rnd` を呼び出して状態を更新します。
 
        ```idris
        bits64 : Gen Bits64
        ```
 
-       This will be our *only* primitive generator, from which we will derived all the others. Therefore, before you continue, quickly test your implementation of `bits64` at the REPL:
-
-       ```repl
-       Solutions.Traverse> runState 100 bits64
-       (2274787257952781382, 100)
-       ```
-
-   02. Implement `range64` for generating random values in the range `[0,upper]`. Hint: Use `bits64` and `mod` in your implementation but make sure to deal with the fact that `mod x upper` produces values in the range `[0,upper)`.
+   02. `[0, upper]` の範囲の乱数を生成する `range64` を実装してください。
 
        ```idris
        range64 : (upper : Bits64) -> Gen Bits64
        ```
 
-       Likewise, implement `interval64` for generating values in the range `[min a b, max a b]`:
+       同様に、`[min a b, max a b]` の範囲の乱数を生成する `interval64`、および任意の整数型に対する `interval` を実装してください：
 
        ```idris
        interval64 : (a,b : Bits64) -> Gen Bits64
-       ```
 
-       Finally, implement `interval` for arbitrary integral types.
-
-       ```idris
        interval : Num n => Cast n Bits64 => (a,b : n) -> Gen n
        ```
 
-       Note, that `interval` will not generate all possible values in the given interval but only such values with a `Bits64` representation in the the range `[0,2305843009213693950]`.
+   03. ランダムな真偽値（`Bool`）を生成するジェネレータを実装してください。
 
-   03. Implement a generator for random boolean values.
+   04. `Fin n` の乱数ジェネレータを実装してください。ヒント: `Data.Fin.natToFin` を参照してください。
 
-   04. Implement a generator for `Fin n`. You'll have to think carefully about getting this one to typecheck and be accepted by the totality checker without cheating. Note: Have a look at function `Data.Fin.natToFin`.
+   05. ベクトルからランダムに要素を 1 つ選択するジェネレータを実装してください。
 
-   05. Implement a generator for selecting a random element from a vector of values. Use the generator from exercise 4 in your implementation.
-
-   06. Implement `vect` and `list`. In case of `list`, the first argument should be used to randomly determine the length of the list.
+   06. `vect` および `list` を実装してください。
 
        ```idris
        vect : {n : _} -> Gen a -> Gen (Vect n a)
@@ -66,33 +54,33 @@ This sections consists of two extended exercise, the aim of which is to increase
        list : Gen Nat -> Gen a -> Gen (List a)
        ```
 
-       Use `vect` to implement utility function `testGen` for testing your generators at the REPL:
+       これらを用いてジェネレータを REPL でテストするための `testGen` を実装してください：
 
        ```idris
        testGen : Bits64 -> Gen a -> Vect 10 a
        ```
 
-   07. Implement `choice`.
+   07. `choice` を実装してください：
 
        ```idris
        choice : {n : _} -> Vect (S n) (Gen a) -> Gen a
        ```
 
-   08. Implement `either`.
+   08. `either` を実装してください：
 
        ```idris
        either : Gen a -> Gen b -> Gen (Either a b)
        ```
 
-   09. Implement a generator for printable ASCII characters. These are characters with ASCII codes in the interval `[32,126]`. Hint: Function `chr` from the *Prelude* will be useful here.
+   09. 印字可能な ASCII 文字（コード 32〜126）のジェネレータを実装してください。
 
-   10. Implement a generator for strings. Hint: Function `pack` from the *Prelude* might be useful for this.
+   10. 文字列のジェネレータを実装してください：
 
        ```idris
        string : Gen Nat -> Gen Char -> Gen String
        ```
 
-   11. We shouldn't forget about our ability to encode interesting things in the types in Idris, so, for a challenge and without further ado, implement `hlist` (note the distinction between `HListF` and `HList`). If you are rather new to dependent types, this might take a moment to digest, so don't forget to use holes.
+   11. `HList` に対するジェネレータ `hlist` を実装してください：
 
        ```idris
        data HListF : (f : Type -> Type) -> (ts : List Type) -> Type where
@@ -102,49 +90,22 @@ This sections consists of two extended exercise, the aim of which is to increase
        hlist : HListF Gen ts -> Gen (HList ts)
        ```
 
-   12. Generalize `hlist` to work with any applicative functor, not just `Gen`.
+   12. `hlist` を `Gen` だけでなく任意のアプリカティブファンクタで動作するように一般化してください。
 
-   If you arrived here, please realize how we can now generate pseudo-random values for most primitives, as well as regular sum- and product types. Here is an example REPL session:
-
-   ```repl
-   > testGen 100 $ hlist [bool, printableAscii, interval 0 127]
-   [[True, ';', 5],
-    [True, '^', 39],
-    [False, 'o', 106],
-    [True, 'k', 127],
-    [False, ' ', 11],
-    [False, '~', 76],
-    [True, 'M', 11],
-    [False, 'P', 107],
-    [True, '5', 67],
-    [False, '8', 9]]
-   ```
-
-   Final remarks: Pseudo-random value generators play an important role in property based testing libraries like [QuickCheck](https://hackage.haskell.org/package/QuickCheck) or [Hedgehog](https://github.com/stefan-hoeck/idris2-hedgehog). The idea of property based testing is to test predefined *properties* of pure functions against a large number of randomly generated arguments, to get strong guarantees about these properties to hold for *all* possible arguments. One example would be a test for verifying that the result of reversing a list twice equals the original list. While it is possible to proof many of the simpler properties in Idris directly without the need for tests, this is no longer possible as soon as functions are involved, which don't reduce during unification such as foreign function calls or functions not publicly exported from other modules.
-
-2. While `State s a` gives us a convenient way to talk about stateful computations, it only allows us to mutate the state's *value* but not its *type*. For instance, the following function cannot be encapsulated in `State` because the type of the state changes:
+2. `State s a` では状態の **値** は変更できますが、状態の **型** を変更することはできません。たとえば、要素を取り出して長さが 1 減るような操作（`uncons`）は通常の `State` では表現できません：
 
    ```idris
    uncons : Vect (S n) a -> (Vect n a, a)
    uncons (x :: xs) = (xs, x)
    ```
 
-   Your task is to come up with a new state type allowing for such changes (sometimes referred to as an *indexed* state data type). The goal of this exercise is to also sharpen your skills in expressing things at the type level including derived function types and interfaces. Therefore, I will give only little guidance on how to go about this. If you get stuck, feel free to peek at the solutions but make sure to only look at the types at first.
+   状態の型が遷移できる **インデックス付き State（Indexed State）** データ型を作成してください。
 
-   1. Come up with a parameterized data type for encapsulating stateful computations where the input and output state type can differ. It must be possible to wrap `uncons` in a value of this type.
+   1. 入力状態の型と出力状態の型が異なる状態付き計算をカプセル化するデータ型を定義してください。
+   2. その型に対する `Functor` を実装してください。
+   3. イディオムブラケットで利用可能にするための演算子を実装してください。
+   4. do ブロックで利用可能にするための演算子（*bind*）を実装してください。
+   5. これらを一般化したインターフェース `IxApplicative` および `IxMonad` を定義し、インスタンスを実装してください。
+   6. `get`, `put`, `modify`, `runState`, `evalState`, `execState` をインデックス付き State 型向けに実装してください。
+   7. 入力状態と出力状態の型が一致する場合に、通常の `Applicative` および `Monad` のインスタンスになることを示してください。
 
-   2. Implement `Functor` for your indexed state type.
-
-   3. It is not possible to implement `Applicative` for this *indexed* state type (but see also exercise 2.vii). Still, implement the necessary functions to use it with idom brackets.
-
-   4. It is not possible to implement `Monad` for this indexed state type. Still, implement the necessary functions to use it in do blocks.
-
-   5. Generalize the functions from exercises 3 and 4 with two new interfaces `IxApplicative` and `IxMonad` and provide implementations of these for your indexed state data type.
-
-   6. Implement functions `get`, `put`, `modify`, `runState`, `evalState`, and `execState` for the indexed state data type. Make sure to adjust the type parameters where necessary.
-
-   7. Show that your indexed state type is strictly more powerful than `State` by implementing `Applicative` and `Monad` for it.
-
-      Hint: Keep the input and output state identical. Note also, that you might need to implement `join` manually if Idris has trouble inferring the types correctly.
-
-   Indexed state types can be useful when we want to make sure that stateful computations are combined in the correct sequence, or that scarce resources get cleaned up properly. We might get back to such use cases in later examples.

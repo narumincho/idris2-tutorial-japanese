@@ -1,16 +1,19 @@
-# Exercises part 1
+# エフェクトを伴う走査 練習問題 パート1
 
-1. It is interesting that `Traversable` has a `Functor` constraint. Proof that every `Traversable` is automatically a `Functor` by implementing `map` in terms of `traverse`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-   Hint: Remember `Control.Monad.Identity`.
+1. `Traversable` が `Functor` を制約（親インターフェース）に持つのは興味深い点です。`map` を `traverse` を使って実装することで、すべての `Traversable` が自動的に `Functor` になることを証明してください。
 
-2. Likewise, proof that every `Traversable` is a `Foldable` by implementing `foldMap` in terms of `Traverse`.
+   ヒント: `Control.Monad.Identity` を思い出してください。
 
-   Hint: Remember `Control.Applicative.Const`.
+2. 同様に、`foldMap` を `traverse` を使って実装することで、すべての `Traversable` が `Foldable` になることを証明してください。
 
-3. To gain some routine, implement `Traversable'` for `List1`, `Either e`, and `Maybe`.
+   ヒント: `Control.Applicative.Const` を思い出してください。
 
-4. Implement `Traversable` for `List01 ne`:
+3. 慣れるために、`List1`, `Either e`, `Maybe` に対する `Traversable'` を実装してください。
+
+4. `List01 ne` に対する `Traversable` を実装してください：
 
    ```idris
    data List01 : (nonEmpty : Bool) -> Type -> Type where
@@ -18,7 +21,7 @@
      (::) : a -> List01 False a -> List01 ne a
    ```
 
-5. Implement `Traversable` for rose trees. Try to satisfy the totality checker without cheating.
+5. ローズツリーに対する `Traversable` を実装してください。全域性チェッカーをごまかさずに通すようにしてください。
 
    ```idris
    record Tree a where
@@ -27,7 +30,7 @@
      forest : List (Tree a)
    ```
 
-6. Implement `Traversable` for `Crud i`:
+6. `Crud i` に対する `Traversable` を実装してください：
 
    ```idris
    data Crud : (i : Type) -> (a : Type) -> Type where
@@ -37,7 +40,7 @@
      Delete : (id : i) -> Crud i a
    ```
 
-7. Implement `Traversable` for `Response e i`:
+7. `Response e i` に対する `Traversable` を実装してください：
 
    ```idris
    data Response : (e, i, a : Type) -> Type where
@@ -48,7 +51,7 @@
      Error   : (err : e) -> Response e i a
    ```
 
-8. Like `Functor`, `Applicative` and `Foldable`, `Traversable` is closed under composition. Proof this by implementing `Traversable` for `Comp` and `Product`:
+8. `Functor`, `Applicative`, `Foldable` と同様に、`Traversable` も合成可能です。`Comp` と `Product` に対する `Traversable` を実装してこれを証明してください：
 
    ```idris
    record Comp (f,g : Type -> Type) (a : Type) where
@@ -60,3 +63,4 @@
      fst : f a
      snd : g a
    ```
+
