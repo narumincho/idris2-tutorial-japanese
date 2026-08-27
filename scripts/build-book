@@ -103,7 +103,7 @@ sub katla-html($src, $ttc-src, $out-path) {
     my $katla = run 'katla', 'html', $src, $ttc-src, :out;
     my $raw-output = $katla.out.slurp(:close);
     # Extract just the code from the output
-    my $output = ($raw-output ~~ /'<code' .* '</code>'/ ).Str;
+    my $output = ($raw-output ~~ /'<code' [\n|\N]* '</code>'/ ).Str;
     # Rerrange into a markdown document
     $output = process-katla-output($output);
     $output = qq:to/END/;
@@ -147,7 +147,7 @@ sub katla-markdown($src, $ttc-src) {
 sub process-katla-output($orig-output) {
     my $output = $orig-output;
     # Post process katla output to set themeing correctly
-    $output ~~ s:g/'<style>' .* '</style>'//;
+    $output ~~ s:g/'<style>' [\n|\N]* '</style>'//;
     $output ~~ s:g/'<br />'//;
     $output ~~ s:g/'\\*'/*/;
     $output ~~ s:g/'\\_'/_/;

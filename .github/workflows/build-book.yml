@@ -11,7 +11,7 @@ jobs:
     name: Build Book
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/idris-community/idris2-tutorial:latest
+      image: ghcr.io/${{ github.repository }}:latest
       options: --user root
     env:
       PACK_DIR: /root/.pack
