@@ -1,12 +1,15 @@
-# Operators
+# 演算子
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1/Operators.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1/Operators.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions1.Operators
 ```
 
-In Idris, infix operators like `.`, `*` or `+` are not built into the language, they are instead just regular Idris function with some special support for using them in infix notation. When we use operators outside of infix notation, we have to wrap them in parentheses.
+Idris では、`.` や `*`、`+` のような中置演算子は言語にハードコードされているわけではなく、中置記法で使用するための特別なサポートを備えた通常の Idris 関数です。中置記法以外で演算子を使用する場合は、括弧で囲む必要があります。
 
-As an example, let us define a custom operator for sequencing functions of type `Bits8 -> Bits8`:
+例として、`Bits8 -> Bits8` 型の関数を順次適用するためのカスタム演算子を定義してみましょう：
 
 ```idris
 infixr 4 >>>
@@ -21,7 +24,7 @@ test : Bits8 -> Bits8
 test = foo >>> foo >>> foo >>> foo
 ```
 
-In addition to declaring and defining the operator itself, we also have to specify its fixity: `infixr 4 >>>` means, that `(>>>)` associates to the right (meaning, that `f >>> g >>> h` is to be interpreted as `f >>> (g >>> h)`) with a priority of `4`. You can also have a look at the fixity of operators exported by the *Prelude* in the REPL:
+演算子自体の宣言と定義に加えて、その結合性（fixity）も指定する必要があります。`infixr 4 >>>` は、`(>>>)` が優先順位 `4` で右結合（つまり `f >>> g >>> h` が `f >>> (g >>> h)` と解釈される）であることを意味します。*Prelude* からエクスポートされている演算子の結合性は、REPL で確認できます：
 
 ```repl
 Tutorial.Functions1> :doc (.)
@@ -31,11 +34,11 @@ Prelude.. : (b -> c) -> (a -> b) -> a -> c
   Fixity Declaration: infixr operator, level 9
 ```
 
-When you mix infix operators in an expression, those with a higher priority bind more tightly. For instance, `(+)` is left associated with a priority of 8, while `(*)` is left associated with a priority of 9. Hence, `a * b + c` is the same as `(a * b) + c` instead of `a * (b + c)`.
+式の中で複数の中置演算子が混在している場合、優先順位が高い演算子ほど強く結合します。たとえば、`(+)` は優先順位 8 の左結合であり、`(*)` は優先順位 9 の左結合です。したがって、`a * b + c` は `a * (b + c)` ではなく `(a * b) + c` と解釈されます。
 
-## Operator Sections
+## 演算子セクション (Operator Sections)
 
-Operators can be partially applied just like regular functions. In this case, the whole expression has to be wrapped in parentheses and is called an *operator section*. Here are two examples:
+演算子は通常の関数と同様に部分適用することができます。この場合、式全体を括弧で囲む必要があり、これは **演算子セクション (operator section)** と呼ばれます。以下に2つの例を示します：
 
 ```repl
 Tutorial.Functions1> testSquare (< 10) 5
@@ -44,23 +47,23 @@ Tutorial.Functions1> testSquare (10 <) 5
 True
 ```
 
-As you can see, there is a difference between `(< 10)` and `(10 <)`. The first tests whether its argument is less than 10, and the second tests whether 10 is less than its argument.
+このように、`(< 10)` と `(10 <)` には違いがあります。前者は「引数が10未満であるか」を判定し、後者は「10が引数未満であるか」を判定します。
 
-One exception where operator sections will not work is with the *minus* operator `(-)`. Here is an example to demonstrate this:
+演算子セクションが機能しない例外の1つが、マイナス演算子 `(-)` です。これを示す例を以下に挙げます：
 
 ```idris
 applyToTen : (Integer -> Integer) -> Integer
 applyToTen f = f 10
 ```
 
-This is just a higher-order function applying the number ten to its function argument. This works very well in the following example:
+これは単に関数引数に10を適用する高階関数です。以下の例では問題なく動作します：
 
 ```repl
 Tutorial.Functions1> applyToTen (* 2)
 20
 ```
 
-However, if we want to subtract five from ten, the following will fail:
+しかし、10から5を引きたい場合、以下はエラーになります：
 
 ```repl
 Tutorial.Functions1> applyToTen (- 5)
@@ -70,16 +73,16 @@ Error: Can't find an implementation for Num (Integer -> Integer).
  1 | applyToTen (- 5)
 ```
 
-The problem here is that Idris treats `- 5` as an integer literal instead of an operator section. In this special case, we have to use an anonymous function instead:
+ここでの問題は、Idris が `- 5` を演算子セクションではなく負の整数リテラルとして扱うことです。この特殊なケースでは、代わりに無名関数を使用する必要があります：
 
 ```repl
 Tutorial.Functions1> applyToTen (\x => x - 5)
 5
 ```
 
-## Infix Notation for Non-Operators
+## 非演算子関数の中置記法
 
-In Idris, it is possible to use infix notation for regular binary functions by wrapping them in backticks. It is even possible to define a precedence (fixity) for these and use them in operator sections, just like regular operators:
+Idris では、通常の2引数関数をバッククォート（`` ` ``）で囲むことで、中置記法として使用できます。これらに対しても優先順位（結合性）を定義し、通常の演算子と同様に演算子セクションで使用することも可能です：
 
 ```idris
 infixl 8 `plus`
@@ -99,23 +102,23 @@ arithTest' : Integer
 arithTest' = 5 + 10 * 12
 ```
 
-## Operators exported by the *Prelude*
+## *Prelude* がエクスポートする主な演算子
 
-Here is a list of important operators exported by the *Prelude*:
+*Prelude* からエクスポートされている重要な演算子のリストです：
 
-- `(.)`: Function composition
-- `(+)`: Addition
-- `(*)`: Multiplication
-- `(-)`: Subtraction
-- `(/)`: Division
-- `(==)` : True, if two values are equal
-- `(/=)` : True, if two values are not equal
-- `(<=)`, `(>=)`, `(<)`, and `(>)` : Comparison operators
-- `($)`: Function application
+- `(.)`: 関数合成
+- `(+)`: 加算
+- `(*)`: 乗算
+- `(-)`: 減算
+- `(/)`: 除算
+- `(==)` : 2つの値が等しい場合に True
+- `(/=)` : 2つの値が等しくない場合に True
+- `(<=)`, `(>=)`, `(<)`, `(>)` : 比較演算子
+- `($)`: 関数適用
 
-Most of these are *constrained*, that is they work only for types implementing a certain *interface*. Don't worry about this right now. We will learn about interfaces their own chapter later, and the operators behave as they intuitively should. For instance, addition and multiplication work for all numeric types, and comparison operators work for almost all types in the *Prelude* with the exception of functions.
+これらの多くには **制約 (constraint)** があり、特定の **インターフェース** を実装した型に対してのみ機能します。これについては現時点では気にする必要はありません。インターフェースについては後の章で詳しく学びますし、これらの演算子は直感通りに振る舞います。たとえば、加算や乗算はすべての数値型に対して動作し、比較演算子は関数を除く Prelude のほぼすべての型に対して動作します。
 
-The most special of the above is the last one, `($)`. It has a priority of 0, so all other operators bind more tightly. In addition, function application binds more tightly, so this can be used to reduce the number of parentheses required in an expression. For instance, instead of writing `isTriple 3 4 (2 + 3 * 1)` we can write `isTriple 3 4 $ 2 + 3 * 1`, with exactly the same meaning. Sometimes this helps readability, other times it doesn't, you will naturally build an intuition for which form of a given expression is more readable with experience, especially from rereading your own code after some time has passed. The important thing to remember is that `fun $ x y` is just the same as `fun (x y)`.
+上記の中で最も特殊なのが最後の `($)` です。この優先順位は 0 であり、他のすべての演算子や通常の関数適用よりも弱く結合します。これを利用して、式の中の括弧の数を減らすことができます。たとえば、`isTriple 3 4 (2 + 3 * 1)` と書く代わりに、全く同じ意味で `isTriple 3 4 $ 2 + 3 * 1` と書くことができます。これは可読性を向上させることもあればそうでないこともありますが、経験を積むにつれてどちらが読みやすいかの直感が身につくでしょう。覚えておくべき重要な点は、`fun $ x y` は `fun (x y)` と全く同じであるということです。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

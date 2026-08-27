@@ -1,8 +1,11 @@
-# Introduction To Functions
+# 関数入門
 
-Idris is a *functional* programming language, functions are its main form of abstraction (unlike for instance in an object oriented language like Java, where *objects* and *classes* are the main form of abstraction). Thus, we expect Idris to make it very easy for us to compose and combine functions to create new functions. In fact, in Idris functions are *first class*, functions can take other functions as arguments and can return functions as their results.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-This chapter will explore some of the basic tools Idris provides for combining and producing functions .
+Idris は **関数型** プログラミング言語であり、関数が主な抽象化の手段です（Java のようなオブジェクト指向言語において「オブジェクト」や「クラス」が主な抽象化手段であるのとは対照的です）。したがって、Idris では関数を合成・組み合わせて新しい関数を作成することが極めて容易になっています。実際、Idris では関数は **第一級 (first-class)** の値であり、他の関数を引数として受け取ったり、結果として関数を返したりすることができます。
+
+本章では、関数を組み合わせたり生成したりするために Idris が提供する基本的なツールについて探っていきます。
 
 ```idris hide
 module Tutorial.Functions1

@@ -1,10 +1,13 @@
-# Functions with more than one Argument
+# 複数の引数を取る関数
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1/FunctionsWithMultipleArguments.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1/FunctionsWithMultipleArguments.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions1.FunctionsWithMultipleArguments
 ```
 
-Let's implement a function, which checks if its three `Integer` arguments form a [Pythagorean triple](https://en.wikipedia.org/wiki/Pythagorean_triple), we'll need to use a new operator for this: `==`, the equality operator.
+3つの `Integer` 引数が [ピタゴラスの三つ組（ピタゴラス数）](https://ja.wikipedia.org/wiki/%E3%83%94%E3%82%BF%E3%82%B8%E3%83%A9%E3%82%B9%E6%95%B0) を形成しているかどうかを判定する関数を実装してみましょう。ここでは新しい演算子である等値演算子 `==` を使用します。
 
 ```idris
 export
@@ -12,7 +15,7 @@ isTriple : Integer -> Integer -> Integer -> Bool
 isTriple x y z = x * x + y * y == z * z
 ```
 
-Let's give this a spin at the REPL before we talk a about the types:
+型について詳しく説明する前に、まずは REPL で試してみましょう：
 
 ```repl
 Tutorial.Functions1> isTriple 1 2 3
@@ -21,15 +24,15 @@ Tutorial.Functions1> isTriple 3 4 5
 True
 ```
 
-As this example demonstrates, the type of a function of several arguments consists of a sequence of argument types (also called *input types*) chained by function arrows (`->`), terminated by an output type (`Bool` in this case).
+この例が示すように、複数の引数を取る関数の型は、関数矢印（`->`）で連結された引数の型（*入力型*）の並びと、最後の出力型（この例では `Bool`）で構成されます。
 
-The implementation looks like a mathematical equation: The arguments are listed on the left hand side of the `=`, and the computation(s) to perform with them are described on the right hand side.
+実装部分は数学の方程式のように見えます。`=` の左側に引数が列挙され、右側にそれらを使って行う計算が記述されます。
 
-Function implementations in functional programming languages often have a more mathematical look compared to implementations in imperative languages, which often describe not *what* to compute, but instead *how* to compute it by describing an algorithm as a sequence of imperative statements. This imperative style is also available in Idris, and we will explore it in later chapters, but we prefer the declarative style whenever possible.
+関数型プログラミング言語における関数の実装は、命令型言語の実装に比べて数学的な見た目になることがよくあります。命令型言語では「何を (what)」計算するかではなく、命令文の並びとして「どのように (how)」計算するかを記述することが多いためです。Idris でもこうした命令型のスタイルを記述することができ、後の章で学びますが、可能な限り宣言的なスタイルが好まれます。
 
-As shown in the above example, functions can be invoked by passing the arguments separated by whitespace. No parentheses are necessary, unless one of the expressions we pass as the function's arguments contains its own additional whitespace. This syntax provides for particularly ergonomic partial function application, a concept we will cover in a later section.
+上の例で示したように、関数を呼び出す際は引数を空白で区切って渡します。引数として渡す式自体に空白が含まれていない限り、括弧 `()` は不要です。この構文は、後のセクションで扱う「部分適用」を非常に扱いやすくしています。
 
-Note that, unlike `Integer` or `Bits8`, `Bool` is not a primitive data type built into the Idris language but just a normal data type that you could have written yourself. We will cover data type definitions in the next chapter
+なお、`Integer` や `Bits8` とは異なり、`Bool` は Idris 言語に組み込まれたプリミティブ型ではなく、ユーザー自身が定義できる通常のデータ型です。データ型の定義方法については次の章で扱います。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

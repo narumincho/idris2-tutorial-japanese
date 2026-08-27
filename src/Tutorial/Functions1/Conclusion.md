@@ -1,24 +1,20 @@
-# Conclusion
+# おわりに
 
-In this chapter, we learned:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-- A function in Idris can take an arbitrary number of arguments, separated by `->` in the function's type.
+本章では、以下の内容について学びました：
 
-- Functions can be combined sequentially using the dot operator `(.)`, which leads to concise code.
+- Idris の関数は任意の個数の引数を取ることができ、関数の型においてそれらは `->` で区切られます。
+- ドット演算子 `(.)` を使って関数を順次合成することができ、簡潔なコードを書くことができます。
+- 関数が期待する引数よりも少ない引数を渡すことで部分適用することができ、残りの引数を期待する新しい関数が得られます。この手法は **カリー化 (currying)** と呼ばれます。
+- 関数を他の関数への引数として渡すことができ、これにより小さなコード片を容易に組み合わせてより複雑な振る舞いを作り出すことができます。
+- トップレベル関数を書くのが大がかりな場合は、高階関数に無名関数（**ラムダ式**）を渡すことができます。
+- Idris では独自のインフィックス（中置）演算子を定義できます。これらは中置記法以外で使用する際には括弧で囲む必要があります。
+- 中置演算子も部分適用できます。この **演算子セクション** は括弧で囲む必要があり、引数の位置によって第1引数として使われるか第2引数として使われるかが決まります。
+- Idris は名前のオーバーロードをサポートしており、関数が同じ名前を持ちながら異なる実装を持つことができます。Idris は関連する型に基づいてどの関数を使用するかを決定します。
 
-- Functions can be partially applied by passing them fewer arguments than they expect, resulting in a new function expecting the remaining arguments. This technique is called *currying*.
-
-- Functions can be passed as arguments to other functions, which allows us to easily combine small units of code to create more complex behavior.
-
-- If writing a corresponding top level function would be too cumbersome, we can pass anonymous functions (*lambdas*) to higher-order functions.
-
-- Idris allows us to define our own infix operators. These have to be written in parentheses unless they are being used in infix notation.
-
-- Infix operators can also be partially applied. These *operator sections* have to be wrapped in parentheses, and the position of the argument determines whether it is used as the operator's first or second argument.
-
-- Idris supports name overloading, functions can have the same names but different implementations. Idris will decide which function to use based to the types involved.
-
-Please note, that function and operator names within an individual a module must be unique. In order to define two functions with the same name, they have to be declared in distinct modules. If Idris is not able to decide which of the two functions to use, we can help name resolution by prefixing a function with (a part of) its *namespace*:
+なお、同一モジュール内では関数名や演算子名は一意である必要があります。同じ名前を持つ2つの関数を定義するには、別々のモジュールで宣言する必要があります。Idris がどちらの関数を使用すべきか判定できない場合は、関数の前にその **名前空間 (namespace)**（の一部）をプレフィックスとして付与することで名前解決を助けることができます：
 
 ```repl
 Tutorial.Functions1> :t Prelude.not
@@ -27,6 +23,7 @@ Tutorial.Functions1> :t Functions1.not
 Tutorial.Functions1.not : (Integer -> Bool) -> (Integer -> Bool) -> Integer -> Bool
 ```
 
-## What's next
+## 次のステップ
 
-In the next section, we will learn how to define our own data types and how to construct and deconstruct values of these new types. We will also learn about generic types and functions.
+次のセクションでは、独自のデータ型を定義する方法と、それらの新しい型の値を構築・分解（パターンマッチ）する方法について学びます。また、ジェネリックな型や関数についても学びます。
+

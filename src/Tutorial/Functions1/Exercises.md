@@ -1,72 +1,75 @@
-# Introductory Function Exercises
+# 関数入門 練習問題
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1/Exercises.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1/Exercises.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions1.Exercises
 ```
 
-The solutions to these exercises can be found in [`src/Solutions/Functions1.idr`](../../Solutions/Functions1.md).
+これらの練習問題の解答は [`src/Solutions/Functions1.idr`](../../Solutions/Functions1.md) にあります。
 
-## Exercise 1
+## 練習問題 1
 
-Reimplement functions `testSquare` and `twice` by using the dot operator and dropping the second arguments (have a look at the implementation of `squareTimes2` to get an idea where this should lead you). This highly concise way of writing function implementations is sometimes called *point-free style* and is often the preferred way of writing small utility functions.
+ドット演算子（`.`）を使い、第2引数を省略することで、関数 `testSquare` と `twice` を再実装してください（`squareTimes2` の実装を参考にしてください）。このように引数を明示せずに書く簡潔なスタイルは **ポイントフリースタイル (point-free style)** と呼ばれ、小さなユーティリティ関数を書く際によく好まれます。
 
-## Exercise 2
+## 練習問題 2
 
-Declare and implement function `isOdd` by combining functions `isEven` from above and `not` (from the Idris *Prelude*). Use point-free style.
+先ほどの `isEven` と（Idris の *Prelude* にある）`not` 関数を組み合わせて、`isOdd` 関数を宣言・実装してください。ポイントフリースタイルを使用してください。
 
-## Exercise 3
+## 練習問題 3
 
-Declare and implement function `isSquareOf`, which checks whether its first `Integer` argument is the square of the second argument.
+第1引数の `Integer` が第2引数の2乗であるかどうかを判定する関数 `isSquareOf` を宣言・実装してください。
 
-## Exercise 4
+## 練習問題 4
 
-Declare and implement function `isSmall`, which checks whether its `Integer` argument is less than or equal to 100. Use one of the comparison operators `<=` or `>=` in your implementation.
+`Integer` 引数が 100 以下であるかどうかを判定する関数 `isSmall` を宣言・実装してください。実装には比較演算子 `<=` または `>=` のいずれかを使用してください。
 
-## Exercise 5
+## 練習問題 5
 
-Declare and implement function `absIsSmall`, which checks whether the absolute value of its `Integer` argument is less than or equal to 100. Use functions `isSmall` and `abs` (from the Idris *Prelude*) in your implementation, which should be in point-free style.
+`Integer` 引数の絶対値が 100 以下であるかどうかを判定する関数 `absIsSmall` を宣言・実装してください。実装には `isSmall` と（Idris の *Prelude* にある）`abs` 関数を使用し、ポイントフリースタイルで記述してください。
 
-## Exercise 6
+## 練習問題 6
 
-In this slightly extended exercise we are going to implement some utilities for working with `Integer` predicates (functions from `Integer` to `Bool`). Implement the following higher-order functions (use boolean operators `&&`, `||`, and function `not` in your implementations):
+この少し発展的な問題では、`Integer` 述語（`Integer -> Bool` 型の関数）を扱うためのユーティリティを実装します。以下の高階関数を実装してください（実装にはブール演算子 `&&`、`||`、および `not` 関数を使用してください）：
 
 ```idris
--- return true, if and only if both predicates hold
+-- 両方の述語が成り立つ場合にのみ true を返す
 and : (Integer -> Bool) -> (Integer -> Bool) -> Integer -> Bool
 
--- return true, if and only if at least one predicate holds
+-- 少なくとも一方の述語が成り立つ場合にのみ true を返す
 or : (Integer -> Bool) -> (Integer -> Bool) -> Integer -> Bool
 
--- return true, if the predicate does not hold
+-- 述語が成り立たない場合に true を返す
 negate : (Integer -> Bool) -> Integer -> Bool
 ```
 
-After solving this exercise, give it a go in the REPL. In the example below, we use binary function `and` in infix notation by wrapping it in backticks. This is just a syntactic convenience to make certain function applications more readable:
+実装できたら、REPL で試してみてください。以下の例では、2引数関数 `and` をバッククォートで囲んで中置記法で使用しています。これは特定の関数適用を読みやすくするための構文上の工夫です：
 
 ```repl
 Tutorial.Functions1> negate (isSmall `and` isOdd) 73
 False
 ```
 
-## Exercise 7
+## 練習問題 7
 
-As explained above, Idris allows us to define our own infix operators. Even better, Idris supports *overloading* of function names, that is, two functions or operators can have the same name, but different types and implementations. Idris will make use of the types to distinguish between equally named operators and functions.
+前述の通り、Idris では独自のインフィックス演算子を定義できます。さらに、Idris は関数名の **オーバーロード (overloading)** をサポートしています。つまり、2つの関数や演算子が同じ名前を持ちながら、異なる型と実装を持つことができます。Idris は型情報を利用して、同じ名前の演算子や関数を区別します。
 
-This allows us, to reimplement functions `and`, `or`, and `negate` from Exercise 6 by using the existing operator and function names from boolean algebra:
+これを利用して、ブール代数の既存の演算子名や関数名を使って、練習問題 6 の `and`、`or`、`negate` を再実装してみましょう：
 
 ```idris
--- return true, if and only if both predicates hold
+-- 両方の述語が成り立つ場合にのみ true を返す
 (&&) : (Integer -> Bool) -> (Integer -> Bool) -> Integer -> Bool
 x && y = and x y
 
--- return true, if and only if at least one predicate holds
+-- 少なくとも一方の述語が成り立つ場合にのみ true を返す
 (||) : (Integer -> Bool) -> (Integer -> Bool) -> Integer -> Bool
 
--- return true, if the predicate does not hold
+-- 述語が成り立たない場合に true を返す
 not : (Integer -> Bool) -> Integer -> Bool
 ```
 
-Implement the other two functions and test them at the REPL:
+残り2つの関数を実装し、REPL でテストしてください：
 
 ```repl
 Tutorial.Functions1> not (isSmall && isOdd) 73

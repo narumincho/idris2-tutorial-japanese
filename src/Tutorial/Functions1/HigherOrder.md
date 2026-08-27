@@ -1,4 +1,7 @@
-# Higher-order Functions
+# 高階関数
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1/HigherOrder.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1/HigherOrder.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Functions1.HigherOrder
@@ -6,7 +9,7 @@ module Tutorial.Functions1.HigherOrder
 import Tutorial.Functions1.FunctionComposition
 ```
 
-Functions can take other functions as arguments. This is an incredibly powerful concept which can be taken to an extreme very easily, but to keep things simple, we'll start slowly:
+関数は他の関数を引数として受け取ることができます。これは極めて強力な概念であり、非常に奥が深いものですが、まずはシンプルな例からゆっくり始めましょう：
 
 ```idris
 export
@@ -18,27 +21,27 @@ testSquare : (Integer -> Bool) -> Integer -> Bool
 testSquare fun n = fun (square n)
 ```
 
-In the above definition, `isEven` uses the `mod` function to check if an integer is divisible by two, and is defined in the same straightforward manor as the other functions we have defined so far.
+上記の定義で、`isEven` は `mod` 関数を使って整数が2で割り切れるかどうかを判定しており、これまでに定義した他の関数と同様にシンプルです。
 
-`testSquare`, however, is more interesting. It takes two arguments, the first argument having the type of a *function from `Integer` to `Bool`*, and the second having type `Integer`. The second argument is squared before being passed to the first argument.
+一方、`testSquare` はより興味深い定義になっています。これは2つの引数を取り、第1引数の型は **`Integer` から `Bool` への関数**、第2引数の型は `Integer` です。第2引数の値は2乗された上で、第1引数の関数に渡されます。
 
-Let's give this a go at the REPL:
+REPL で動かしてみましょう：
 
 ```repl
 Tutorial.Functions1> testSquare isEven 12
 True
 ```
 
-Take your time to understand what's going on here. We pass the function `isEven` as the first argument to `testSquare`. The second argument is an integer, which will first be squared and then passed to `isEven`. While this particular example is not very interesting, we will cover lots of use cases for passing functions as arguments to other functions as we continue.
+ここで何が起きているかをじっくり理解してください。関数 `isEven` を `testSquare` の第1引数として渡しています。第2引数は整数で、まず2乗されてから `isEven` に渡されます。この例自体は単純ですが、読み進めるにつれて、他の関数へ関数を渡す様々なユースケースに出会うことになります。
 
-As noted earlier, things can go to an extreme pretty easily. Consider the following example:
+先述の通り、この概念を応用すると非常に強力なことができます。以下の例を見てみましょう：
 
 ```idris
 twice : (Integer -> Integer) -> Integer -> Integer
 twice f n = f (f n)
 ```
 
-And at the REPL:
+REPL での実行結果：
 
 ```repl
 Tutorial.Functions1> twice square 2
@@ -46,10 +49,10 @@ Tutorial.Functions1> twice square 2
 Tutorial.Functions1> (twice . twice) square 2
 65536
 Tutorial.Functions1> (twice . twice . twice . twice) square 2
-*** huge number ***
+*** 非常に大きな数値 ***
 ```
 
-You might be surprised about this behavior, so let's break it down. The following two expressions are identical in their behavior:
+この挙動に驚くかもしれませんが、分解して考えてみましょう。以下の2つの式は全く同じ振る舞いをします：
 
 ```idris
 expr1 : Integer -> Integer
@@ -59,12 +62,12 @@ expr2 : Integer -> Integer
 expr2 = twice (twice (twice (twice square)))
 ```
 
-Let's walk through this:
+順を追って見ていきましょう：
 
-- `square` raises its argument to the 2nd power
-- `twice square` applies `square` twice, raising its argument to the 4th power
-- `twice (twice square)` raises it to the 16th power, by invoking `twice square` twice
-- And so on until `twice (twice (twice (twice square)))`, which raises it's argument to the 65536th power, giving an impressively huge result
+- `square` は引数を2乗（2の累乗）します。
+- `twice square` は `square` を2回適用するため、引数を4乗します。
+- `twice (twice square)` は `twice square` を2回呼び出すため、16乗します。
+- これを繰り返して `twice (twice (twice (twice square)))` となると、引数を65536乗することになり、とてつもなく巨大な数値になります。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->
