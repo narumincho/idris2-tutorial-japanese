@@ -1,22 +1,26 @@
-# Exercises part 3
+# 依存型 練習問題 パート3
 
-1. Here is a function declaration for flattening a `List` of `List`s:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+1. 以下は `List` のリストを平坦化（flatten）する関数宣言です：
 
    ```idris
    flattenList : List (List a) -> List a
    ```
 
-   Implement `flattenList` and declare and implement a similar function `flattenVect` for flattening vectors of vectors.
+   `flattenList` を実装し、ベクトルのベクトルを平坦化する同様の関数 `flattenVect` を宣言・実装してください。
 
-2. Implement functions `take'` and `splitAt'` like in the exercises of the previous section but using the technique shown for `drop'`.
+2. 前節の練習問題の `take'` と `splitAt'` を、`drop'` で示したテクニック（加算の型レベル計算）を使って実装してください。
 
-3. Implement function `transpose` for converting an `m x n`-matrix (represented as a `Vect m (Vect n a)`) to an `n x m`-matrix.
+3. `m x n` 行列（`Vect m (Vect n a)` として表現）を `n x m` 行列に転置する関数 `transpose` を実装してください。
 
-   Note: This might be a challenging exercise, but make sure to give it a try. As usual, make use of holes if you get stuck!
+   補足: これは少し歯ごたえのある問題ですが、ぜひ挑戦してみてください。いつものように、行き詰まったらホールを活用しましょう！
 
-   Here is an example how this should work in action:
+   実際の動作例は以下のようになります：
 
    ```repl
    Solutions.Dependent> transpose [[1,2,3],[4,5,6]]
    [[1, 4], [2, 5], [3, 6]]
    ```
+

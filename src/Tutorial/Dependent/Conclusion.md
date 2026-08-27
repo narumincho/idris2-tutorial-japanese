@@ -1,19 +1,18 @@
-# Conclusion
+# おわりに
 
-- Dependent types allow us to calculate types from values. This makes it possible to encode properties of values at the type-level and verify these properties at compile time.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-- Length-indexed lists (vectors) let us rule out certain implementation errors, by forcing us to be precise about the lengths of input and output vectors.
+- 依存型を使用すると、値から型を計算できます。これにより値の性質を型レベルでエンコードし、コンパイル時に検証することが可能になります。
+- 長さ付きリスト（ベクトル）は、入力と出力のベクトルの長さを厳密に指定することを強制することで、特定の実装エラーを排除します。
+- 型シグネチャ内でパターンを使用でき、たとえばベクトルの長さが 0 でないこと（つまりベクトルが空でないこと）を表現できます。
+- 型族の値を生成する際、インデックスの値がコンパイル時に判明しているか、あるいは値を生成する関数への引数として渡されて、パターンマッチによってどのコンストラクタを使用すべきかを判断できる必要があります。
+- `n` よりも真に小さい自然数の型 `Fin n` を使用して、長さ `n` のベクトルに対して安全にインデックスアクセスできます。
+- 文脈から推論可能な引数を非消去（数量が 0 でない）暗黙引数として渡すと便利な場合があります。この場合、Idris が値を自動補完しようとする一方で、パターンマッチで引数を検査したり他の関数に渡したりすることができます。
 
-- We can use patterns in type signatures, for instance to express that the length of a vector is non-zero and therefore, the vector is non-empty.
+なお、ここで実装したデータ型 `Vect` や多くの関連関数は、*base* ライブラリの `Data.Vect` モジュールから利用できます。同様に、`Fin` も *base* の `Data.Fin` から利用可能です。
 
-- When creating values of a type family, the values of the indices need to be known at compile time, or they need to be passed as arguments to the function creating the values, where we can pattern match on them to figure out, which constructors to use.
+## 次のステップ
 
-- We can use `Fin n`, the type of natural numbers strictly smaller than `n`, to safely index into a vector of length `n`.
+次のセクションでは、純粋性を保ったまま副作用を伴うプログラム（エフェクトフルなプログラム）を書く方法について学びます。
 
-- Sometimes, it is convenient to pass inferable arguments as non-erased implicits, in which case we can still inspect them by pattern matching or pass them to other functions, while Idris will try and fill in the values for us.
-
-Note, that data type `Vect` together with many of the functions we implemented here is available from module `Data.Vect` from the *base* library. Likewise, `Fin` is available from `Data.Fin` from *base*.
-
-## What's next
-
-In the next section, it is time to learn how to write effectful programs and how to do this while still staying *pure*.

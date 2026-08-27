@@ -1,4 +1,7 @@
-# Compile-Time Computations
+# コンパイル時計算 (Compile-Time Computations)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Comptime.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Comptime.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Dependent.Comptime
@@ -8,9 +11,9 @@ import Tutorial.Dependent.LengthIndexedLists
 %default total
 ```
 
-In the last section - especially in some of the exercises - we started more and more to use compile time computations to describe the types of our functions and values. This is a very powerful concept, as it allows us to compute output types from input types. Here's an example:
+前節（特にいくつかの練習問題）では、関数や値の型を記述するためにコンパイル時計算を多用し始めました。これは入力の型から出力の型を計算できる非常に強力な概念です。例を見てみましょう：
 
-It is possible to concatenate two `List`s with the `(++)` operator. Surely, this should also be possible for `Vect`. But `Vect` is indexed by its length, so we have to reflect in the types exactly how the lengths of the inputs affect the lengths of the output. Here's how to do this:
+2つの `List` は `(++)` 演算子で連結できます。もちろん `Vect` に対しても同様の操作ができるべきです。しかし `Vect` は長さでインデックス付けされているため、入力の長さが出力の長さにどのように影響するかを型に正確に反映させる必要があります：
 
 ```idris
 (++) : Vect m a -> Vect n a -> Vect (m + n) a
@@ -18,9 +21,9 @@ It is possible to concatenate two `List`s with the `(++)` operator. Surely, this
 (++) (x :: xs) ys = x :: (xs ++ ys)
 ```
 
-Note, how we keep track of the lengths at the type-level, again ruling out certain common programming errors like inadvertently dropping some values.
+型レベルで長さを追跡することにより、要素を誤って欠落させてしまうような一般的なプログラミングミスをここでも排除できています。
 
-We can also use type-level computations as patterns on the input types. Here is an alternative type and implementation for `drop`, which you implemented in the exercises by using a `Fin n` argument:
+型レベルの計算を入力型のパターンとして使用することもできます。以下は、前の練習問題で `Fin n` 引数を使って実装した `drop` の代替となる型と実装です：
 
 ```idris
 drop' : (m : Nat) -> Vect (m + n) a -> Vect n a
@@ -28,21 +31,21 @@ drop' 0     xs        = xs
 drop' (S k) (_ :: xs) = drop' k xs
 ```
 
-Note that changing the order from `(m + n)` to `(n + m)` in the second parameter will cause an error at the second `xs`:
+なお、第2引数の `(m + n)` の順序を `(n + m)` に変更すると、2つ目の `xs` でエラーが発生します：
 
 ```repl
 While processing right hand side of drop'. Can't solve constraint between: plus n 0 and n.
 ```
 
-You will learn why in the next section.
+その理由については次のセクションで学びます。
 
-## Limitations
+## 限界と制約 (Limitations)
 
-After all the examples and exercises in this section you might have come to the conclusion that we can use arbitrary expressions in the types and Idris will happily evaluate and unify all of them for us.
+ここまでの例や練習問題を見て、型の中に任意の式を書けば Idris が自動的にすべてを評価・単一化してくれる、という結論に至ったかもしれません。
 
-I'm afraid that's not even close to the truth. The examples in this section were hand-picked because they are known to *just work*. The reason being, that there was always a direct link between our own pattern matches and the implementations of functions we used at compile time.
+残念ながら、現実はそこまで単純ではありません。本節の例は、コンパイル時に問題なく「そのまま動く」ことがわかっているものを厳選したものです。その理由は、自分たちが書いたパターンマッチと、コンパイル時に使用した関数の実装との間に直接の対応関係があったからです。
 
-For instance, here is the implementation of addition of natural numbers:
+たとえば、自然数の加算の実装は以下のようになっています：
 
 ```idris
 add : Nat -> Nat -> Nat
@@ -50,9 +53,9 @@ add Z     n = n
 add (S k) n = S $ add k n
 ```
 
-As you can see, `add` is implemented via a pattern match on its *first* argument, while the second argument is never inspected. Note, how this is exactly how `(++)` for `Vect` is implemented: There, we also pattern match on the first argument, returning the second unmodified in the `Nil` case, and prepending the head to the result of appending the tail in the *cons* case. Since there is a direct correspondence between the two pattern matches, it is possible for Idris to unify `0 + n` with `n` in the `Nil` case, and `(S k) + n` with `S (k + n)` in the *cons* case.
+ご覧の通り、`add` は **第1引数** に対するパターンマッチによって実装されており、第2引数は一切検査されません。これが `Vect` に対する `(++)` の実装方法とまったく同じである点に注目してください。`(++)` でも第1引数に対してパターンマッチを行い、`Nil` のケースでは第2引数をそのまま返し、*cons* のケースでは先頭要素を残りの連結結果に追加しています。2つのパターンマッチの間に直接の対応関係があるため、Idris は `Nil` のケースで `0 + n` を `n` と単一化でき、*cons* のケースで `(S k) + n` を `S (k + n)` と単一化できるのです。
 
-Here is a simple example, where Idris will not longer be convinced without some help from us:
+人間による補助なしには Idris が納得してくれない簡単な例を以下に示します：
 
 ```idris
 failing "Can't solve constraint"
@@ -61,47 +64,47 @@ failing "Can't solve constraint"
   reverse (x :: xs) = reverse xs ++ [x]
 ```
 
-When we type-check the above, Idris will fail with the following error message: "Can't solve constraint between: plus n 1 and S n." Here's what's going on: From the pattern match on the left hand side, Idris knows that the length of the vector is `S n`, for some natural number `n` corresponding to the length of `xs`. The length of the vector on the right hand side is `n + 1`, according to the type of `(++)` and the lengths of `xs` and `[x]`. Overloaded operator `(+)` is implemented via function `Prelude.plus`, that's why Idris replaces `(+)` with `plus` in the error message.
+上記を型チェックすると、Idris は次のエラーを出力して失敗します：「Can't solve constraint between: plus n 1 and S n.」 何が起きているのでしょうか：左辺のパターンマッチから、Idris はベクトルの長さが `xs` の長さに対応する自然数 `n` の後続者 `S n` であることを知っています。右辺のベクトルの長さは、`(++)` の型と `xs` および `[x]` の長さから `n + 1` になります。オーバーロードされた演算子 `(+)` は関数 `Prelude.plus` で実装されているため、エラーメッセージ内では `(+)` が `plus` に置き換わっています。
 
-As you can see from the above, Idris can't verify on its own that `1 + n` is the same thing as `n + 1`. It can accept some help from us, though. If we come up with a *proof* that the above equality holds (or - more generally - that our implementation of addition for natural numbers is *commutative*), we can use this proof to *rewrite* the types on the right hand side of `reverse`. Writing proofs and using `rewrite` will require some in-depth explanations and examples. Therefore, these things will have to wait until another chapter.
+このように、Idris は `1 + n` と `n + 1` が同じものであることを自力で検証することができません。しかし、人間が手助けすることは可能です。上記の等式が成り立つこと（より一般的には、自然数の加算が **交換法則 (commutative)** を満たすこと）の **証明** を提供すれば、その証明を使って `reverse` の右辺の型を **書き換え (rewrite)** ることができます。証明の記述と `rewrite` の使用には詳細な説明と例が必要なため、これらは後の章で詳しく解説します。
 
-## Unrestricted Implicits
+## 無制限の暗黙引数 (Unrestricted Implicits)
 
-In functions like `replicate`, we pass a natural number `n` as an explicit, unrestricted argument from which we infer the length of the vector to return. In some circumstances, `n` can be inferred from the context. For instance, in the following example it is tedious to pass `n` explicitly:
+`replicate` のような関数では、戻り値のベクトルの長さを推論するために、自然数 `n` を明示的かつ無制限の引数として渡しました。しかし状況によっては、`n` が文脈から推論できる場合があります。たとえば以下の例では、`n` を明示的に渡すのは冗長です：
 
 ```idris
 ex4 : Vect 3 Integer
 ex4 = zipWith (*) (replicate 3 10) (replicate 3 11)
 ```
 
-The value `n` is clearly derivable from the context, which can be confirmed by replacing it with underscores:
+値 `n` は明らかに文脈から導出可能であり、アンダースコアに置き換えても問題なく動作します：
 
 ```idris
 ex5 : Vect 3 Integer
 ex5 = zipWith (*) (replicate _ 10) (replicate _ 11)
 ```
 
-We therefore can implement an alternative version of `replicate`, where we pass `n` as an implicit argument of *unrestricted* quantity:
+したがって、`n` を **無制限 (unrestricted)** の数量を持つ暗黙の引数として渡す `replicate` の代替バージョンを実装できます：
 
 ```idris
 replicate' : {n : _} -> a -> Vect n a
 replicate' = replicate n
 ```
 
-Note how, in the implementation of `replicate'`, we can refer to `n` and pass it as an explicit argument to `replicate`.
+`replicate'` の実装において、`n` を参照して `replicate` に明示的な引数として渡せている点に注目してください。
 
-Deciding whether to pass potentially inferable arguments to a function implicitly or explicitly is a question of how often the arguments actually *are* inferable by Idris. Sometimes it might even be useful to have both versions of a function. Remember, however, that even in case of an implicit argument we can still pass the value explicitly:
+推論可能な引数を暗黙的に渡すか明示的に渡すかの判断は、Idris がその引数を実際に推論できる頻度がどれくらいあるかによって決まります。場合によっては、1つの関数に対して両方のバージョンを用意するのが有用なこともあります。なお、暗黙の引数であっても明示的に値を渡すことができることを思い出してください：
 
 ```idris
 ex6 : Vect ? Bool
 ex6 = replicate' {n = 2} True
 ```
 
-In the type signature above, the question mark (`?`) means, that Idris should try and figure out the value on its own by unification. This forces us to specify `n` explicitly on the right hand side of `ex6`.
+上記の型シグネチャにおけるクエスチョンマーク（`?`）は、Idris が単一化によって自力で値を推論すべきであることを示しています。これにより、`ex6` の右辺で `n` を明示的に指定することが強制されます。
 
-### Pattern Matching on Implicits
+### 暗黙引数に対するパターンマッチ
 
-The implementation of `replicate'` makes use of function `replicate`, where we could pattern match on the explicit argument `n`. However, it is also possible to pattern match on implicit, named arguments of non-zero quantity:
+`replicate'` の実装では `replicate` 関数を利用し、明示的な引数 `n` に対してパターンマッチを行いました。しかし、数量が 0 でない名前付き暗黙引数に対して直接パターンマッチを行うことも可能です：
 
 ```idris
 replicate'' : {n : _} -> a -> Vect n a

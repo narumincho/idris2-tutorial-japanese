@@ -1,31 +1,35 @@
-# Exercises part 2
+# 依存型 練習問題 パート2
 
-1. Implement function `update`, which, given a function of type `a -> a`, updates the value in a`Vect n a` at position `k < n`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-2. Implement function `insert`, which inserts a value of type `a` at position `k <= n` in a `Vect n a`. Note, that `k` is the index of the freshly inserted value, so that the following holds:
+1. 関数 `a -> a` を受け取り、`Vect n a` の位置 `k < n` にある要素を更新する関数 `update` を実装してください。
+
+2. `Vect n a` の位置 `k <= n` に `a` 型の値を挿入する関数 `insert` を実装してください。`k` は新しく挿入された値のインデックスであり、以下の関係が成り立つことに注意してください：
 
    ```repl
    index k (insert k v vs) = v
    ```
 
-3. Implement function `delete`, which deletes a value from a vector at the given index.
+3. ベクトル内の指定されたインデックスにある要素を削除する関数 `delete` を実装してください。
 
-   This is trickier than Exercises 1 and 2, as we have to properly encode in the types that the vector is getting one element shorter.
+   これは練習問題 1 や 2 よりも難易度が高いです。ベクトルが1要素短くなることを型に正しく表現する必要があります。
 
-4. We can use `Fin` to implement safe indexing into `List`s as well. Try to come up with a type and implementation for `safeIndexList`.
+4. `Fin` を使って `List` に対する安全なインデックスアクセスを実装することもできます。`safeIndexList` の型と実装を考えてみてください。
 
-   Note: If you don't know how to start, look at the type of `fromList` for some inspiration. You might also need give the arguments in a different order than for `index`.
+   ヒント: どこから始めればよいかわからない場合は、`fromList` の型を参考にしてください。また、`index` とは引数の順序を変える必要があるかもしれません。
 
-5. Implement function `finToNat`, which converts a `Fin n` to the corresponding natural number, and use this to declare and implement function `take` for splitting of the first `k` elements of a `Vect n a` with `k <= n`.
+5. `Fin n` を対応する自然数に変換する関数 `finToNat` を実装し、これを使用して `k <= n` を満たす `Vect n a` の先頭 `k` 個の要素を取り出す関数 `take` を宣言・実装してください。
 
-6. Implement function `minus` for subtracting a value `k` from a natural number `n` with `k <= n`.
+6. `k <= n` を満たす自然数 `n` から値 `k` を減算する関数 `minus` を実装してください。
 
-7. Use `minus` from Exercise 6 to declare and implement function `drop`, for dropping the first `k` values from a `Vect n a`, with `k <= n`.
+7. 練習問題 6 の `minus` を使用して、`k <= n` を満たす `Vect n a` から先頭 `k` 個の要素を削除（スキップ）する関数 `drop` を宣言・実装してください。
 
-8. Implement function `splitAt` for splitting a `Vect n a` at position `k <= n`, returning the prefix and suffix of the vector wrapped in a pair.
+8. `Vect n a` を位置 `k <= n` で分割し、ベクトルの接頭辞（prefix）と接尾辞（suffix）をペアにまとめて返す関数 `splitAt` を実装してください。
 
-   Hint: Use `take` and `drop` in your implementation.
+   ヒント: 実装内で `take` と `drop` を使用してください。
 
-Hint: Since `Fin n` consists of the values strictly smaller than `n`, `Fin (S n)` consists of the values smaller than or equal to `n`.
+ヒント: `Fin n` が `n` より真に小さい値からなるため、`Fin (S n)` は `n` 以下の値から構成されます。
 
-Note: Functions `take`, `drop`, and `splitAt`, while correct and provably total, are rather cumbersome to type. There is an alternative way to declare their types, as we will see in the next section.
+補足: 関数 `take`, `drop`, `splitAt` は、正しく全域性が証明可能であるものの、型を指定するのが少々煩雑です。次のセクションで見るように、これらの型をより簡潔に宣言する別の方法が存在します。
+
