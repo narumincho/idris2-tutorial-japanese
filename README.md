@@ -1,68 +1,72 @@
-# Idris 2 Community Tutorial
+# Idris 2 チュートリアル（日本語版）
 
-This project is an mdbook based off of Stefan Höck's [idris2-tutorial](https://github.com/stefan-hoeck/idris2-tutorial). At present, it's largely just a direct port, but will evolve as the community maintains it.
+このプロジェクトは、Stefan Höck 氏および Idris Community による [idris-community/idris2-tutorial](https://github.com/idris-community/idris2-tutorial) の日本語翻訳版（非公式）です。
 
-This book is rendered automatically from the `main` branch with GitHub pages, which can be viewed at <https://idris-community.github.io/idris2-tutorial/>. The [summary page](src/SUMMARY.md) can also be used as a table of contents for direct viewing in GitHub, though the rendered version is much preferable.
+📖 **公開サイト:** <https://narumincho.github.io/idris2-tutorial-japanese/>  
+📚 **目次:** [SUMMARY.md](src/SUMMARY.md)
 
-## Contributing
+---
 
-Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for style and formatting guidance before submitting a PR.
+## 🌐 翻訳について
 
-## Dependencies and Building
+- 本ドキュメントは、原著 [idris2-tutorial](https://github.com/idris-community/idris2-tutorial) の内容を **Gemini 3.7 Flash** を活用して日本語に翻訳したものです。
+- 各ページの先頭に原文（英語版）へのリンクと翻訳クレジットを明記しています。
+- 翻訳の改善や誤訳の修正、表記ゆれの修正などのコントリビューション（Pull Request や Issue）を歓迎しています。
 
-Building this mdbook is slightly complicated, as highlight.js has no support for idris, we are using [katla](https://github.com/idris-community/katla) to perform the highlighting, and injecting that highlighting into the Markdown before mdbook has a chance to see it using the [build-book](scripts/build-book) Raku script.
+---
 
-### Idris Dependencies
+## 📜 ライセンス (License)
 
-This project requires [pack](https://github.com/stefan-hoeck/idris2-pack) and [katla](https://github.com/idris-community/katla) to build.
+本プロジェクトは、原著と同様に **[BSD 3-Clause License](LICENSE)** に基づいて公開・配布されています。
 
-After either installing pack from your distro's package manager or following the [quick installation](https://github.com/stefan-hoeck/idris2-pack?tab=readme-ov-file#quick-installation) directions in pack's readme, you can install katla with:
+- **原著作権表示 (Original Copyright):**
+  - Copyright (c) 2021, Stefan Höck
+  - Copyright (c) 2025, Idris Community (Unofficial)
+- **日本語翻訳 (Japanese Translation):**
+  - Copyright (c) 2026, narumincho & Contributors
 
-```sh
-pack install-app katla
-```
+改変および再配布（二次的著作物としての翻訳を含む）は、BSD 3-Clause License の条項に従って自由に行っていただけます。
 
-### Raku Dependencies
+---
 
-This project requires [Raku](https://rakudo.org/) and the `File::Temp`, `Shell::Command`, and `paths` modules to build.
+## 🛠️ 依存関係とビルド方法
 
-I recommend installing raku and [zef](https://github.com/ugexe/zef) through your distro's package manger. If your package manger has lacks either zef or raku, installation through [rakubrew](https://rakubrew.org/) is an option, and if your package manager has raku but lacks zef, zef can be quite easily [installed from source](https://github.com/ugexe/zef?tab=readme-ov-file#installation).
+本チュートリアルのビルドでは、Idris コードのシンタックスハイライトを行うために [katla](https://github.com/idris-community/katla) を使用し、Raku スクリプト（[scripts/build-book](scripts/build-book)）を介して [mdBook](https://rust-lang.github.io/mdBook/) 用のファイルを生成しています。
 
-Once you have zef up and running, the dependencies for this project can be installed with:
+### 必要な依存関係
 
-```sh
-zef install File::Temp Shell::Command paths
-```
+1. **Idris 2 & pack**:
+   - [pack](https://github.com/stefan-hoeck/idris2-pack) のセットアップ後、katla をインストールします:
+     ```sh
+     pack install-app katla
+     ```
 
-### mdbook
+2. **Raku & zef**:
+   - [Raku](https://rakudo.org/) および [zef](https://github.com/ugexe/zef) をインストール後、必要なモジュールをインストールします:
+     ```sh
+     zef install File::Temp Shell::Command paths
+     ```
 
-Many distros have mdbook in their package manager, this is the recommended way to install it. If your distro lacks mdbook, or if the version it packages proves to be too old to build this project, after setting up a Rust toolchain with [rustup](https://rustup.rs/), you can install mdbook from source with:
+3. **mdBook**:
+   - Rust の [cargo](https://rustup.rs/) を使用してインストールします:
+     ```sh
+     cargo install mdbook
+     ```
 
-```sh
-cargo install mdbook
-```
+### ビルド手順
 
-### Building
+1. まず Idris コードをビルドします（シンタックスハイライト情報の生成に必要です）:
+   ```sh
+   pack build
+   ```
 
-Once you have all the dependencies in place, simply run:
+2. チュートリアル本をビルドします:
+   ```sh
+   ./scripts/build-book
+   ```
 
-> [!IMPORTANT]
-> The `build-book` script assumes that the Idris code in the project has already been built, and will not function properly if the Idris build directory is not populated, as the build files are required by katla to provide syntax highlighting.
->
-> Run `pack build` after a clean checkout or making any changes to Idris files to ensure that the build directory is up to date before running the `build-book` script.
+3. ビルドされた HTML は `book/` ディレクトリに出力されます。ローカルサーバーを起動して確認できます:
+   ```sh
+   python3 -m http.server -d book 8000
+   ```
 
-```sh
-./scripts/build-book
-```
-
-from this project's root directory, and the rendered book will be available in the `book` directory. I recommend using a simple static file server such as `python -m http.server`to view the rendered book in your browser, simply opening the files directly in your browser is unlikely to work.
-
-### Formatting
-
-This project uses [mdformat](https://github.com/hukkin/mdformat) to ensure consistency in Markdown formatting. While this is not strictly necessary to have locally, it is linted against in CI.
-
-The mdformat configuration used in CI can be replicated by running the following commmand from the base directory of the project:
-
-```sh
-mdformat --wrap=no --number **/*.md
-```
