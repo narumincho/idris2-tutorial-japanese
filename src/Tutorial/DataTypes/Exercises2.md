@@ -1,4 +1,7 @@
-# Sum Type Exercises
+# 直和型 練習問題
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.DataTypes.Exercises2
@@ -6,39 +9,39 @@ module Tutorial.DataTypes.Exercises2
 import Tutorial.DataTypes.SumTypes
 ```
 
-The solutions to these exercises can be found in [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md).
+これらの練習問題の解答は [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md) にあります。
 
-## Exercise 1
+## 練習問題 1
 
-Implement an equality test for `Title` (you can use the equality operator `(==)` for comparing two `String`s):
+`Title` 型の等値性判定関数を実装してください（2つの `String` の比較には等値演算子 `(==)` を使用できます）：
 
 ```idris
 total
 eqTitle : Title -> Title -> Bool
 ```
 
-## Exercise 2
+## 練習問題 2
 
-Implement a simple test for `Title` to check whether or not a custom title is being used:
+カスタム敬称（`Other`）が使用されているかどうかを判定するシンプルな関数を実装してください：
 
 ```idris
 total
 isOther : Title -> Bool
 ```
 
-## Exercise 3
+## 練習問題 3
 
-Given our simple `Credentials` type, there are three ways for authentication to fail:
+前述のシンプルな `Credentials` 型において、認証が失敗する原因には以下の3通りがあります：
 
-- An unknown username was used.
-- The password given does not match the one associated with the username.
-- An invalid key was used.
+- 不明な（存在しない）ユーザー名が指定された。
+- 指定されたパスワードがユーザー名に紐づくものと一致しない。
+- 無効な秘密鍵が使用された。
 
-Encapsulate these three possibilities in a sum type called `LoginError`. Make sure not to disclose any confidential information, an invalid username should be stored in the corresponding error value, but an invalid password or key should not.
+これら3つの可能性を表現する直和型 `LoginError` を定義してください。機密情報が漏洩しないように配慮し、無効なユーザー名自体は対応するエラー値に格納して構いませんが、無効なパスワードや鍵は格納しないようにしてください。
 
-## Exercise 4
+## 練習問題 4
 
-Implement the following function , which can be used to display an error message to the user after they unsuccessfully tried to login into our web application:
+Web アプリケーションへのログインに失敗したユーザーに対してエラーメッセージを表示するための以下の関数を実装してください：
 
 ```idris hide
 -- Hidden forward declaration to make this module compile so we can have syntax

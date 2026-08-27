@@ -1,24 +1,27 @@
-# Sum Types
+# 直和型 (Sum Types)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/SumTypes.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/SumTypes.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.DataTypes.SumTypes 
 ```
 
-The simple enumerations we covered in the previous chapter are only the most basic form of the more general *sum types*. A lot of traditional imperative programming languages, if they have enumerations at all, only have the basic form we've already explored, where the only data stored in a value of the enumeration type is the information on which variant the particular value is. Like other functional programming languages and many contemporary imperative languages, Idris goes a step further, allowing you to store additional data of your choosing in each of the variants of your type.
+前節で扱ったシンプルな列挙型は、より一般的な **直和型 (sum types)** の最も基本的な形態にすぎません。従来の多くの命令型プログラミング言語では、列挙型があったとしても、その特定の値がどのバリアントであるかという情報しか保持できない基本的な形式のみでした。Idris は他の関数型言語や多くの現代的な命令型言語と同様にさらに一歩進んでおり、型の各バリアントに任意の追加データを保持させることができます。
 
-To provide an example, lets assume we'd like to write some web form, where users of our web application can tell us how they would like to be addressed. We'll give them a choice between two common predefined forms of address (Mr and Mrs), but also allow them to input a completely custom, freeform value. We can encode these choices in an Idris data type like so:
+例として、Web アプリケーションのユーザーに敬称（呼び名）を選択してもらう Web フォームを作成するとします。事前定義された2つの一般的な敬称（Mr と Mrs）の選択肢を用意しつつ、完全に自由なカスタム文字列を入力できるようにしたいとします。この選択肢は、Idris のデータ型として以下のように表現できます：
 
 ```idris
 public export
 data Title = Mr | Mrs | Other String
 ```
 
-This looks almost like the enumeration types from the previous section, except that there is a new *thing* in the `Other` "slot", called a *data constructor*, which accepts a `String` argument.
+これは前節の列挙型とほぼ同じように見えますが、`Other` の位置に `String` 引数を受け取る **データコンストラクタ (data constructor)** がある点が異なります。
 
 > [!TIP]
-> The values in a simple enumeration are also called (nullary) data constructors
+> シンプルな列挙型の値も、（引数を取らない）データコンストラクタと呼ばれます。
 
-If we inspect the types at the REPL, we learn the following:
+REPL で型を調べてみると、以下のことがわかります：
 
 ```repl
 Tutorial.DataTypes.SumTypes> :t Mr
@@ -27,7 +30,7 @@ Tutorial.DataTypes.SumTypes> :t Other
 Tutorial.DataTypes.SumTypes.Other : String -> Title
 ```
 
-As the REPL has informed us,`Other` is actually a *function* from a `String` to a `Title`. This means that we can pass `Other` a `String` argument and get a `Title` as the result:
+REPL が示しているように、`Other` は実際には `String` から `Title` への **関数** です。つまり、`Other` に `String` 引数を渡すことで、結果として `Title` を得ることができます：
 
 ```idris
 public export
@@ -36,7 +39,7 @@ dr : Title
 dr = Other "Dr."
 ```
 
-Just as with simple enumerations, a value of type `Title` can only consist of one of the three choices listed above, and we can again use pattern matching to implement functions on the `Title` data type in a provably total way:
+シンプルな列挙型と同様に、`Title` 型の値は上記3つの選択肢のいずれか1つにしかなり得ず、ここでもパターンマッチを使用して `Title` データ型に対する関数を証明可能に全域的な形で実装できます：
 
 ```idris
 export
@@ -48,11 +51,11 @@ showTitle (Other x) = x
 ```
 
 > [!NOTE]
-> In the last pattern match, the string value stored in the `Other` data constructor is *bound* to the local variable `x`. Additionally, the `Other x` pattern has to be wrapped in parentheses, as otherwise Idris would think that `Other` and `x` were two distinct function arguments.
+> 最後のパターンマッチでは、`Other` データコンストラクタに格納されている文字列値がローカル変数 `x` に **束縛 (bound)** されています。また、`Other x` パターンは括弧で囲む必要があります。括弧がない場合、Idris は `Other` と `x` を関数の2つの独立した引数だと解釈してしまいます。
 >
-> Pattern matching as such is a very common way to extract the values from data constructors.
+> このようなパターンマッチは、データコンストラクタから値を抽出するための非常に一般的な手法です。
 
-We can build upon `showTitle` to implement a function for creating a courteous greeting from a `Title` and a name, passed in as a `String`. We'll use string literals and the string concatenation operator `(++)` to assemble the greeting from its parts:
+`showTitle` を利用して、`Title` と `String` 型の氏名から丁寧な挨拶文を生成する関数を実装してみましょう。文字列リテラルと文字列連結演算子 `(++)` を使用して挨拶文を組み立てます：
 
 ```idris
 export
@@ -61,7 +64,7 @@ greet : Title -> String -> String
 greet t name = "Hello, " ++ showTitle t ++ " " ++ name ++ "!"
 ```
 
-At the REPL:
+REPL での実行結果：
 
 ```repl
 Tutorial.DataTypes.SumTypes> greet dr "Höck"
@@ -70,15 +73,15 @@ Tutorial.DataTypes.SumTypes> greet Mrs "Smith"
 "Hello, Mrs. Smith!"
 ```
 
-Data types such as `Title` are called *sum types*, as they consist of the sum of their different parts: A value of type `Title` is either a `Mr`, a `Mrs`, or a `String` wrapped up in `Other`.
+`Title` のようなデータ型は、それぞれの構成要素の「和」で構成されているため **直和型 (sum types)** と呼ばれます。`Title` 型の値は、`Mr`、`Mrs`、または `Other` にラップされた `String` のいずれかです。
 
-To provide another (drastically simplified) example of a sum type, let's assume that we want to allow two forms of authentication in our web application, either by entering a username plus a password (which we will represent with an unsigned 64 bit integer here), or by providing username plus a very complex secret key (which we will represent with a string). We can encode these two options as a sum type as follows:
+直和型の別の例（極めて単純化したもの）として、Web アプリケーションで2種類の認証方法を許可したいとします。ユーザー名とパスワード（ここでは符号なし64ビット整数で表現）を入力する方法と、ユーザー名と非常に複雑な秘密鍵（文字列で表現）を入力する方法です。これら2つの選択肢を直和型として以下のように定義できます：
 
 ```idris
 data Credentials = Password String Bits64 | Key String String
 ```
 
-We can then use this type to implement a very primitive login function by hard-coding some known credentials:
+この型を使って、既知の資格情報をハードコードしたシンプルなログイン関数を実装できます：
 
 ```idris
 total
@@ -89,9 +92,9 @@ login _                             = "Access denied!"
 ```
 
 > [!NOTE]
-> As our `login` function demonstrates, we can also pattern match against primitive values by using integer and string literals.
+> この `login` 関数が示すように、整数リテラルや文字列リテラルを使用してプリミティブ値に対するパターンマッチを行うこともできます。
 
-Let's go ahead and try out `login` at the REPL:
+REPL で `login` を試してみましょう：
 
 ```repl
 Tutorial.DataTypes.SumTypes> login (Password "Anderson" 6665443)

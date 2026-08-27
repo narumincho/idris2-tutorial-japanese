@@ -1,4 +1,7 @@
-# Generic Data Type Exercises
+# ジェネリックデータ型 練習問題
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Exercises4.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Exercises4.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.DataTypes.Exercises4
@@ -11,74 +14,72 @@ import Tutorial.DataTypes.SumTypes
 data Element = C | H | O
 ```
 
-The solutions to these exercises can be found in [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md).
+これらの練習問題の解答は [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md) にあります。
 
-If this is your first time programming in a pure functional language, these exercises are *very* important. Do not skip any of them! Take your time and work through them all. In most cases, the types should be enough to explain what's going on, even though they might appear cryptic in the beginning. Otherwise, have a look at the comments (if any) of each exercise.
+純粋関数型言語でのプログラミングが初めての場合、これらの練習問題は **非常に重要** です。飛ばさずに、時間をかけてすべて取り組んでみてください。最初は難解に見えるかもしれませんが、多くの場合、型シグネチャ自体が何をすべきかを教えてくれます。必要に応じて各問題のコメントも参考にしてください。
 
-Remember, that lower-case identifiers in a function signature are treated as type parameters.
+関数の型シグネチャにおける小文字の識別子は型パラメータとして扱われることを思い出してください。
 
-## Exercise 1
+## 練習問題 1
 
-Implement the following generic functions for `Maybe`:
+`Maybe` に対する以下のジェネリック関数を実装してください：
 
 ```idris
--- make sure to map a `Just` to a `Just`.
+-- `Just` を別の `Just` にマップするようにしてください
 total
 mapMaybe : (a -> b) -> Maybe a -> Maybe b
 
--- Example: `appMaybe (Just (+2)) (Just 20) = Just 22`
+-- 例: `appMaybe (Just (+2)) (Just 20) = Just 22`
 total
 appMaybe : Maybe (a -> b) -> Maybe a -> Maybe b
 
--- Example: `bindMaybe (Just 12) Just = Just 12`
+-- 例: `bindMaybe (Just 12) Just = Just 12`
 total
 bindMaybe : Maybe a -> (a -> Maybe b) -> Maybe b
 
--- keep the value in a `Just` only if the given predicate holds
+-- 与えられた述語が True を返す場合にのみ `Just` 内の値を保持する
 total
 filterMaybe : (a -> Bool) -> Maybe a -> Maybe a
 
--- keep the first value that is not a `Nothing` (if any)
+-- `Nothing` ではない最初の値（あれば）を保持する
 total
 first : Maybe a -> Maybe a -> Maybe a
 
--- keep the last value that is not a `Nothing` (if any)
+-- `Nothing` ではない最後の値（あれば）を保持する
 total
 last : Maybe a -> Maybe a -> Maybe a
 
--- this is another general way to extract a value from a `Maybe`.
--- Make sure the following holds:
+-- これは `Maybe` から値を抽出するためのもう1つの汎用的な方法です。
+-- 以下が成り立つように実装してください：
 -- `foldMaybe (+) 5 Nothing = 5`
 -- `foldMaybe (+) 5 (Just 12) = 17`
 total
 foldMaybe : (acc -> el -> acc) -> acc -> Maybe el -> acc
 ```
 
-## Exercise 2
+## 練習問題 2
 
-Implement the following generic functions for `Either`:
+`Either` に対する以下のジェネリック関数を実装してください：
 
 ```idris
 total
 mapEither : (a -> b) -> Either e a -> Either e b
 
--- In case of both `Either`s being `Left`s, keep the
--- value stored in the first `Left`.
+-- 両方の `Either` が `Left` の場合は、
+-- 最初の `Left` に格納されている値を保持してください
 total
 appEither : Either e (a -> b) -> Either e a -> Either e b
 
 total
 bindEither : Either e a -> (a -> Either e b) -> Either e b
 
--- Keep the first value that is not a `Left`
--- If both `Either`s are `Left`s, use the given accumulator
--- for the error values
+-- `Left` ではない最初の値を保持する。
+-- 両方とも `Left` の場合は、与えられた累積関数を使ってエラー値を結合する
 total
 firstEither : (e -> e -> e) -> Either e a -> Either e a -> Either e a
 
--- Keep the last value that is not a `Left`
--- If both `Either`s are `Left`s, use the given accumulator
--- for the error values
+-- `Left` ではない最後の値を保持する。
+-- 両方とも `Left` の場合は、与えられた累積関数を使ってエラー値を結合する
 total
 lastEither : (e -> e -> e) -> Either e a -> Either e a -> Either e a
 
@@ -86,9 +87,9 @@ total
 fromEither : (e -> c) -> (a -> c) -> Either e a -> c
 ```
 
-## Exercise 3
+## 練習問題 3
 
-Implement the following generic functions for `List`:
+`List` に対する以下のジェネリック関数を実装してください：
 
 ```idris
 total
@@ -97,35 +98,32 @@ mapList : (a -> b) -> List a -> List b
 total
 filterList : (a -> Bool) -> List a -> List a
 
--- re-implement list concatenation (++) such that e.g. (++) [1, 2] [3, 4] = [1, 2, 3, 4]
--- note that because this function conflicts with the standard
--- Prelude.List.(++), if you use it then you will need to prefix it with
--- the name of your module, like DataTypes.(++) or Ch3.(++). alternatively
--- you could simply call the function something unique like myListConcat or concat'
+-- リストの連結 (++) を再実装してください（例: (++) [1, 2] [3, 4] = [1, 2, 3, 4]）
+-- 注意: この関数は標準の Prelude.List.(++) と衝突するため、
+-- 使用する際は DataTypes.(++) や Ch3.(++) のようにモジュール名をプレフィックスにする必要があります。
+-- あるいは、関数名を myListConcat や concat' のような独自の名前にしても構いません。
 total
 (++) : List a -> List a -> List a
 
--- return the first value of a list, if it is non-empty
+-- リストが空でなければ、先頭の要素を返す
 total
 headMaybe : List a -> Maybe a
 
--- return everything but the first value of a list, if it is non-empty
+-- リストが空でなければ、先頭以外のすべての要素を返す
 total
 tailMaybe : List a -> Maybe (List a)
 
--- return the last value of a list, if it is non-empty
+-- リストが空でなければ、末尾の要素を返す
 total
 lastMaybe : List a -> Maybe a
 
--- return everything but the last value of a list,
--- if it is non-empty
+-- リストが空でなければ、末尾以外のすべての要素を返す
 total
 initMaybe : List a -> Maybe (List a)
 
--- accumulate the values in a list using the given
--- accumulator function and initial value
+-- 与えられた累積関数と初期値を使用して、リスト内の値を畳み込む（集計する）
 --
--- Examples:
+-- 例:
 -- `foldList (+) 10 [1,2,7] = 20`
 -- `foldList String.(++) "" ["Hello","World"] = "HelloWorld"`
 -- `foldList last Nothing (mapList Just [1,2,3]) = Just 3`
@@ -133,9 +131,9 @@ total
 foldList : (acc -> el -> acc) -> acc -> List el -> acc
 ```
 
-## Exercise 4
+## 練習問題 4
 
-Assume we store user data for our web application in the following record:
+Web アプリケーションのユーザーデータを以下のレコードに保存するとします：
 
 ```idris
 record Client where
@@ -146,20 +144,20 @@ record Client where
   passwordOrKey : Either Bits64 String
 ```
 
-Using `LoginError` from an earlier exercise, implement function `login`, which, given a list of `Client`s plus a value of type `Credentials` will return either a `LoginError` in case no valid credentials where provided, or the first `Client` for whom the credentials match.
+前の練習問題で作成した `LoginError` を使い、`Client` のリストと `Credentials` 型の値を受け取り、有効な資格情報が提供されなかった場合は `LoginError` を返し、資格情報が一致した場合はその最初の `Client` を返す関数 `login` を実装してください。
 
-## Exercise 5
+## 練習問題 5
 
-Using your data type for chemical elements from an earlier exercise, implement a function for calculating the molar mass of a molecular formula.
+前の練習問題で作成した化学元素のデータ型を使用して、分子式のモル質量を計算する関数を実装してください。
 
-Use a list of elements each paired with its count (a natural number) for representing formulae. For instance:
+分子式の表現には、各元素とその個数（自然数 `Nat`）のペアのリストを使用します。たとえば以下のようになります：
 
 ```idris
 ethanol : List (Element,Nat)
 ethanol = [(C,2),(H,6),(O,1)]
 ```
 
-Hint: You can use function `cast` to convert a natural number to a `Double`.
+ヒント: 自然数を `Double` に変換するには `cast` 関数を使用できます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

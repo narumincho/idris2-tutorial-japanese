@@ -1,8 +1,11 @@
-# Algebraic Data Types
+# 代数的データ型
 
-In the previous chapter, we learned how to write our own functions and combine them to create more complex functionality. Of equal importance is the ability to define our own data types and use them as arguments and results in functions.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-This is a lengthy chapter, densely packed with information. While much of this content may be familiar if you have prior experience with functional programming, if you are new to functional programming it is advisable to follow along slowly, taking time to play around with the examples, maybe even coming up with some examples of your own. Make sure to complete as many of the exercises as you need to in order to develop a working understanding of the concepts, if these concepts are new to you, this will likely mean all of them.
+前章では、独自の関数を記述し、それらを組み合わせてより複雑な機能を作り出す方法について学びました。それと同様に重要なのが、独自のデータ型を定義し、それらを関数の引数や戻り値として利用できるようにすることです。
+
+本章は情報量が多く、読みごたえのある章となっています。関数型プログラミングの経験があれば馴染みのある内容も多いかもしれませんが、初めて学ぶ場合は焦らずゆっくり読み進め、例を実際に動かしたり、自分でも例を考えて試してみたりすることをお勧めします。概念をしっかり理解するために、必要に応じて練習問題にも取り組んでみてください。
 
 ```idris hide
 module Tutorial.DataTypes

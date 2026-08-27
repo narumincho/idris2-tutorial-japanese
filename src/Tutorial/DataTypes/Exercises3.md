@@ -1,19 +1,23 @@
-# Record Exercises
+# レコード 練習問題
 
-The solutions to these exercises can be found in [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md).
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-## Exercise 1
+これらの練習問題の解答は [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md) にあります。
 
-Define a record type for time spans by pairing a `UnitOfTime` with an integer representing the duration of the time span in the given unit of time. Also define a function for converting a time span to an `Integer` representing the duration in seconds.
+## 練習問題 1
 
-## Exercise 2
+`UnitOfTime` と、その単位における時間幅を表す整数をペアにした時間幅（タイムスパン）を表すレコード型を定義してください。また、時間幅を秒単位の `Integer` に変換する関数も定義してください。
 
-Implement an equality check for time spans. Two time spans should be considered equal, if and only if they correspond to the same number of seconds.
+## 練習問題 2
 
-## Exercise 3
+時間幅の等値性判定関数を実装してください。2つの時間幅は、秒数換算で等しい場合にのみ等しいとみなされる必要があります。
 
-Implement a function for pretty printing time spans. The resulting string should display the time span in its given unit, plus show the number of seconds in parentheses, if the unit is not already seconds.
+## 練習問題 3
 
-## Exercise 4
+時間幅を整形して文字列化（プリティプリント）する関数を実装してください。結果の文字列には、指定された単位での時間幅を表示し、単位が秒以外の場合は括弧内に秒数も表示するようにしてください。
 
-Implement a function for adding two time spans. If the two time spans use different units of time, use the smaller unit of time to ensure a lossless conversion.
+## 練習問題 4
+
+2つの時間幅を加算する関数を実装してください。2つの時間幅の単位が異なる場合は、情報落ち（精度の損失）を防ぐために、より小さい方の単位に統一して計算してください。
+

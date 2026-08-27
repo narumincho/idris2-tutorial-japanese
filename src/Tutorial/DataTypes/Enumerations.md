@@ -1,12 +1,15 @@
-# Enumerations
+# 列挙型
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Enumerations.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Enumerations.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.DataTypes.Enumerations
 ```
 
-Enumerations, the most basic form of a more general concept known as sum types or a [tagged unions](https://en.wikipedia.org/wiki/Tagged_union) are one the two basic forms of algebraic data types. Enumerations are data types that can store one of several specified options as their values.
+列挙型（Enumeration）は、直和型（Sum type）や [タグ付き直和（Tagged union）](https://ja.wikipedia.org/wiki/%E3%82%BF%E3%82%B0%E4%BB%98%E3%81%8D%E7%B5%90%E5%90%88) として知られるより一般的な概念の最も基本的な形態であり、代数的データ型の2つの基本形態の1つです。列挙型は、指定された複数の選択肢（値）のうちの1つを値として保持できるデータ型です。
 
-Lets define a basic enumeration over the days of the week as a first example. This very basic form of enumeration may be familiar to you from other languages:
+最初の例として、曜日を表す基本的な列挙型を定義してみましょう。このシンプルな列挙型は他のプログラミング言語でも馴染みがあるかもしれません：
 
 ```idris
 public export
@@ -19,10 +22,10 @@ data Weekday = Monday
              | Sunday
 ```
 
-The declaration above defines a new *type* (`Weekday`) and several new *values* (`Monday` through `Sunday`) of the given type (`Weekday`). Go ahead and try this type out this at the REPL:
+上記の宣言は、新しい **型**（`Weekday`）と、その型（`Weekday`）に属するいくつかの新しい **値**（`Monday` から `Sunday`）を定義しています。REPL でこの型を試してみましょう：
 
 > [!NOTE]
-> Notice that the value `Monday` has type `Weekday`, while `Weekday` itself has type `Type`.
+> 値 `Monday` の型は `Weekday` であり、`Weekday` 自体の型は `Type` であることに注目してください。
 
 ```repl
 Tutorial.DataTypes.Enumerations> :t Monday
@@ -31,13 +34,13 @@ Tutorial.DataTypes.Enumerations> :t Weekday
 Tutorial.DataTypes.Enumerations.Weekday : Type
 ```
 
-It is important to note that a value of type `Weekday` can only ever be one of the values listed above, it is a *type error* to use any other value where a `Weekday` is expected.
+重要な点として、`Weekday` 型の値は上に列挙された値のいずれか1つにしかなり得ません。`Weekday` が期待される場所で他の値を使用することは **型エラー** となります。
 
-## Pattern Matching
+## パターンマッチ (Pattern Matching)
 
-In order to make effective use of our new data type as a function argument, we need to introduce one of the fundamental building blocks of functions in functional programming languages: Pattern matching.
+新しいデータ型を関数の引数として効果的に活用するには、関数型プログラミング言語における関数の基本構成要素の1つである **パターンマッチ** を導入する必要があります。
 
-Let's implement a function which calculates the successor of a weekday:
+曜日の翌日を計算する関数を実装してみましょう：
 
 ```idris
 total
@@ -51,22 +54,22 @@ next Saturday  = Sunday
 next Sunday    = Monday
 ```
 
-In order to inspect an argument of type `Weekday`, we need to *pattern match* on the different possible values and return a result for each of them.
+`Weekday` 型の引数を調べるには、取り得る異なる値に対して **パターンマッチ** を行い、それぞれについて結果を返す必要があります。
 
-This is a very powerful concept, as it allows us to match on and extract values from deeply nested data structures. The compiler works through the different cases in a pattern match from top to bottom, with each potential match being compared against the current function argument. Once a matching pattern is found, the computation on the right hand side of the matching pattern is evaluated, with any further patterns then being ignored.
+これは非常に強力な概念であり、深くネストしたデータ構造から値をマッチングして抽出することができます。コンパイラはパターンマッチの各ケースを上から下へと順番に評価し、各パターンを現在の関数の引数と比較します。一致するパターンが見つかると、そのパターンの右辺にある計算が評価され、それ以降のパターンは無視されます。
 
-For instance, if we invoke `next` with `Thursday` given as the argument, the first three patterns (`Monday`, `Tuesday`, and `Wednesday`) will be checked against the argument, but they do not match. However, the fourth pattern, `Thursday`, is a match, and as a result `Friday` is returned. The later patterns are then ignored, even if they would also match the input (this becomes relevant with catch-all patterns, which we will talk about in a moment).
+たとえば、引数として `Thursday` を渡して `next` を呼び出すと、最初の3つのパターン（`Monday`、`Tuesday`、`Wednesday`）が引数と比較されますが一致しません。しかし、4番目のパターン `Thursday` は一致するため、結果として `Friday` が返されます。それ以降のパターンは、たとえ入力に一致する可能性があったとしても無視されます（これは後述するキャッチオールパターンで重要になります）。
 
-Our `next` function is provably total. Since Idris knows about the possible values of type `Weekday`, it can therefore figure out that our pattern match covers all the possible cases. We can therefore annotate the function with the `total` keyword, and Idris will fail to compile with a type error if it can't verify the function's totality.
+この `next` 関数は証明可能に全域的（total）です。Idris は `Weekday` 型の取り得る値をすべて把握しているため、このパターンマッチがすべての可能性を網羅していることを判定できます。したがって、関数に `total` キーワードを注釈することができ、Idris が全域性を検証できない場合はコンパイルエラーとなります。
 
 > [!NOTE]
-> The totality and type checkers provide a very strong set of guarantees here. Given enough resources, a provably total function will *always* return a result of the specified type in a finite amount of time (*resources* here meaning computational resources like memory, time, or, in case of recursive functions, stack space).
+> 全域性チェッカーと型チェッカーは非常に強力な保証を提供します。十分な計算資源が与えられれば、証明可能に全域的な関数は有限時間内に **必ず** 指定された型の一致する結果を返します（ここでいう *資源* とは、メモリや時間、再帰関数の場合のスタック空間などの計算資源を指します）。
 
-Try removing one of the clauses in `next` to get a feel for what error messages from the coverage checker look like.
+`next` の節の1つを削除してみて、網羅性チェッカー（coverage checker）のエラーメッセージがどのように表示されるか確認してみてください。
 
-## Catch-all Patterns
+## キャッチオールパターン (Catch-all Patterns)
 
-Sometimes, it is convenient to only match on a subset of the possible values of a type, and collect the remaining possibilities in a catch-all clause:
+場合によっては、型の取り得る値のサブセットにのみ明示的にマッチさせ、残りの可能性をキャッチオール節でまとめて処理するのが便利なことがあります：
 
 ```idris
 export
@@ -77,9 +80,9 @@ isWeekend Sunday   = True
 isWeekend _        = False
 ```
 
-The final line with the catch-all pattern (here we use `_` since we want to ignore the exact value of the argument in this option, but we could also put a variable name here) is only invoked if the argument is not equal to either `Saturday` or `Sunday`. Remember: Patterns in a pattern match are matched against the input from top to bottom, and the first match decides which path on the right hand side will be taken.
+キャッチオールパターンを持つ最後の行（ここでは引数の正確な値を無視したいため `_` を使っていますが、変数名を指定することもできます）は、引数が `Saturday` にも `Sunday` にも等しくない場合にのみ実行されます。パターンマッチにおけるパターンは上から下へと比較され、最初に一致したパターンによって右辺の実行パスが決まることを覚えておいてください。
 
-We can use catch-all patterns to implement a function that tests values of `Weekday` for equality (we will use the `==` operator for this here, we will explore that in the section on interfaces). To do this, we define pattern matches for each case where the two arguments are the same `Weekday`, returning `True` in those branches, then specifying a catch-all branch at the end that returns `False`:
+キャッチオールパターンを使用して、`Weekday` の値の等値性をテストする関数を実装できます（ここでは等値性演算子 `==` の実装の仕組みとして紹介します。インターフェースのセクションで詳しく学びます）。2つの引数が同じ `Weekday` である各ケースに対してパターンマッチを定義して `True` を返し、最後に `False` を返すキャッチオール節を指定します：
 
 ```idris
 total
@@ -94,19 +97,19 @@ eqWeekday Sunday Sunday        = True
 eqWeekday _ _                  = False
 ```
 
-## Enumeration Types in the Prelude
+## Prelude の列挙型
 
-Data types like `Weekday` that consist of a finite set of values are sometimes called *enumerations*. The Idris *Prelude* defines some common enumerations for us, such as `Bool` and `Ordering`. As with `Weekday`, we can use pattern matching to implement functions over these types:
+`Weekday` のように有限個の値のセットで構成されるデータ型は **列挙型** と呼ばれます。Idris の *Prelude* では、`Bool` や `Ordering` など、いくつかの一般的な列挙型があらかじめ定義されています。`Weekday` と同様に、これらの型に対する関数もパターンマッチを用いて実装できます：
 
 ```idris
--- this is how `not` is implemented in the *Prelude*
+-- これは Prelude での `not` の実装方法です
 total
 negate : Bool -> Bool
 negate False = True
 negate True  = False
 ```
 
-The `Ordering` data type describes an ordering relation (defining a notion of "less than", "equal to", and "greater than") between two values. For instance:
+`Ordering` データ型は、2つの値の間の順序関係（「より小さい」「等しい」「より大きい」という概念）を表します：
 
 ```idris
 total
@@ -117,14 +120,14 @@ compareBool True True   = EQ
 compareBool True False  = GT
 ```
 
-Here, `LT` means that the first argument is *less than* the second, `EQ` means that the two arguments are *equal* and `GT` means, that the first argument is *greater than* the second.
+ここで、`LT` は第1引数が第2引数より *小さい (Less Than)* こと、`EQ` は2つの引数が *等しい (Equal)* こと、`GT` は第1引数が第2引数より *大きい (Greater Than)* ことを意味します。
 
-## Case Expressions
+## Case 式 (Case Expressions)
 
-Sometimes, instead of pattern matching directly on the arguments to a function, we instead want to perform some computation with them first, and then pattern match on the result of that computation. *Case expressions* provide the ability to perform pattern in such a situation:
+関数の引数に直接パターンマッチするのではなく、まず何らかの計算を行い、その計算結果に対してパターンマッチを行いたい場合があります。**Case 式** は、そのような状況でパターンマッチを行う機能を提供します：
 
 ```idris
--- returns the larger of the two arguments
+-- 2つの引数のうち大きい方を返す
 total
 maxBits8 : Bits8 -> Bits8 -> Bits8
 maxBits8 x y =
@@ -133,15 +136,15 @@ maxBits8 x y =
     _  => x
 ```
 
-The first line of the case expression (`case compare x y of`) will invoke the function `compare` with arguments `x` and `y`. On the following (indented) lines, we pattern match on the result of this computation, much as we would in the top level of our function declaration, only using `=>` to separate the pattern from the resulting expression to be evaluated instead of `=`. The value we get from calling `compare` is of type `Ordering`, so we expect one of the three constructors `LT`, `EQ`, or `GT` as the result. On the first line, we handle the `LT` case explicitly, while the other two cases are handled with an underscore as a catch-all pattern.
+Case 式の1行目（`case compare x y of`）は、引数 `x` と `y` を使って関数 `compare` を呼び出します。続くインデントされた行では、トップレベルの関数宣言とほぼ同様に、この計算結果に対してパターンマッチを行います（ただし `=` の代わりに `=>` を使用してパターンと評価式を区切ります）。`compare` を呼び出して得られる値は `Ordering` 型なので、結果として `LT`, `EQ`, `GT` の3つのコンストラクタのいずれかが得られます。最初の行では `LT` の場合を明示的に処理し、他の2つの場合はアンダースコア `_` を使ったキャッチオールパターンで処理しています。
 
-It is important to note that the indentation matters here, the case block as a whole must be indented (if it starts on a new line), and the each case must be indented by the same amount of whitespace as all of the other cases.
+インデントが重要であることに注意してください。Case ブロック全体がインデントされている必要があり（改行から始まる場合）、各ケースは他のすべてのケースと同じ空白量でインデントされている必要があります。
 
-The `compare` function is overloaded for many data types, which we will explore in depth in the section on interfaces.
+`compare` 関数は多くのデータ型に対してオーバーロードされており、これについてはインターフェースのセクションで詳しく学びます。
 
 ### If Then Else
 
-When working with `Bool`, there is an alternative to pattern matching common to most programming languages:
+`Bool` を扱う場合、多くのプログラミング言語で一般的な `if then else` 式という代替手段もあります：
 
 ```idris
 total
@@ -149,25 +152,25 @@ maxBits8' : Bits8 -> Bits8 -> Bits8
 maxBits8' x y = if compare x y == LT then y else x
 ```
 
-Note that the `if then else` expression *always* returns a value and, unlike in typical imperative languages where a bare `if` may be desirable for executing side effects, the `else` branch cannot be dropped.
+`if then else` 式は **常に** 値を返す式であり、副作用の実行のために `else` を省略できる典型的な命令型言語とは異なり、`else` 節を省略することはできません。
 
-## Naming Conventions: Identifiers
+## 命名規則: 識別子
 
-While we are free to use lower-case and upper-case identifiers for function names, type and data constructors must be given upper-case identifiers in order not to confuse Idris (operators are also fine). For instance, the following data definition is not valid, and Idris will complain that it expected upper-case identifiers:
+関数名には小文字・大文字の識別子を自由に使用できますが、型コンストラクタおよびデータコンストラクタには、Idris を混乱させないために **大文字で始まる識別子** を付与する必要があります（演算子も使用可能です）。たとえば、以下のデータ定義は無効であり、Idris は大文字の識別子を期待しているというエラーを出力します：
 
 ```repl
 data foo = bar | baz
 ```
 
-The same goes for similar data definitions like records and sum types (both will be explained below):
+レコードや直和型（後述）のような同様のデータ定義でも同じです：
 
 ```repl
--- not valid Idris
+-- 有効な Idris コードではありません
 record Foo where
   constructor mkfoo
 ```
 
-On the other hand, we typically use lower-case identifiers for function names, unless we plan to use them mostly at the type level (which will be covered in a future section). However, this is not enforced by Idris, so if you are working in a domain where upper-case identifiers are preferable, feel free to use those:
+一方、関数名には通常小文字で始まる識別子を使用します（型レベルで主に使用する関数を除く）。ただしこれは Idris によって強制されているわけではないため、大文字の識別子が適しているドメインであれば大文字を使用することも可能です：
 
 ```idris
 foo : Bits32 -> Bits32

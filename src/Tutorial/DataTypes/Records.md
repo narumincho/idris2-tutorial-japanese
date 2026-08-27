@@ -1,4 +1,7 @@
-# Records
+# レコード (Records)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Records.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Records.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.DataTypes.Records
@@ -7,7 +10,7 @@ import Tutorial.DataTypes.Enumerations
 import Tutorial.DataTypes.SumTypes
 ```
 
-It is often useful to group together several related values into a single logical unit. For instance, in our web application, we might want to group several pieces of information about a user into a single data type. Such data types are often called *product types*. The most common and convenient way to define such types is the `record` keyword:
+関連する複数の値を1つの論理的な単位としてまとめると便利なことがよくあります。たとえば Web アプリケーションでは、ユーザーに関する複数の情報を1つのデータ型にまとめたい場合があります。このようなデータ型は **直積型 (product types)** と呼ばれます。直積型を定義する最も一般的で便利な方法は `record` キーワードを使用することです：
 
 ```idris
 record User where
@@ -17,7 +20,7 @@ record User where
   age   : Bits8
 ```
 
-The declaration above creates a new *type*, called `User`, and a new *data constructor* called `MkUser`. As usual, let's have a look at their types in the REPL:
+上記の宣言は、`User` という新しい **型** と、`MkUser` という新しい **データコンストラクタ** を作成します。いつものように REPL でそれらの型を確認してみましょう：
 
 ```repl
 Tutorial.DataTypes.Records> :t User
@@ -26,7 +29,7 @@ Tutorial.DataTypes.Records> :t MkUser
 Tutorial.DataTypes.Records.MkUser : String -> Title -> Bits8 -> User
 ```
 
-We can use `MkUser`, which is a function from `String` to `Title` to `Bits8` to `User`, to create values of type `User`:
+`String -> Title -> Bits8 -> User` 型の関数である `MkUser` を使って、`User` 型の値を構築できます：
 
 ```idris
 total
@@ -38,7 +41,7 @@ drNo : User
 drNo = MkUser "No" dr 73
 ```
 
-We can also use pattern matching to extract the fields from a value of the `User` type, binding them to local variables, just as we previously explored in the context of sum types:
+直和型で学んだのと同様に、パターンマッチを使って `User` 型の値からフィールドを抽出し、ローカル変数に束縛することもできます：
 
 ```idris
 total
@@ -46,18 +49,18 @@ greetUser : User -> String
 greetUser (MkUser n t _) = greet t n
 ```
 
-In our `greetUser` function, the `name` and `title` field are bound to two new local variables (`n` and `t` respectively), which can then be used on the right hand side of its implementation. For the `age` field, which is not used on the right hand side, we can use an underscore as a catch-all pattern, signifying our intent to ignore it's value.
+`greetUser` 関数では、`name` と `title` フィールドが2つの新しいローカル変数（それぞれ `n` と `t`）に束縛され、右辺の実装で使用されます。右辺で使用しない `age` フィールドには、値を無視することを表すアンダースコア `_` をキャッチオールパターンとして使用できます。
 
-In this instance, Idris will prevent us from making a common mistake, if we confuse the order of arguments, the implementation will no longer type check.
+ここで引数の順序を取り違えた場合、Idris は型チェックエラーを出してプログラミングミスを防いでくれます。
 
-We can verify this by putting the erroneous code in a `failing` block:
+これは `failing` ブロックを使って確認できます：
 
 > [!NOTE]
-> The `failing` keyword marks an indented code block which is intended to fail to type check. Idris will attempt to compile the code inside the `failing` block, and give us an error if the included code actually does type check.
+> `failing` キーワードは、型チェックに失敗することが意図されているインデントされたコードブロックをマークします。Idris は `failing` ブロック内のコードのコンパイルを試み、実際に型チェックが通ってしまった場合にコンパイルエラーを発生させます。
 >
-> Additionally, a string can optionally be specified as an argument to the `failing` keyword. If such a string is given, Idris will verify that the resulting compilation error contains the provided string, and provide a compilation error otherwise.
+> さらに、`failing` キーワードの引数として文字列を渡すこともできます。文字列が渡された場合、Idris は発生したコンパイルエラーにその文字列が含まれているかを検証し、含まれていなければエラーとします。
 >
-> `failing` blocks serve as a useful tool to show that type saftey works in two directions, allowing us to show not only that valid code type checks, but also that invalid code does not type check.
+> `failing` ブロックは、型安全性が双方向に機能すること（正しいコードが型チェックを通るだけでなく、不正なコードが型チェックを通らないこと）を示すための有用なツールです。
 
 ```idris
 failing "Mismatch between: String and Title"
@@ -65,7 +68,7 @@ failing "Mismatch between: String and Title"
   greetUser' (MkUser n t _) = greet n t
 ```
 
-Alternatively, we can prevent such errors more generally by exploiting the fact that the arguments of a record constructor are, in fact, *named arguments*:
+また、レコードコンストラクタの引数が実際には **名前付き引数 (named arguments)** であることを利用して、引数の順序によるミスを回避することもできます：
 
 ```idris
 total
@@ -73,7 +76,7 @@ greetUser' : User -> String
 greetUser' (MkUser {name = n, title = t, age = _}) = greet t n
 ```
 
-We'll explore this syntax in full detail in the chapter on advanced function topics, but for now, take note that using the named argument syntax frees us from having to care about the order of the augments:
+この構文の詳細については後の章で解説しますが、名前付き引数構文を使用することで引数の順序を気にする必要がなくなります：
 
 ```idris
 total
@@ -81,7 +84,7 @@ greetUser'' : User -> String
 greetUser'' (MkUser {age = _, title = t, name = n}) = greet t n
 ```
 
-For every record field, Idris creates an accessor function of the same name. This can either be used as a regular function, or it can be used in postfix notation by appending it to a variable of the associated record type separated by a dot:
+レコードの各フィールドに対して、Idris は同名のアクセサ（ゲッター）関数を自動生成します。これは通常の関数として呼び出すことも、ドットで区切って後置記法で使用することもできます：
 
 ```idris
 getAgeFunction : User -> Bits8
@@ -91,11 +94,11 @@ getAgePostfix : User -> Bits8
 getAgePostfix u = u.age
 ```
 
-## Syntactic Sugar for Records
+## レコードの糖衣構文 (Syntactic Sugar)
 
-As we discussed in the introduction, Idris is a *pure* functional programming language. In pure functions, we are not allowed to modify global mutable state, as such, if we want to modify a record value, we must create a *new* value, leaving the original value remaining unchanged. Records, like other values in Idris, are *immutable*. While this *can* have an impact on performance, it comes with the benefit that we can freely pass a record value to different functions, without needing to consider the possibility of the functions modifying the value through in-place mutation. These are, again, very strong guarantees, making it drastically easier to reason about our code.
+はじめにで述べたように、Idris は **純粋** 関数型プログラミング言語です。純粋関数ではグローバルな変更可能状態を変更することは許されないため、レコードの値を「変更」したい場合は、元の値を変更せずに残したまま **新しい** レコード値を作成する必要があります。Idris の他の値と同様に、レコードは **不変 (immutable)** です。これはパフォーマンスに影響を与える可能性がありますが、関数にレコード値を自由に渡しても、その関数内で破壊的変更（in-place mutation）が行われる心配がないという強力な利点があります。これにより、コードの挙動を推論することが非常に容易になります。
 
-There are several ways to modify a record, the most general being to pattern match on the record and adjust each field as desired. If, for instance, we'd like to increase the age of a `User` by one, we could do the following:
+レコードを変更する方法はいくつかありますが、最も一般的なのはレコードにパターンマッチして各フィールドを再構築することです。たとえば、`User` の年齢（`age`）を 1 増やしたい場合は以下のように書けます：
 
 ```idris
 total
@@ -103,10 +106,10 @@ incAge : User -> User
 incAge (MkUser name title age) = MkUser name title (age + 1)
 ```
 
-That's a lot of code for such a simple thing, so Idris offers several syntactic conveniences for "modifying" values in records. For instance, using *record* syntax, we can directly access and update the `age` field of a value:
+このような単純な処理に対してこれは記述量が多いため、Idris にはレコードの値を「更新」するための便利な糖衣構文が用意されています。たとえば、**レコード構文** を使用して値の `age` フィールドに直接アクセスして更新できます：
 
 > [!NOTE]
-> In record syntax, `:=` updates the named field to a provided *value*, while `$=` updates the named field by applying a provided *function* to its current value.
+> レコード構文において、`:=` は指定されたフィールドを指定した **値** で更新し、`$=` は指定されたフィールドの現在の値に関数を適用した結果で更新します。
 
 ```idris
 total
@@ -114,11 +117,11 @@ incAge2 : User -> User
 incAge2 u = { age := u.age + 1 } u
 ```
 
-Here, the assignment operator `:=` assigns a new value to the `age` field in the record stored in `u`. Remember, this will create a new `User` value, the original value in `u` remains unaffected by this.
+ここで代入演算子 `:=` は、`u` に格納されたレコードの `age` フィールドに新しい値を割り当てています。これにより新しい `User` 値が作成され、`u` 内の元の値は影響を受けないことに注意してください。
 
-We can access a record field, either by using the field name as a projection function (`age u`; also have a look at `:t age` in the REPL), or by using dot syntax: `u.age`. This is its own special syntax and is *not* related to the dot operator for function composition (`(.)`).
+レコードのフィールドへのアクセスは、フィールド名を射影関数として使う方法（`age u`。REPL で `:t age` も確認してみてください）か、ドット構文 `u.age` を使う方法のいずれかで行えます。これはレコード専用の特殊な構文であり、関数合成のドット演算子 `(.)` とは関係ありません。
 
-Modifying a record field is such a common use case that Idris provides special syntax for it as well:
+レコードフィールドの更新は非常によくあるユースケースなので、Idris は専用の関数適用構文 `$=` も提供しています：
 
 ```idris
 total
@@ -126,7 +129,7 @@ incAge3 : User -> User
 incAge3 u = { age $= (+ 1) } u
 ```
 
-In this example, we use an *operator section* (`(+ 1)`) to define a function that accepts a numeric value and adds one to to it, here inferred to have type `Bits8 -> Bits8` due to the type of the `age` field, in a concise manner. As a more general alternative, we could have used an anonymous function instead:
+この例では、演算子セクション `(+ 1)` を使って、数値を受け取って 1 を加算する関数（`age` フィールドの型により `Bits8 -> Bits8` と推論される）を簡潔に定義しています。より一般的な代替手段として、無名関数を使うこともできます：
 
 ```idris
 total
@@ -134,7 +137,7 @@ incAge4 : User -> User
 incAge4 u = { age $= \x => x + 1 } u
 ```
 
-Since our function's argument `u` is only used once at the very end, we can drop it altogether, to get the following, highly concise version. You may recognize this as an example of [tacit programming](https://en.wikipedia.org/wiki/Tacit_programming), sometimes also called "point-free" style:
+関数の引数 `u` は一番最後で1回使われているだけなので、完全に省略して以下の極めて簡潔なバージョンにすることができます（ポイントフリースタイル / 黙示的プログラミング）：
 
 ```idris
 total
@@ -142,7 +145,7 @@ incAge5 : User -> User
 incAge5 = { age $= (+ 1) }
 ```
 
-As usual, we should give this a try at the REPL:
+REPL で試してみましょう：
 
 ```repl
 Tutorial.DataTypes.Records> incAge5 drNo
@@ -150,7 +153,7 @@ MkUser "No" (Other "Dr.") 74
 ```
 
 > [!NOTE]
-> Record syntax can also be used to set and/or update multiple record fields at once
+> レコード構文を使用して、複数のフィールドを一度に設定・更新することも可能です。
 
 ```idris
 total
@@ -158,9 +161,9 @@ drNoJunior : User
 drNoJunior = { name $= (++ " Jr."), title := Mr, age := 17 } drNo
 ```
 
-## Tuples
+## タプル (Tuples)
 
-Previously, we refereed to records as *product types*. Much like how *sum types* are named by analogy to addition, product types are named by analogy to multiplication. Before we dig into this, lets define an example record to discuss in concrete terms:
+先ほど、レコードを **直積型 (product types)** と呼びました。直和型が足し算のアナロジーで命名されているのと同様に、直積型は掛け算のアナロジーで命名されています。具体例として以下のレコードを見てみましょう：
 
 ```idris
 record Foo where
@@ -169,9 +172,9 @@ record Foo where
   bool : Bool
 ```
 
-Consider how many possible values there are of type `Foo`. There are 7 possible values for the `wd` field, since it is of type `Weekday`, and 2 possible values for the `bool` field. Since `Foo` can contain any possible combination of valid values of these two types, we need to multiply, or take the *product*, the numbers of possible values for each of the two types, getting `7 * 2 = 14`.
+`Foo` 型の取り得る値の総数を考えてみましょう。`wd` フィールドは `Weekday` 型なので 7 通り、`bool` フィールドは `Bool` 型なので 2 通りの値があります。`Foo` はこれら2つの型の有効な値のあらゆる組み合わせを取り得るため、取り得る値の総数はそれぞれの型の要素数の積となり、`7 * 2 = 14` 通りになります。
 
-The most basic product type is the `Pair`, a type that stores two values, each of different types. Idris provides `Pair` in the *Prelude*:
+最も基本的な直積型は `Pair`（ペア）であり、異なる型の2つの値を保持する型です。Idris は *Prelude* で `Pair` を提供しています：
 
 ```idris
 total
@@ -179,7 +182,7 @@ weekdayAndBool : Weekday -> Bool -> Pair Weekday Bool
 weekdayAndBool wd b = MkPair wd b
 ```
 
-Since it is quite common to return several values from a function wrapped in a `Pair`, or a larger tuple, Idris provides some syntactic sugar for working with tuples. Instead of `Pair Weekday Bool`, we can write `(Weekday, Bool)`. Likewise, instead of `MkPair wd b`, we can write `(wd, b)` (the space is optional):
+関数から複数の値を `Pair` やより大きなタプルにまとめて返すことは非常によくあるため、Idris はタプルを扱うための糖衣構文を提供しています。`Pair Weekday Bool` の代わりに `(Weekday, Bool)` と書くことができます。同様に、`MkPair wd b` の代わりに `(wd, b)` と書くことができます：
 
 ```idris
 total
@@ -187,7 +190,7 @@ weekdayAndBool2 : Weekday -> Bool -> (Weekday, Bool)
 weekdayAndBool2 wd b = (wd, b)
 ```
 
-This works also for nested tuples:
+これはネストしたタプルに対しても機能します：
 
 ```idris
 total
@@ -200,11 +203,11 @@ triple2 = (False, Friday, "foo")
 ```
 
 > [!NOTE]
-> Tuples of more than two elements, such as in the `triple2` example, are converted into nested tuples, as in the `triple` example, by the Idris compiler.
+> `triple2` のような3要素以上のタプルは、Idris コンパイラによって `triple` のようなネストしたペアに内部変換されます。
 >
-> `(a, b, c)` becomes `(a, (b, c))`, also written `Pair a (Pair b c)`, `(a, b, c, d)` becomes `(a, (b, (c, d)))`, and so on.
+> `(a, b, c)` は `(a, (b, c))`（`Pair a (Pair b c)`）になり、`(a, b, c, d)` は `(a, (b, (c, d)))` になります。
 
-Tuple syntax can also be used in pattern matching:
+タプル構文はパターンマッチでも使用できます：
 
 ```idris
 total
@@ -213,9 +216,9 @@ bar = case triple of
   (b,wd,_) => b && isWeekend wd
 ```
 
-## As Patterns
+## As パターン (As Patterns)
 
-Sometimes, we'd like to take apart a value by pattern matching on it, but still retain the original value as a whole for using it in further computations:
+パターンマッチによって値を分解しつつ、その後の計算のために元の値全体も保持しておきたい場合があります：
 
 ```idris
 total
@@ -223,7 +226,7 @@ baz : (Bool,Weekday,String) -> (Nat,Bool,Weekday,String)
 baz t@(_,_,s) = (length s, t)
 ```
 
-In our `baz` function, the variable `t` is *bound* to the triple as a whole, which is then reused to construct the resulting quadruple. Remember, that `(Nat,Bool,Weekday,String)` is just sugar for `Pair Nat (Bool,Weekday,String)`, and `(length s, t)` is just sugar for `MkPair (length s) t`. Hence, the implementation above is correct as is confirmed by the type checker.
+`baz` 関数では、変数 `t` がタプル全体に **束縛** され、結果の4つ組タプルを構築するために再利用されています。`(Nat,Bool,Weekday,String)` は単に `Pair Nat (Bool,Weekday,String)` の糖衣構文であり、`(length s, t)` は `MkPair (length s) t` の糖衣構文です。そのため、上記の実装は正しく型チェックを通ります。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

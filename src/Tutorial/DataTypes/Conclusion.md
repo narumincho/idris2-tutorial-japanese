@@ -1,25 +1,21 @@
-# Conclusion
+# おわりに
 
-In this chapter we learned that:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-- Enumerations are data types consisting of a finite number of possible *values*.
+本章では、以下の内容について学びました：
 
-- Sum types are data types with more than one data constructor, where each constructor describes a *choice* that can be made.
+- 列挙型は、有限個の取り得る **値** からなるデータ型です。
+- 直和型は、複数のデータコンストラクタを持つデータ型であり、各コンストラクタは可能な **選択肢** を表します。
+- 直積型は、異なる型の複数の値を1つにまとめるための単一のコンストラクタを持つデータ型です。
+- Idris では、不変な値を分解するためにパターンマッチを使用します。指定可能なパターンは、データ型のデータコンストラクタに対応します。
+- パターン内の値を変数に **束縛** したり、右辺の実装で使わない値のプレースホルダーとしてアンダースコア `_` を使用したりできます。
+- **case ブロック** を導入することで、中間計算の結果に対してパターンマッチを行うことができます。
+- 新しい直積型を定義する際は、個々の **レコードフィールド** を取得・更新するための便利な糖衣構文が提供されているため、**レコード** として定義することが推奨されます。
+- ジェネリックな型や関数を使うと、関数や型のシグネチャで具体的な型の代わりに **型パラメータ** を使用することで、特定の概念を一般化し、多くの型で利用可能にできます。
+- 存在しない可能性のある値（`Maybe`）、何らかのエラーで失敗する可能性のある計算（`Either`）、同じ型の値のコレクションの一括処理（`List`）などの一般的な概念は、すでに *Prelude* で提供されているジェネリック型および関数の代表例です。
 
-- Product types are data types with a single constructor used to group several values of possibly different types.
+## 次のステップ
 
-- We use pattern matching to deconstruct immutable values in Idris. The possible patterns correspond to a data type's data constructors.
+次の章では、**関数のオーバーロード** に対するもう1つのアプローチである **インターフェース** について学びます。
 
-- We can *bind* variables to values in a pattern or use an underscore as a placeholder for a value that's not needed on the right hand side of an implementation.
-
-- We can pattern match on an intermediary result by introducing a *case block*.
-
-- The preferred way to define new product types is to define them as *records*, since these come with additional syntactic conveniences for setting and modifying individual *record fields*.
-
-- Generic types and functions allow us generalize certain concepts and make them available for many types by using *type parameters* instead of concrete types in function and type signatures.
-
-- Common concepts like *nullary values* (`Maybe`), computations that might fail with some error condition (`Either`), and handling collections of values of the same type at once (`List`) are example use cases of generic types and functions already provided by the *Prelude*.
-
-## What's next
-
-In the next chapter, we will introduce *interfaces*, another approach to *function overloading*.
