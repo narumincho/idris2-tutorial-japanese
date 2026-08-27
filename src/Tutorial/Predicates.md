@@ -1,6 +1,9 @@
-# Predicates and Proof Search
+# 述語と証明探索 (Predicates and Proof Search)
 
-In the last chapter we learned about propositional equality, which allowed us to proof that two values are equal. Equality is a relation between values, and we used an indexed data type to encode this relation by limiting the degrees of freedom of the indices in the sole data constructor. There are other relations and contracts we can encode this way. This will allow us to restrict the values we accept as a function's arguments or the values returned by functions.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+前章では、2 つの値が等しいことを証明するための命題的等値性について学びました。等値性は値の間の関係（二項関係）であり、インデックス付きデータ型のコンストラクタでインデックスの自由度を制限することで表現しました。同様の方法で、値の間のさまざまな関係や契約（述語）をエンコードできます。これにより、関数の引数として受け付ける値や関数が返す値を型レベルで厳密に制限（事前条件・事後条件）できるようになります。
 
 ```idris hide
 module Tutorial.Predicates
