@@ -77,8 +77,11 @@ paths("src").race(batch => 1).map( -> $path {
 # Build the book
 
 indir $tempdir, {
-    my $mdbook = run <mdbook build>;
-    die "Ooops" unless $mdbook;
+    my $mdbook = run 'mdbook', 'build';
+    if !$mdbook {
+        say "mdbook build failed with exitcode: ", $mdbook.exitcode;
+        die "mdbook build failed";
+    }
 }
 
 # Copy it over
@@ -99,11 +102,15 @@ sub katla-html($src, $ttc-src, $out-path) {
         return;
     }
     # Run katla and collect the output
-    # TODO: Detect and handle katla errors
-    my $katla = run 'katla', 'html', $src, $ttc-src, :out;
+    my $katla = run 'katla', 'html', $src, $ttc-src, :out, :err;
     my $raw-output = $katla.out.slurp(:close);
-    # Extract just the code from the output
-    my $output = ($raw-output ~~ /'<code' [\n|\N]* '</code>'/ ).Str;
+    my $err-output = $katla.err.slurp(:close);
+    if !$katla {
+        say "Warning: katla html failed on $src (code {$katla.exitcode}): $err-output";
+    }
+    # Extract just the code from the output if present, or fallback
+    my $code-match = $raw-output ~~ /'<code' [\n|\N]* '</code>'/;
+    my $output = $code-match ?? $code-match.Str !! ($raw-output.chars > 0 ?? $raw-output !! "```idris\n" ~ $src.IO.slurp ~ "\n```");
     # Rerrange into a markdown document
     $output = process-katla-output($output);
     $output = qq:to/END/;
@@ -135,10 +142,16 @@ sub katla-markdown($src, $ttc-src) {
         return;
     }
     # Run katla and collect the output
-    # TODO: Detect and handle katla errors
-    my $katla = run 'katla', 'markdown', $src, $ttc-src, :out;
+    my $katla = run 'katla', 'markdown', $src, $ttc-src, :out, :err;
     my $output = $katla.out.slurp(:close);
-    $output = process-katla-output($output);
+    my $err-output = $katla.err.slurp(:close);
+    if !$katla || $output.chars == 0 {
+        say "Warning: katla markdown failed on $src (code {$katla.exitcode}): $err-output";
+        say "Falling back to verbatim copy for $src";
+        $output = $src.IO.slurp;
+    } else {
+        $output = process-katla-output($output);
+    }
     # Spurt the output to the temporary directory
     $output-path.spurt($output);
 }
