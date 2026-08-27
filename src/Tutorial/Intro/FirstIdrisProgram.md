@@ -1,34 +1,37 @@
-# A First Idris Program
+# 最初の Idris プログラム
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/FirstIdrisProgram.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/FirstIdrisProgram.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Intro.FirstIdrisProgram
 ```
 
-While we will often start with the REPL for tinkering with small parts of the Idris language, for reading some documentation, or for inspecting the content of an Idris module, lets go ahead and will write a minimal Idris program to get started with the language.
+Idris 言語の一部を試したり、ドキュメントを読んだり、モジュールの内容を確認したりするのには REPL を使うことが多いですが、まずは言語の第一歩として最小限の Idris プログラムを書いてみましょう。
 
-Here comes the mandatory *Hello World*:
+プログラミング学習の定番である *Hello World* です：
 
 ```idris
 main : IO ()
 main = putStrLn "Hello World!"
 ```
 
-We will inspect the code above in some detail in a moment, but first we'd like to compile and run it. If you have checked out this books source code, you can run the following from the root directory:
+上記のコードの詳細は後ほど詳しく説明しますが、まずはこれをコンパイルして実行してみましょう。本書のソースコードをチェックアウトしている場合は、ルートディレクトリから以下を実行します：
 
 ```sh
 pack -o hello exec src/Tutorial/Intro/FirstIdrisProgram.md
 ```
 
-This will create an executable called `hello` in the `build/exec` directory, which can be invoked from the command-line like so (without the dollar prefix; this is used here to distinguish the terminal command from its output):
+これにより `build/exec` ディレクトリ内に `hello` という実行可能ファイルが作成されます。以下のようにコマンドラインから実行できます（`$` 記号はターミナルコマンドと出力を区別するための表記なので入力不要です）：
 
 ```sh
 $ build/exec/hello
 Hello World!
 ```
 
-The pack program requires an `.ipkg` to be in scope (in the current directory or one of its parent directories), which provides other settings like the source directory to use (`src` in our case). The optional `-o` option provides a name to use for the executable to be generated. Pack comes up with a name of its own it this is not provided. Type `pack help` for a list of available command-line options and commands, and `pack help <cmd>` for help with a specific command.
+`pack` プログラムは、使用するソースディレクトリ（本書の場合は `src`）などの設定を提供する `.ipkg` ファイルがスコープ内（カレントディレクトリまたはその親ディレクトリ）に存在することを前提としています。オプションの `-o` は生成する実行可能ファイルの名前を指定します（省略した場合は pack が自動的に名前を決定します）。利用可能なコマンドラインオプションとコマンドの一覧は `pack help` で確認でき、特定のコマンドのヘルプは `pack help <cmd>` で確認できます。
 
-You can also load this source file in a REPL session and invoke function `main` from there:
+また、このソースファイルを REPL セッションに読み込んで、そこから `main` 関数を実行することもできます：
 
 ```sh
 pack repl src/Tutorial/Intro/FirstIdrisProgram.md
@@ -39,7 +42,7 @@ Tutorial.Intro> :exec main
 Hello World!
 ```
 
-Go ahead and try both ways of building and running `main` on your system!
+ぜひ両方の方法で `main` をビルド・実行してみてください！
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

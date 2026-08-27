@@ -1,50 +1,51 @@
-# About the Idris Programming Language
+# Idris 言語について
 
-Idris is a *pure*, *dependently typed*, *total* *functional* programming language.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/AboutTheLanguage.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/AboutTheLanguage.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-Lets break that down and explore what each of those terms means on their own.
+Idris は、**純粋 (pure)** で、**依存型付き (dependently typed)** かつ **全域的 (total)** な **関数型 (functional)** プログラミング言語です。
 
-## Functional Programming
+これらの用語がそれぞれ何を意味するのかを順に見ていきましょう。
 
-In functional programming languages, functions are *first-class constructs*, meaning that they can be assigned to variables, passed as arguments to other functions, and returned as results from functions, just like any other value in the language. Unlike in, for instance, object-oriented languages, functions are the main form of abstraction in functional programming.
+## 関数型プログラミング
 
-Whenever we find a common pattern or (almost) identical code in several parts of a project, we try to implement an abstraction over it to avoid write the same code multiple times. In functional programming, we do this by introducing one or more new functions implementing the required behavior, often trying to be as general as possible to maximize the versatility and re-usability of our functions.
+関数型プログラミング言語では、関数は **第一級の値 (first-class constructs)** として扱われます。つまり、他のあらゆる値と同様に、変数に代入したり、他の関数への引数として渡したり、関数の戻り値として返したりすることができます。オブジェクト指向言語などとは異なり、関数型プログラミングにおける主な抽象化の手段は関数です。
 
-Functional programming languages are concerned with the evaluation of functions, unlike imperative languages, which are concerned with the execution of statements.
+プロジェクトの複数の箇所で共通のパターンや（ほぼ）同一のコードを見つけた場合、同じコードを何度も書くのを避けるために抽象化を行います。関数型プログラミングでは、必要な振る舞いを実装した新しい関数を1つ以上定義することでこれを行い、関数の汎用性と再利用性を最大化するために可能な限り一般化することを試みます。
 
-## Pure Functional Programming
+命令型言語が文 (statement) の実行に関心を持つのに対し、関数型言語は関数 (function) の評価に関心を持ちます。
 
-*Pure* functional programming languages come with an additional important guarantee:
+## 純粋関数型プログラミング
 
-Functions don't have side effects, like writing to a file or mutating global state. They can only compute a result from their arguments possibly by invoking other pure functions, *and nothing else*. Given the same input, a pure function will *always* generate the same output, this property is known as [referential transparency](https://en.wikipedia.org/wiki/Referential_transparency).
+**純粋 (Pure)** な関数型プログラミング言語には、さらに重要な保証が備わっています：
 
-Pure functions have several advantages:
+関数は、ファイルへの書き込みやグローバル状態の変更といった **副作用 (side effects)** を持ちません。純粋関数は、他の純粋関数を呼び出すことを除けば、与えられた引数から結果を計算すること **のみ** を行います。同じ入力が与えられれば、純粋関数は **常に** 同じ出力を生成します。この性質は [参照透過性 (referential transparency)](https://ja.wikipedia.org/wiki/%E5%8F%82%E7%85%A7%E9%80%8F%E9%81%8E%E6%80%A7) として知られています。
 
-- They are easy to test by specifying (possibly randomly generated) sets of input arguments alongside the expected results.
+純粋関数にはいくつかの利点があります：
 
-- They are thread-safe. Since they don't mutate global state, they be used in several computations running in parallel without interfering with each other.
+- （ランダムに生成されたものを含む）入力引数のセットと期待される結果を指定することで、テストを容易に行えます。
+- スレッドセーフです。グローバルな状態を変更しないため、互いに干渉することなく並行して実行される複数の計算で安全に使用できます。
 
-There are, of course, also some disadvantages:
+もちろん、いくつかの欠点もあります：
 
-- Some algorithms are hard to implement efficiently with only pure functions.
+- 一部のアルゴリズムは、純粋関数のみで効率的に実装するのが難しい場合があります。
+- 実際に何らかの目に見える効果（画面出力や入出力など）を持つプログラムを書くには少し工夫が必要ですが、確実に可能です。
 
-- Writing programs that actually *do* something (have some observable effect) is a bit tricky, but certainly possible.
+## 依存型
 
-## Dependent Types
+Idris は、静的かつ強い型付けを持つプログラミング言語です。すべての式には **型**（整数、文字列のリスト、真偽値、整数から真偽値への関数など）が与えられ、一般的なプログラミングエラーを排除するためにコンパイル時に型が検証されます。
 
-Idris is a strongly, statically typed programming language. Every expression is given a *type* (for instance: integer, list of strings, boolean, function from integer to boolean, etc.), and types are verified at compile time to rule out certain common programming errors.
+たとえば、ある関数が `String` 型（`"Hello123"` のようなUnicode文字列）の引数を期待している場合、その関数を `Integer` 型の引数で呼び出すと **型エラー (type error)** となり、Idris は不正な型のプログラムのコンパイルを拒否します。
 
-For instance, if a function expects an argument of type `String` (a sequence of unicode characters, such as `"Hello123"`), it is a *type error* to invoke this function with an argument of type `Integer`, and Idris will refuse to compile such an ill-typed program.
+**静的型付き (statically typed)** であるということは、実行可能なプログラムを生成する前の **コンパイル時** に Idris が型エラーを検出することを意味します。これは、プログラムの実行中に実行時チェックを行う Python のような動的型付き言語とは対照的です。静的型付き言語の目標は、実行可能なプログラムが作成される前に、可能な限り多くの型エラーを捕捉することです。
 
-Being *statically typed* means that Idris will catch type errors at *compile time*, before it generates an executable program that can be run. This stands in contrast with *dynamically typed* languages such as Python, which check for type errors at *runtime*, while a program is already being executed. It is the goal of statically typed languages to catch as many type errors as possible before there even is a program that can be run.
+さらに、Idris は **依存型 (dependently typed)** を備えており、これが他のプログラミング言語と比較した際の最大の特徴の1つです。Idris では、型そのものが **第一級** の存在です。型を関数に引数として渡すことができ、関数が型を結果として返すこともできます。また、型が他の **値に依存** することもできます。たとえば、関数の戻り値の型が引数の値に応じて変化することができます。これは最初は抽象的で理解しづらいかもしれませんが、本書を読み進める中で、具体的な例を通じてその意味とプログラミングに与える大きな影響を探っていきます。
 
-Furthermore, Idris is *dependently typed*, which is one of its most characteristic properties in comparison to other programming languages. In Idris, types are *first class*: Types can be passed as arguments to functions, and functions can return types as their results. Types can also *depend* on other *values*, as one example, the return type of a function can depend on the value of one of its arguments. This is a quite abstract statement that may be difficult to grasp at first, but we will be exploring its meaning and the profound impact it has on programming through example as we move through this book.
+## 全域関数 (Total Functions)
 
-## Total Functions
+**全域関数 (total function)** とは、有限回の計算ステップで、考えられるすべての入力に対して必ず戻り値型の値を返すことが保証された純粋関数です。全域関数は例外で失敗したり無限ループに陥ったりすることがありません（ただし、計算に任意の時間がかかる可能性はあります）。
 
-A *total* function is a pure function which is guaranteed to return a value of its return type for every possible set of inputs in a finite number of computational steps. A total function will never fail with an exception or loop infinitely, although it can still take arbitrarily long to compute its result.
-
-Idris comes with a totality checker built-in, which allows us to verify that the functions we write are provably total. Totality in Idris is opt-in, as checking the totality of an arbitrary computer program is undecidable in the general case (a dilemma you may recognize as the [halting problem](https://en.wikipedia.org/wiki/Halting_problem)). However, if we annotate a function with the `total` keyword, and the totality checker is unable to verify that the function is, indeed, total, Idris will fail with a type error. Notably, failing to determine a function is total is not the same as judging the function to be non-total.
+Idris には全域性チェッカーが組み込まれており、記述した関数が証明可能に全域的であることを検証できます。任意のプログラムの停止性を一般的に判定することは不可能なため（[停止性問題](https://ja.wikipedia.org/wiki/%E5%81%9C%E6%AD%A2%E6%80%A7%E5%95%8F%E9%A1%8C) として知られるジレンマ）、Idris における全域性の検査はオプトイン方式となっています。しかし、関数に `total` キーワードを付与し、全域性チェッカーがその関数が真に全域的であることを検証できなかった場合、Idris は型エラーを出力します。なお、ある関数が全域的であると判定できないことは、その関数が非全域的であると断定することとは異なる点に注意してください。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

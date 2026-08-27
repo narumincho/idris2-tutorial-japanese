@@ -1,16 +1,19 @@
-# Introduction
+# はじめに
 
-Many of the Markdown files [making up this book](https://github.com/idris-community/idris2-tutorial) (those with a `.md` file extension) are _literate_ Idris files, consisting of a mixture of Markdown and Idris code, and can be type checked and built just like regular code by the Idris compiler. You can identify a document as a literate Idris document if it contains a `module` declaration, like so:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+[本書を構成する](https://github.com/idris-community/idris2-tutorial) Markdown ファイルの多く（拡張子が `.md` のもの）は、Markdown と Idris コードが混在した「文芸的 (literate) Idris」ファイルです。これらは通常のコードと同様に Idris コンパイラによって型チェックされ、ビルドされます。ドキュメントが文芸的 Idris ファイルであるかどうかは、以下のように `module` 宣言が含まれているかどうかで判別できます：
 
 ```idris
 module Tutorial.Intro
 ```
 
-Even though this file (`src/Tutorial/Intro.md`) has no actual code in it, by including that `module` declaration, it qualifies as a literate Idris file. A module name consists of a list of identifiers separated by dots and must reflect the folder structure plus the module file's name, starting from the source directory. For instance, as this file's path, from the root of the `src` directory is `Tutorial/Intro.md`, it's module name _must_ be `Tutorial.Intro`.
+このファイル（`src/Tutorial/Intro.md`）には実際の関数定義コードは含まれていませんが、この `module` 宣言を含めることで文芸的 Idris ファイルとして扱われます。モジュール名はドットで区切られた識別子のリストで構成され、ソースディレクトリからのフォルダ構造とモジュールファイル名を反映している必要があります。たとえば、このファイルの `src` ディレクトリからの相対パスは `Tutorial/Intro.md` であるため、モジュール名は必ず `Tutorial.Intro` でなければなりません。
 
-Before starting this book, make sure you have the Idris compiler installed on your computer. While it is technically possible to work through this book without it, we recommend that you have the _pack_ package manager installed and have a skeleton package setup as described in the [Getting Started with pack and Idris2](../Appendices/Install.md) appendix, as such a setup is assumed.
+本書を読み始める前に、お手元のコンピュータに Idris コンパイラがインストールされていることを確認してください。コンパイラがなくても読み進めることは可能ですが、本書では [pack と Idris 2 の導入手順](../Appendices/Install.md) の付録で説明されているように、パッケージマネージャ _pack_ をインストールし、スケルトンパッケージをセットアップしていることを前提としています。
 
-Later in the book, you will encounter various exercises. The solutions to these exercises can be found as regular Idris files in the `src/Solutions` directory of the [git repository](https://github.com/idris-community/idris2-tutorial/tree/main/src/Solutions), or in syntax highlight form in the "Exercise Solutions" section at the bottom of the navigation sidebar.
+本書を読み進めると、さまざまな練習問題が登場します。これらの問題の解答は、[Git リポジトリ](https://github.com/idris-community/idris2-tutorial/tree/main/src/Solutions) の `src/Solutions` ディレクトリにある通常の Idris ファイルとして参照できるほか、ナビゲーションサイドバー下部の「練習問題の解答」セクションからシンタックスハイライト付きで確認することもできます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

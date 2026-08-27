@@ -1,12 +1,15 @@
-# Using the REPL
+# REPL の使い方
 
-Idris comes with a REPL (*Read Evaluate Print Loop*), which is useful for tinkering with small ideas, and for quickly experimenting with the code we just wrote. To start a REPL session, run the following command in a terminal:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/UsingTheRepl.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/UsingTheRepl.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+Idris には REPL（*Read-Eval-Print Loop*、対話型評価環境）が付属しており、ちょっとしたアイデアを試したり、書いたばかりのコードを手早く実験したりするのに便利です。REPL セッションを開始するには、ターミナルで以下のコマンドを実行します：
 
 ```sh
 pack repl
 ```
 
-Idris should now be ready to accept your commands:
+これで Idris はコマンドを受け付ける準備が整います：
 
 ```repl
      ____    __     _         ___
@@ -19,7 +22,7 @@ Welcome to Idris 2.  Enjoy yourself!
 Main>
 ```
 
-We can go ahead and enter some simple arithmetic expressions, Idris will *evaluate* them and print the result:
+簡単な算術式を入力すると、Idris がそれを **評価 (evaluate)** して結果を出力します：
 
 ```repl
 Main> 2 * 4
@@ -28,18 +31,19 @@ Main> 3 * (7 + 100)
 321
 ```
 
-Since every expression in Idris has a *type*, we might want to inspect those as well:
+Idris ではすべての式が **型 (type)** を持っているため、型を確認することもできます：
 
 ```repl
 Main> :t 2
 2 : Integer
 ```
 
-`:t` is a command specific to the Idris REPL (it is not part of the Idris programming language), and it is used to inspect the type of an expression:
+`:t` は Idris REPL 専用のコマンドであり（Idris プログラミング言語自体の構文ではありません）、式の型を調べるために使用します：
 
 ```repl
 Main> :t 2 * 4
 2 * 4 : Integer
 ```
 
-Whenever we perform calculations involving integer literals without explicitly specifying the types involved, Idris will assume the `Integer` type by default. `Integer` is an *arbitrary precision* (there is no hard-coded maximum value) signed integer type. It is one of the *primitive types* built into the language. Other primitives include fixed precision signed and unsigned integral types (`Bits8`, `Bits16`, `Bits32` `Bits64`, `Int8`, `Int16`, `Int32`, and `Int64`), double precision (64 bit) floating point numbers (`Double`), unicode characters (`Char`) and strings of unicode characters (`String`).
+型を明示せずに整数リテラルを含む計算を行う場合、Idris はデフォルトで `Integer` 型を仮定します。`Integer` は、ハードコードされた上限値のない **任意精度 (arbitrary precision)** の符号付き整数型です。これは言語に組み込まれている **プリミティブ型 (primitive types)** の1つです。その他のプリミティブ型には、固定精度の符号付き・符号なし整数型（`Bits8`, `Bits16`, `Bits32`, `Bits64`, `Int8`, `Int16`, `Int32`, `Int64`）、倍精度 (64ビット) 浮動小数点数（`Double`）、Unicode文字（`Char`）、Unicode文字列（`String`）などがあります。
+

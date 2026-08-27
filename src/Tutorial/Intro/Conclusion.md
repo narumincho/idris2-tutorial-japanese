@@ -1,9 +1,13 @@
-# Conclusion
+# おわりに
 
-In this introduction we learned about the most basic features of the Idris programming language. We used the REPL to tinker with our ideas and inspect the types of things in our code, and we used the Idris compiler to compile an Idris source file to an executable.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/Conclusion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-We also learned about the basic shape of a top level definition in Idris, which always consists of an identifier (its name), a type, and an implementation.
+この入門章では、Idris プログラミング言語の最も基本的な機能について学びました。REPL を使ってアイデアを試したり式の型を調べたりしたほか、Idris コンパイラを使ってソースファイルを実行可能ファイルにコンパイルしました。
 
-## What's next?
+また、Idris におけるトップレベル定義の基本構造（識別子（名前）、型、実装の3つの要素からなること）についても学びました。
 
-In the next chapter, we start programming in Idris for real. We learn how to write our own pure functions, how functions compose, and how we can treat functions just like other values and pass them around as arguments to other functions.
+## 次のステップ
+
+次の章からは、Idris での本格的なプログラミングを開始します。独自の純粋関数の書き方、関数の合成方法、そして関数を他の値と同様に第一級の値として扱い、他の関数へ引数として渡す方法について学んでいきます。
+

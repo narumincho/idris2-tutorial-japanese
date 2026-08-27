@@ -1,35 +1,32 @@
-# Where to get Help
+# 困ったときのヘルプ・質問先
 
-There are several resources available online and in print, where you can find help and documentation about the Idris programming language. Here is a non-comprehensive list:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/WhereToGetHelp.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/WhereToGetHelp.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+Idris プログラミング言語に関するヘルプやドキュメントを入手できるリソースが、オンラインや書籍としていくつか提供されています。以下はその主な一覧です：
 
 - [Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris)
-
-  *The* Idris book! This describes in great detail the core concepts for using Idris and dependent types to write robust and concise code. It uses Idris 1 in its examples, so parts of it have to be slightly adjusted when using Idris 2. There is also a [list of required updates](https://idris2.readthedocs.io/en/latest/typedd/typedd.html).
+  Idris の決定版とも言える書籍です！Idris と依存型を使用して堅牢かつ簡潔なコードを記述するためのコアコンセプトが詳しく説明されています。Idris 1 をベースに書かれているため、Idris 2 で使用する際は一部調整が必要です。[必要な変更点の一覧](https://idris2.readthedocs.io/en/latest/typedd/typedd.html) も公開されています。
 
 - [A Crash Course in Idris 2](https://idris2.readthedocs.io/en/latest/tutorial/index.html)
+  公式の Idris 2 チュートリアルです。Idris 2 の全機能が網羅的かつコンパクトに解説されています。リファレンスとして非常に有用ですが、関数型プログラミングや型駆動開発全般の入門書という構成ではありません。
 
-  The official Idris 2 tutorial. A comprehensive but dense explanation of all features of Idris 2. I find this to be useful as a reference, and as such it is highly accessible. However, it is not an introduction to functional programming or type-driven development in general.
+- [Idris 2 GitHub リポジトリ](https://github.com/idris-lang/Idris2)
+  詳細なインストール手順や入門資料が掲載されています。[Wiki](https://github.com/idris-lang/Idris2/wiki) には、[エディタプラグイン一覧](https://github.com/idris-lang/Idris2/wiki/Editor-Support) や [外部バックエンド一覧](https://github.com/idris-lang/Idris2/wiki/External-backends) などの有用な情報がまとまっています。
 
-- [The Idris 2 GitHub Repository](https://github.com/idris-lang/Idris2)
+- [pack データベース](https://github.com/stefan-hoeck/idris2-pack-db/blob/main/STATUS.md)
+  [pack](https://github.com/stefan-hoeck/idris2-pack) のコレクションに含まれる全ライブラリの一覧です。コミュニティによって寄贈された Idris 2 ライブラリの最も網羅的なリストです。
 
-  Look here for detailed installation instructions and some introductory material. There is also a [wiki](https://github.com/idris-lang/Idris2/wiki), where you can find a [list of editor plugins](https://github.com/idris-lang/Idris2/wiki/Editor-Support), a [list of external backends](https://github.com/idris-lang/Idris2/wiki/External-backends), and other useful information.
+- [Idris 2 Discord サーバー](https://discord.gg/UX68fDs2jc)
+  コードで行き詰まったとき、言語の機能について質問したいとき、新しいライブラリを宣伝したいとき、あるいは他の Idris プログラマーと交流したいときはここを訪れてみてください。非常に活発で、初心者にもとても親切なコミュニティです。
 
-- [The pack Database](https://github.com/stefan-hoeck/idris2-pack-db/blob/main/STATUS.md)
+- Idris REPL
+  Idris 自体からも多くの有用な情報を得ることができます。多くの開発者は Idris プロジェクトの作業中に少なくとも1つの REPL を常に起動しています。また、テキストエディタで [Idris 2 向け Language Server (LSP)](https://github.com/idris-community/idris2-lsp) を使用する設定も非常に便利です。REPL では以下のようなコマンドが使用できます：
+  - `:t` : 式やメタ変数（ホール）の型を確認（例: `:t foldl`）
+  - `:ti` : 暗黙引数を含む関数の型を確認（例: `:ti foldl`）
+  - `:m` : スコープ内にあるすべてのメタ変数（ホール）を一覧表示
+  - `:doc` : トップレベル関数（`:doc the`）、データ型とすべてのコンストラクタ（`:doc Bool`）、言語機能（`:doc case`, `:doc let`, `:doc interface`, `:doc record`, `:doc ?` など）、インターフェース（`:doc Uninhabited`）のドキュメントを表示
+  - `:module` : 利用可能なパッケージからモジュールをインポート（例: `:module Data.Vect`）
+  - `:browse` : 読み込んだモジュールが公開している全関数の名前と型を一覧表示（例: `:browse Data.Vect`）
+  - `:help` : その他利用可能なコマンドとその簡単な説明を一覧表示
 
-  This is the listing of all the libraries included in [pack](https://github.com/stefan-hoeck/idris2-pack)'s collection, which is currently the most comprehensive source of community contributed libraries for Idris 2.
-
-- [The Idris 2 Discord Channel](https://discord.gg/UX68fDs2jc)
-
-  If you get stuck with a piece of code, want to ask about some obscure language feature, want to promote your new library, or want to just hang out with other Idris programmers, this is the place to go. The discord channel is pretty active and *very* friendly towards newcomers.
-
-- The Idris REPL
-
-  Finally, a lot of useful information can be provided by Idris itself. Many users tend to kep at least one REPL open while working on an Idris project. Text editors can be set up to use the [language server for Idris 2](https://github.com/idris-community/idris2-lsp), which is incredibly useful. In the REPL,
-
-  - use `:t` to inspect the type of an expression or meta variable (hole): `:t foldl`,
-  - use `:ti` to inspect the type of a function including implicit arguments: `:ti foldl`,
-  - use `:m` to list all meta variables (holes) in scope,
-  - use `:doc` to access the documentation of a top level function (`:doc the`), a data type plus all its constructors and available hints (`:doc Bool`), a language feature (`:doc case`, `:doc let`, `:doc interface`, `:doc record`, or even `:doc ?`), or an interface (`:doc Uninhabited`),
-  - use `:module` to import a module from one of the available packages: `:module Data.Vect`,
-  - use `:browse` to list the names and types of all functions exported by a loaded module: `:browse Data.Vect`,
-  - use `:help` to get a list of other commands plus a short description for each.

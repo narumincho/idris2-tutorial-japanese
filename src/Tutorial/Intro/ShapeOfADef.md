@@ -1,37 +1,40 @@
-# The Shape of an Idris Definition
+# Idris における定義の構造
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/ShapeOfADef.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/ShapeOfADef.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Intro.ShapeOfADef
 ```
 
-Now that we have executed our first Idris program, lets talk a bit more about the code we had to write to define it.
+最初の Idris プログラムを実行できたところで、定義するために記述したコードについてもう少し詳しく見ていきましょう。
 
-A typical top level function in Idris consists of three things:
+Idris における典型的なトップレベルの関数は、以下の3つの要素で構成されます：
 
-1. The function's name (`main` in our case)
-2. Its type (`IO ()`)
-3. Its implementation (`putStrLn "Hello World"`)
+1. 関数名（前節の例では `main`）
+2. その型（`IO ()`）
+3. その実装（`putStrLn "Hello World!"`）
 
-Lets explore these parts through a couple of examples, starting out by defining a constant for the largest unsigned 8 bit integer:
+いくつか例を通じてこれらの要素を探ってみましょう。まずは符号なし8ビット整数の最大値を表す定数を定義します：
 
 ```idris
 maxBits8 : Bits8
 maxBits8 = 255
 ```
 
-The first line can be read as:
+1行目は次のように読むことができます：
 
-> We'd like to declare a (nullary, or zero argument) function `maxBits8`. It is of type `Bits8`.
+> （0個の引数を取る）関数 `maxBits8` を宣言します。その型は `Bits8` です。
 
-This is called the *function declaration*, we declare that there shall be a function of the given name and type.
+これは **関数宣言 (function declaration)** と呼ばれ、指定された名前と型を持つ関数が存在することを宣言します。
 
-The second line reads:
+2行目は次のように読みます：
 
-> The result of invoking `maxBits8` should be `255`. (As you can see, we can use integer literals for other integral types and not just `Integer`.)
+> `maxBits8` を呼び出した（評価した）結果は `255` となります。（このように、`Integer` だけでなく他の整数型に対しても整数リテラルを使用できます。）
 
-This is called the *function definition*, the function `maxBits8` should behave as described here when being evaluated.
+これは **関数定義 (function definition)** と呼ばれ、関数 `maxBits8` が評価されたときにどのように振る舞うかを記述します。
 
-We can inspect this at the REPL, load this source file into an Idris REPL (as described in the previous section, this time using `src/Tutorial/Intro/ShapeOfADef.md` as the source file), and try running the following tests:
+これを REPL で確認してみましょう。前節で説明したように、このソースファイル（`src/Tutorial/Intro/ShapeOfADef.md`）を Idris REPL に読み込み、以下を試してみてください：
 
 ```repl
 Tutorial.Intro> maxBits8
@@ -40,27 +43,27 @@ Tutorial.Intro> :t maxBits8
 Tutorial.Intro.maxBits8 : Bits8
 ```
 
-We can also use `maxBits8` as part of another expression:
+また、`maxBits8` を他の式の一部として使用することもできます：
 
 ```repl
 Tutorial.Intro> maxBits8 - 100
 155
 ```
 
-We previously described `maxBits8` as a *nullary function*, which is just a fancy word for a *constant*. Let's write and test our first *real* function:
+先ほど `maxBits8` を「0引数の関数」と説明しましたが、これは単に「定数」の別の言い方にすぎません。では、最初の **本物の** 関数を書いてテストしてみましょう：
 
 ```idris
 distanceToMax : Bits8 -> Bits8
 distanceToMax n = maxBits8 - n
 ```
 
-This introduces some new syntax and a new kind of type: Function types.
+ここでは新しい構文と新しい種類の型である「関数型」が登場しました。
 
-`distanceToMax : Bits8 -> Bits8` can be read as:
+`distanceToMax : Bits8 -> Bits8` は次のように読みます：
 
-> `distanceToMax` is a function of one argument, with type `Bits8`, which returns a result of type `Bits8`.
+> `distanceToMax` は `Bits8` 型の引数を1つ取り、`Bits8` 型の結果を返す関数です。
 
-In the implementation, the argument is given a local identifier (a fancy term for "name") `n`, which is then used in the calculation on the right hand side. Go ahead and try this function at the REPL:
+実装では、引数に `n` というローカル識別子（「名前」のこと）が与えられ、それが右辺の計算で使用されます。REPL でこの関数を試してみましょう：
 
 ```repl
 Tutorial.Intro> distanceToMax 12
@@ -71,28 +74,28 @@ Tutorial.Intro> :t distanceToMax 12
 distanceToMax 12 : Bits8
 ```
 
-As a final example, let's implement a function that calculates the square of an integer:
+最後の例として、整数の2乗（平方）を計算する関数を実装してみましょう：
 
 ```idris
 square : Integer -> Integer
 square n = n * n
 ```
 
-We now learn a very important aspect of programming in Idris: Idris is a *statically typed* programming language. We are not allowed to freely mix types as we please, doing so will result in an error message from the type checker (which is part of Idris's compilation process). For instance, if we try the following at the REPL, we will get a type error:
+ここで、Idris でプログラミングする際の非常に重要な側面を学びます。Idris は **静的型付き** 言語です。異なる型を自由に混在させることはできず、型を混在させると型チェッカー（Idris のコンパイルプロセスの一部）からエラーメッセージが出力されます。たとえば、REPL で以下を試すと型エラーになります：
 
 ```repl
 Tutorial.Intro> square maxBits8
 Error: ...
 ```
 
-This is because `square` expects an argument of type `Integer`, but `maxBits8` is of type `Bits8`. Many primitive types can be converted back and forth between each other (sometimes with the risk of loss of precision) using function `cast` (we will cover `cast` in further detail in the section on Interfaces in the Prelude):
+これは `square` が `Integer` 型の引数を期待しているのに対し、`maxBits8` は `Bits8` 型であるためです。多くのプリミティブ型は、`cast` 関数を使用することで相互に変換できます（精度が失われるリスクがある場合もあります）。`cast` については、後の「Prelude のインターフェース」のセクションで詳しく説明します：
 
 ```repl
 Tutorial.Intro> square (cast maxBits8)
 65025
 ```
 
-Notice that the above result is much larger than `maxBits8`. This is because `maxBits8` is first converted to an `Integer` of the same value, which is then squared. If we instead squared `maxBits8` directly, the result would be truncated to still fit in the range of valid `Bits8`s:
+上記の結果が `maxBits8` よりもはるかに大きいことに注目してください。これは、`maxBits8` がまず同じ値を持つ `Integer` に変換され、その後2乗されているためです。もし `maxBits8` を直接2乗した場合、結果は `Bits8` の有効範囲に収まるように切り詰められます（オーバーフロー）：
 
 ```repl
 Tutorial.Intro> maxBits8 * maxBits8
