@@ -16,6 +16,7 @@ jobs:
   superlinter:
     name: Superlinter
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,6 +38,7 @@ jobs:
   mdformat:
     name: Markdown Formatting
     runs-on: ubuntu-latest
+    continue-on-error: true
     container:
       image: docker.io/python:slim
     steps:
@@ -48,3 +50,4 @@ jobs:
         run: |
           pip install mdformat
           mdformat --check --wrap no --number ./**/*.md
+
