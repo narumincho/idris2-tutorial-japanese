@@ -1,4 +1,7 @@
-# Use Case: Flexible Error Handling
+# ユースケース: 柔軟なエラーハンドリング (Use Case: Flexible Error Handling)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/ErrorHandling.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/ErrorHandling.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Predicates.ErrorHandling
@@ -18,7 +21,11 @@ import System.File
 %default total
 ```
 
-A recurring pattern when writing larger applications is the combination of different parts of a program each with their own failure types in a larger effectful computation. We saw this, for instance, when implementing a command-line tool for handling CSV files. There, we read and wrote data from and to files, we parsed column types and schemata, we parsed row and column indices and command-line commands. All these operations came with the potential of failure and might be implemented in different parts of our application. In order to unify these different failure types, we wrote a custom sum type encapsulating each of them, and wrote a single handler for this sum type. This approach was alright then, but it does not scale well and is lacking in terms of flexibility. We are therefore trying a different approach here. Before we continue, we quickly implement a couple of functions with the potential of failure plus some custom error types:
+規模の大きなアプリケーションを作成する際によく現れるパターンとして、それぞれ固有の失敗型（failure types）を持つプログラムの異なる部分を、ひとつの大きな作用を伴う計算の中で組み合わせるというものがあります。例えば、CSV ファイルを操作するコマンドラインツールを実装した際にもこれを見かけました。そこでは、ファイルからのデータ読み書き、列の型やスキーマのパース、行や列のインデックスのパース、コマンドラインのコマンドのパースなどを行いました。これらの操作はすべて失敗する可能性を秘めており、アプリケーションの異なる部分で実装されている可能性があります。
+
+これらの異なる失敗型を統合するために、以前はそれぞれの型をカプセル化するカスタム直和型（sum type）を作成し、その直和型に対する単一のハンドラを記述しました。そのアプローチはその時点では問題ありませんでしたが、拡張性に乏しく柔軟性にも欠けています。そこで、ここでは別のアプローチを試みます。
+
+まず手始めに、失敗する可能性のあるいくつかの関数とカスタムエラー型を実装します：
 
 ```idris
 public export
@@ -42,7 +49,7 @@ readColType' "Float"   = Right Float
 readColType' s         = Left $ MkNoColType s
 ```
 
-However, if we wanted to parse a `Fin n`, there'd be already two ways how this could fail: The string in question could not represent a natural number (leading to a `NoNat` error), or it could be out of bounds (leading to an `OutOfBounds` error). We have to somehow encode these two possibilities in the return type, for instance, by using an `Either` as the error type:
+しかし、`Fin n` をパースしたい場合、すでに失敗の原因が 2 通り存在します。対象の文字列が自然数を表していない場合（`NoNat` エラー）と、範囲外である場合（`OutOfBounds` エラー）です。戻り値の型でこの 2 つの可能性を何らかの形でエンコードする必要があります。例えばエラー型として `Either` を使う方法が考えられます：
 
 ```idris
 public export
@@ -57,14 +64,18 @@ readFin' s = do
   maybeToEither (Right $ MkOutOfBounds n ix) $ natToFin ix n
 ```
 
-This is incredibly ugly. A custom sum type might have been slightly better, but we still would have to use `mapFst` when invoking `readNat'`, and writing custom sum types for every possible combination of errors will get cumbersome very quickly as well. What we are looking for, is a generalized sum type: A type indexed by a list of types (the possible choices) holding a single value of exactly one of the types in question. Here is a first naive try:
+これは非常に不格好です。カスタム直和型を使えば少しはマシになるかもしれませんが、それでも `readNat'` を呼び出す際に `mapFst` を使う必要があり、エラーの組み合わせごとにカスタム直和型を書くのもすぐに煩雑になってしまいます。
+
+私たちが求めているのは、**一般化された直和型（generalized sum type）** です。つまり、型のリスト（選択肢のリスト）でインデックス付けされ、対象の型のうちちょうど 1 つの値を保持する型です。以下は最初の素朴な試みです：
 
 ```idris
 data Sum : List Type -> Type where
   MkSum : (val : t) -> Sum ts
 ```
 
-However, there is a crucial piece of information missing: We have not verified that `t` is an element of `ts`, nor *which* type it actually is. In fact, this is another case of an erased existential, and we will have no way to at runtime learn something about `t`. What we need to do is to pair the value with a proof, that its type `t` is an element of `ts`. We could use `Elem` again for this, but for some use cases we will require access to the number of types in the list. We will therefore use a vector instead of a list as our index. Here is a predicate similar to `Elem` but for vectors:
+しかし、これには決定的な情報が欠けています。`t` が `ts` の要素であることも、実際に「どの」型であるかも検証されていません。事実、これは消去された存在型の別の一例であり、実行時に `t` について知る手がかりが一切ありません。
+
+必要なのは、その値の型 `t` が `ts` の要素であるという証明と値をペアにすることです。これにも再び `Elem` を使うことができますが、一部のユースケースではリスト内の型の個数にアクセスする必要があります。そのため、インデックスとしてリストの代わりにベクトル（`Vect`）を使用します。以下は `Elem` に似ていますがベクトルに対する述語です：
 
 ```idris
 public export
@@ -78,7 +89,7 @@ Uninhabited (Has v []) where
   uninhabited (S _) impossible
 ```
 
-A value of type `Has v vs` is a witness that `v` is an element of `vs`. With this, we can now implement an indexed sum type (also called an *open union*):
+`Has v vs` 型の値は、`v` が `vs` の要素であることの証拠です。これを使って、インデックス付き直和型（**オープンユニオン / open union** とも呼ばれます）を実装できます：
 
 ```idris
 public export
@@ -90,7 +101,9 @@ Uninhabited (Union []) where
   uninhabited (U ix _) = absurd ix
 ```
 
-Note the difference between `HList` and `Union`. `HList` is a *generalized product type*: It holds a value for each type in its index. `Union` is a *generalized sum type*: It holds only a single value, which must be of a type listed in the index. With this we can now define a much more flexible error type:
+`HList` と `Union` の違いに注意してください。`HList` は **一般化された積型（generalized product type）** であり、インデックス内の各型に対して値を 1 つずつ保持します。一方、`Union` は **一般化された直和型（generalized sum type）** であり、インデックスに列挙された型のいずれか 1 つの値のみを保持します。
+
+これを使って、より柔軟なエラー型を定義できます：
 
 ```idris
 public export
@@ -98,7 +111,7 @@ public export
 Err ts t = Either (Union ts) t
 ```
 
-A function returning an `Err ts a` describes a computation, which can fail with one of the errors listed in `ts`. We first need some utility functions.
+`Err ts a` を返す関数は、`ts` に列挙されたエラーのいずれかで失敗する可能性のある計算を表します。まずユーティリティ関数を用意しましょう。
 
 ```idris
 inject : (prf : Has t ts) => (v : t) -> Union ts
@@ -112,7 +125,7 @@ failMaybe : Has t ts => (err : Lazy t) -> Maybe a -> Err ts a
 failMaybe err = maybeToEither (inject err)
 ```
 
-Next, we can write more flexible versions of the parsers we wrote above:
+次に、先ほど書いたパーサーのより柔軟なバージョンを記述できます：
 
 ```idris
 readNat : Has NoNat ts => String -> Err ts Nat
@@ -126,7 +139,7 @@ readColType "Float"   = Right Float
 readColType s         = fail $ MkNoColType s
 ```
 
-Before we implement `readFin`, we introduce a short cut for specifying that several error types must be present:
+`readFin` を実装する前に、複数のエラー型が存在しなければならないことを指定するためのショートカットを導入します：
 
 ```idris
 public export
@@ -135,7 +148,7 @@ Errs []        _  = ()
 Errs (x :: xs) ts = (Has x ts, Errs xs ts)
 ```
 
-Function `Errs` returns a tuple of constraints. This can be used as a witness that all listed types are present in the vector of types: Idris will automatically extract the proofs from the tuple as needed.
+関数 `Errs` は制約のタプルを返します。これは、列挙されたすべての型が型のベクトル内に存在することの証拠として使用できます。Idris は必要に応じてタプルから証明を自動的に抽出します。
 
 ```idris
 export
@@ -145,7 +158,7 @@ readFin s = do
   failMaybe (MkOutOfBounds n (S ix)) $ natToFin ix n
 ```
 
-As a last example, here are parsers for schemata and CSV rows:
+最後の例として、スキーマと CSV 行のパーサーを以下に示します：
 
 ```idris
 fromCSV : String -> List String
@@ -199,7 +212,7 @@ decodeRow row = go 1 s . fromCSV
           [| decodeField row k c s :: go (S k) cs ss |]
 ```
 
-Here is an example REPL session, where I test `readSchema`. I defined variable `ts` using the `:let` command to make this more convenient. Note, how the order of error types is of no importance, as long as types `InvalidColumn` and `NoColType` are present in the list of errors:
+以下は `readSchema` をテストする REPL セッションの例です。便宜上 `:let` コマンドを使って変数 `ts` を定義しています。エラー型のリストに `InvalidColumn` と `NoColType` が含まれてさえいれば、エラー型の順序は関係ない点に注目してください：
 
 ```repl
 Tutorial.Predicates> :let ts = the (Vect 3 _) [NoColType,NoNat,InvalidColumn]
@@ -211,11 +224,11 @@ Tutorial.Predicates> readSchema {ts} "foo Float"
 Left (U (S (S Z)) (MkInvalidColumn "foo Float"))
 ```
 
-## Error Handling
+## エラーハンドリング (Error Handling)
 
-There are several techniques for handling errors, all of which are useful at times. For instance, we might want to handle some errors early on and individually, while dealing with others much later in our application. Or we might want to handle them all in one fell swoop. We look at both approaches here.
+エラーを処理するテクニックにはいくつかあり、いずれも状況に応じて役立ちます。例えば、一部のエラーを早期に個別で処理し、他のエラーはアプリケーションのずっと後で処理したい場合があります。あるいは、すべてのエラーを一挙にまとめて処理したい場合もあります。ここでは両方のアプローチを見ていきます。
 
-First, in order to handle a single error individually, we need to *split* a union into one of two possibilities: A value of the error type in question or a new union, holding one of the other error types. We need a new predicate for this, which not only encodes the presence of a value in a vector but also the result of removing that value:
+まず、単一のエラーを個別に処理するには、ユニオンを 2 つの可能性（対象のエラー型の値であるか、他のエラー型のいずれかを保持する新しいユニオンであるか）に **分割（split）** する必要があります。これには、ベクトル内の値の存在だけでなく、その値を削除した結果もエンコードする新しい述語が必要です：
 
 ```idris
 data Rem : (v : a) -> (vs : Vect (S n) a) -> (rem : Vect n a) -> Type where
@@ -224,7 +237,7 @@ data Rem : (v : a) -> (vs : Vect (S n) a) -> (rem : Vect n a) -> Type where
   RS : Rem v vs rem -> Rem v (w :: vs) (w :: rem)
 ```
 
-Once again, we want to use one of the indices (`rem`) in our functions' return types, so we only use the other indices during proof search. Here is a function for splitting off a value from an open union:
+ここでも、インデックスの 1 つ（`rem`）を関数の戻り値の型で使いたいため、証明探索中は他のインデックスのみを使用します。オープンユニオンから値を切り離す関数は以下のようになります：
 
 ```idris
 split : (prf : Rem t ts rem) => Union ts -> Either t (Union rem)
@@ -236,9 +249,9 @@ split {prf = RS p} (U (S x) val) = case split {prf = p} (U x val) of
   Right (U ix y) => Right $ U (S ix) y
 ```
 
-This tries to extract a value of type `t` from a union. If it works, the result is wrapped in a `Left`, otherwise a new union is returned in a `Right`, but this one has `t` removed from its list of possible types.
+これはユニオンから型 `t` の値を抽出しようとします。成功した場合は結果が `Left` にラップされ、そうでない場合は `Right` で新しいユニオンが返されます。この新しいユニオンの型のリストからは `t` が削除されています。
 
-With this, we can implement a handler for single errors. Error handling often happens in an effectful context (we might want to print a message to the console or write the error to a log file), so we use an applicative effect type to handle errors in.
+これを使って、単一のエラーに対するハンドラを実装できます。エラーハンドリングは作用を伴うコンテキストで発生することが多い（コンソールにメッセージを表示したり、ログファイルにエラーを書き込んだりする）ため、エラーを処理する環境として Applicative 作用型を使用します。
 
 ```idris
 handle :  Applicative f
@@ -252,7 +265,7 @@ handle h (Left x)  = case split x of
 handle _ (Right x) = pure $ Right x
 ```
 
-For handling all errors at once, we can use a handler type indexed by the vector of errors, and parameterized by the output type:
+すべてのエラーを一度に処理するには、エラーのベクトルでインデックス付けされ、出力型でパラメータ化されたハンドラ型を使用できます：
 
 ```idris
 namespace Handler
@@ -271,7 +284,7 @@ handleAll _ (Right v)       = pure v
 handleAll h (Left $ U ix v) = extract h ix v
 ```
 
-Below, we will see an additional way of handling all errors at once by defining a custom interface for error handling.
+以下では、エラーハンドリング用のカスタムインターフェースを定義することで、すべてのエラーを一度に処理するもうひとつの方法を見ていきます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

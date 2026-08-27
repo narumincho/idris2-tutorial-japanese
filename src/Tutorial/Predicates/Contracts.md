@@ -1,4 +1,7 @@
-# Contracts between Values
+# 値どうしの契約 (Contracts between Values)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Contracts.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Contracts.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Predicates.Contracts
@@ -16,24 +19,24 @@ import System.File
 %default total
 ```
 
-The predicates we saw so far restricted the values of a single type, but it is also possible to define predicates describing contracts between several values of possibly distinct types.
+これまで見てきた述語は単一の型の値を制約するものでしたが、異なる複数の型の値の間にある「契約」を記述する述語を定義することも可能です。
 
-## The `Elem` Predicate
+## `Elem` 述語 (The `Elem` Predicate)
 
-Assume we'd like to extract a value of a given type from a heterogeneous list:
+ヘテロジニアスリスト（`HList`）から指定した型の値を抽出したいとしましょう：
 
 ```idris
 get' : (0 t : Type) -> HList ts -> t
 ```
 
-This can't work in general: If we could implement this we would immediately have a proof of void:
+一般にはこれは成り立ちません。もしこれが実装できてしまうと、即座に空虚（`Void`）の証明が手に入ってしまうからです：
 
 ```idris
 voidAgain : Void
 voidAgain = get' Void []
 ```
 
-The problem is obvious: The type of which we'd like to extract a value must be an element of the index of the heterogeneous list. Here is a predicate, with which we can express this:
+問題は明白です。値を取り出したい型 `t` は、ヘテロジニアスリストのインデックス（型のリスト）の要素でなければなりません。これを表現できる述語が以下です：
 
 ```idris
 public export
@@ -42,7 +45,11 @@ data Elem : (elem : a) -> (as : List a) -> Type where
   There : Elem x xs -> Elem x (y :: xs)
 ```
 
-This is a predicate describing a contract between two values: A value of type `a` and a list of `a`s. Values of this predicate are witnesses that the value is an element of the list. Note, how this is defined recursively: The case where the value we look for is at the head of the list is handled by the `Here` constructor, where the same variable (`x`) is used for the element and the head of the list. The case where the value is deeper within the list is handled by the `There` constructor. This can be read as follows: If `x` is an element of `xs`, then `x` is also an element of `y :: xs` for any value `y`. Let's write down some examples to get a feel for these:
+これは 2 つの値（型 `a` の値と、`a` のリスト）の間の契約を記述する述語です。この述語の値は、その値がリストの要素であることの証拠（witness）となります。この定義が再帰的である点に注目してください：
+- 探している値がリストの先頭にあるケースは `Here` コンストラクタで扱われます（要素とリストの先頭に同じ変数 `x` が使われています）。
+- 探している値がリストのより深い場所にあるケースは `There` コンストラクタで扱われます。これは「`x` が `xs` の要素であるならば、任意の `y` に対して `x` は `y :: xs` の要素でもある」と読めます。
+
+感覚を掴むためにいくつか例を書いてみましょう：
 
 ```idris
 MyList : List Nat
@@ -55,15 +62,15 @@ sevenElemMyList : Elem 7 MyList
 sevenElemMyList = There $ There Here
 ```
 
-Now, `Elem` is just another way of indexing into a list of values. Instead of using a `Fin` index, which is limited by the list's length, we use a proof that a value can be found at a certain position.
+`Elem` は、値のリストに対するもうひとつのインデックス付けの方法と言えます。リストの長さによって制限される `Fin` インデックスを使う代わりに、「値が特定の位置に見つかる」という証明を使用します。
 
-We can use the `Elem` predicate to extract a value from the desired type of a heterogeneous list:
+この `Elem` 述語を使って、ヘテロジニアスリストから目的の型の値を抽出できます：
 
 ```idris
 get : (0 t : Type) -> HList ts -> (prf : Elem t ts) => t
 ```
 
-It is important to note that the auto implicit must not be erased in this case. This is no longer a single value data type, and we must be able to pattern match on this value in order to figure out, how far within the heterogeneous list our value is stored:
+ここで重要なのは、自動暗黙引数 `prf` を消去（多重度 0）にしてはならない点です。これは単一値データ型ではないため、値がヘテロジニアスリストのどれくらい奥に格納されているかを把握するために、この値にパターンマッチする必要があるからです：
 
 ```idris
 get t (v :: vs) {prf = Here}    = v
@@ -71,9 +78,9 @@ get t (v :: vs) {prf = There p} = get t vs
 get _ [] impossible
 ```
 
-It can be instructive to implement `get` yourself, using holes on the right hand side to see the context and types of values Idris infers based on the value of the `Elem` predicate.
+右辺にホールを使って `get` を自分で実装してみると、Idris が `Elem` 述語の値に基づいて推論するコンテキストや値の型を確認できて勉強になります。
 
-Let's give this a spin at the REPL:
+REPL で試してみましょう：
 
 ```repl
 Tutorial.Predicates> get Nat ["foo", Just "bar", S Z]
@@ -86,7 +93,9 @@ Error: Can't find an implementation for Elem Nat [String, Maybe String].
      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 
-With this example we start to appreciate what *proof search* actually means: Given a value `v` and a list of values `vs`, Idris tries to find a proof that `v` is an element of `vs`. Now, before we continue, please note that proof search is not a silver bullet. The search algorithm has a reasonably limited *search depth*, and will fail with the search if this limit is exceeded. For instance:
+この例を見ると、**証明探索（proof search）** が実際に何を意味するのかが実感できるでしょう。値 `v` と値のリスト `vs` が与えられると、Idris は `v` が `vs` の要素であるという証明を自動で見つけ出そうとします。
+
+なお、証明探索は万能ではありません。探索アルゴリズムには適切な **探索深度（search depth）** の制限があり、この制限を超えると探索は失敗します。例えば：
 
 ```idris
 Tps : List Type
@@ -101,14 +110,14 @@ hlist = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         , Nothing ]
 ```
 
-And at the REPL:
+REPL で実行すると：
 
 ```repl
 Tutorial.Predicates> get (Maybe String) hlist
 Error: Can't find an implementation for Elem (Maybe String) [Nat,...
 ```
 
-As you can see, Idris fails to find a proof that `Maybe String` is an element of `Tps`. The search depth can be increased with the `%auto_implicit_depth` directive, which will hold for the rest of the source file or until set to a different value. The default value is set at 25. In general, it is not advisable to set this to a too large value as this can drastically increase compile times.
+このように、Idris は `Maybe String` が `Tps` の要素であるという証明の探索に失敗します。探索深度は `%auto_implicit_depth` ディレクティブで増やすことができ、ソースファイルの残り（または別の値に設定されるまで）有効になります。デフォルト値は 25 です。一般に、これを大きすぎる値に設定するとコンパイル時間が大幅に増加するため推奨されません。
 
 ```idris
 %auto_implicit_depth 100
@@ -118,9 +127,9 @@ aMaybe = get _ hlist
 %auto_implicit_depth 25
 ```
 
-## Use Case: A nicer Schema
+## ユースケース: より扱いやすいスキーマ (A nicer Schema)
 
-In the chapter about sigma types, we introduced a schema for CSV files. This was not very nice to use, because we had to use natural numbers to access a certain column. Even worse, users of our small library had to do the same. There was no way to define a name for each column and access columns by name. We are going to change this. Here is an encoding for this use case:
+シグマ型の章では、CSV ファイル用のスキーマを導入しました。しかし、特定の列にアクセスするために自然数のインデックスを使わなければならず、あまり使い勝手が良くありませんでした。さらに悪いことに、この小さなライブラリのユーザーも同様にインデックスを使わざるを得ず、各列に名前をつけて名前でアクセスする方法がありませんでした。今回はこれを改善します。以下はこのユースケースのエンコーディングです：
 
 ```idris
 public export
@@ -164,7 +173,7 @@ showSchema : Schema -> String
 showSchema = concat . intersperse "," . map show
 ```
 
-As you can see, in a schema we now pair a column's type with its name. Here is an example schema for a CSV file holding information about employees in a company:
+このように、スキーマの中で列の型とその名前をペアにします。企業の従業員情報を保持する CSV ファイルのスキーマ例は以下のようになります：
 
 ```idris
 EmployeeSchema : Schema
@@ -177,7 +186,7 @@ EmployeeSchema = [ "firstName"  :> Str
                  ]
 ```
 
-Such a schema could of course again be read from user input, but we will wait with implementing a parser until later in this chapter. Using this new schema with an `HList` directly led to issues with type inference, therefore I quickly wrote a custom row type: A heterogeneous list indexed over a schema.
+このようなスキーマはもちろんユーザー入力から読み込むことも可能ですが、パーサーの実装は本章の後半まで待つことにします。この新しいスキーマを直接 `HList` と組み合わせて使うと型推論の問題が生じたため、カスタムの行型（スキーマでインデックス付けされたヘテロジニアスリスト）を用意しました：
 
 ```idris
 public export
@@ -191,9 +200,9 @@ data Row : Schema -> Type where
        -> Row (name :> type :: ss)
 ```
 
-In the signature of *cons*, I list the erased implicit arguments explicitly. This is good practice, as otherwise Idris will often issue shadowing warnings when using such data constructors in client code.
+*cons* のシグネチャでは、消去される暗黙引数を明示的に列挙しています。これを行わないと、クライアントコードでこのようなデータコンストラクタを使用する際に Idris がシャドーイングの警告を出すことが多いため、良い習慣です。
 
-We can now define a type alias for CSV rows representing employees:
+従業員を表す CSV 行の型エイリアスを定義できます：
 
 ```idris
 0 Employee : Type
@@ -203,9 +212,9 @@ hock : Employee
 hock = [ "Stefan", "Höck", "hock@foo.com", 46, 5443.2, False ]
 ```
 
-Note, how I gave `Employee` a zero quantity. This means, we are only ever allowed to use this function at compile time but never at runtime. This is a safe way to make sure our type-level functions and aliases do not leak into the executable when we build our application. We are allowed to use zero-quantity functions and values in type signatures and when computing other erased values, but not for runtime-relevant computations.
+`Employee` に多重度 0（zero quantity）を与えている点に注目してください。これにより、この関数はコンパイル時のみに使用可能で、実行時には決して使用できなくなります。これは、アプリケーションをビルドする際に型レベルの関数やエイリアスが実行可能バイナリに漏れ出さないようにするための安全な手法です。多重度 0 の関数や値は、型シグネチャや他の消去される値の計算では使えますが、実行時に関係する計算には使用できません。
 
-We would now like to access a value in a row based on the name given. For this, we write a custom predicate, which serves as a witness that a column with the given name is part of the schema. Now, here is an important thing to note: In this predicate we include an index for the *type* of the column with the given name. We need this, because when we access a column by name, we need a way to figure out the return type. But during proof search, this type will have to be derived by Idris based on the column name and schema in question (otherwise, the proof search will fail unless the return type is known in advance). We therefore *must* tell Idris, that it can't include this type in the list of search criteria, otherwise it will try and infer the column type from the context (using type inference) before running the proof search. This can be done by listing the indices to be used in the search like so: `[search name schema]`.
+次に、指定された名前に基づいて行の値にアクセスしたいと考えます。このために、指定された名前の列がスキーマの一部であることの証拠となるカスタム述語を作成します。ここで重要な点があります。この述語には、指定された名前を持つ列の「型」に対するインデックスを含めています。名前で列にアクセスする際、戻り値の型を把握する方法が必要だからです。しかし証明探索の間、この型は対象の列名とスキーマに基づいて Idris が導出する必要があります（そうでなければ、戻り値の型が事前に分かっていない限り証明探索は失敗します）。したがって、Idris に対してこの型を探索条件のリストに含めないよう指示する **必要があります**。そうしないと、証明探索を実行する前にコンテキストから（型推論を用いて）列の型を推論しようとしてしまうからです。これは、`[search name schema]` のように探索に使用するインデックスを明示的に指定することで実現できます。
 
 ```idris
 public export
@@ -223,7 +232,7 @@ Uninhabited (InSchema n [] c) where
   uninhabited (IsThere _) impossible
 ```
 
-With this, we are now ready to access the value at a given column based on the column's name:
+これにより、列名に基づいて特定の列の値にアクセスする準備が整いました：
 
 ```idris
 export
@@ -236,7 +245,7 @@ getAt name (v :: vs) {prf = IsHere}    = v
 getAt name (_ :: vs) {prf = IsThere p} = getAt name vs
 ```
 
-Below is an example how to use this at compile time. Note the amount of work Idris performs for us: It first comes up with proofs that `firstName`, `lastName`, and `age` are indeed valid names in the `Employee` schema. From these proofs it automatically figures out the return types of the calls to `getAt` and extracts the corresponding values from the row. All of this happens in a provably total and type safe way.
+以下はコンパイル時にこれを使用する例です。Idris がどれだけの作業を肩代わりしてくれているかに注目してください。まず `firstName`、`lastName`、`age` が確かに `Employee` スキーマの有効な名前であるという証明を生成します。これらの証明から `getAt` の呼び出しの戻り値の型を自動的に割り出し、行から対応する値を抽出します。これらすべてが、全域性が証明可能かつ型安全な方法で行われます。
 
 ```idris
 shoeck : String
@@ -248,7 +257,7 @@ shoeck =  getAt "firstName" hock
        ++ " years old."
 ```
 
-In order to at runtime specify a column name, we need a way for computing values of type `InSchema` by comparing the column names with the schema in question. Since we have to compare two string values for being propositionally equal, we use the `DecEq` implementation for `String` here (Idris provides `DecEq` implementations for all primitives). We extract the column type at the same time and pair this (as a dependent pair) with the `InSchema` proof:
+実行時に列名を指定するためには、列名と対象のスキーマを比較して `InSchema` 型の値を計算する手段が必要です。命題的に等しいかどうか 2 つの文字列値を比較する必要があるため、ここでは `String` の `DecEq` 実装を使用します（Idris はすべてのプリミティブに対して `DecEq` 実装を提供しています）。同時に列の型を抽出し、これを（依存ペアとして）`InSchema` の証明とペアにします：
 
 ```idris
 export
@@ -261,7 +270,7 @@ inSchema (MkColumn cn t :: xs) n = case decEq cn n of
     Nothing         => Nothing
 ```
 
-At the end of this chapter we will use `InSchema` in our CSV command-line application to list all values in a column.
+本章の最後では、CSV コマンドラインアプリケーションにおいて列のすべての値を一覧表示するために `InSchema` を使用します。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

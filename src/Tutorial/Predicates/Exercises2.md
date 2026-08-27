@@ -1,13 +1,16 @@
-# Exercises part 2
+# 述語と証明探索 練習問題 パート2
 
-1. Show that `InSchema` is decidable by changing the output type of `inSchema` to `Dec (c ** InSchema n ss c)`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-2. Declare and implement a function for modifying a field in a row based on the column name given.
+1. `inSchema` の戻り値の型を `Dec (c ** InSchema n ss c)` に変更することで、`InSchema` が決定可能であることを示してください。
 
-3. Define a predicate to be used as a witness that one list contains only elements in the second list in the same order and use this predicate to extract several columns from a row at once.
+2. 指定された列名に基づいて行のフィールドを変更する関数を宣言・実装してください。
 
-   For instance, `[2,4,5]` contains elements from `[1,2,3,4,5,6]` in the correct order, but `[4,2,5]` does not.
+3. あるリストが別のリストの要素を「同じ順序」ですべて含んでいることの証拠となる述語を定義し、この述語を使って行から複数の列を一度に抽出してください。
 
-4. Improve the functionality from exercise 3 by defining a new predicate, witnessing that all strings in a list correspond to column names in a schema (in arbitrary order). Use this to extract several columns from a row at once in arbitrary order.
+   例えば、`[2,4,5]` は `[1,2,3,4,5,6]` の要素を正しい順序で含んでいますが、`[4,2,5]` はそうではありません。
 
-   Hint: Make sure to include the resulting schema as an index, but search only based on the list of names and the input schema.
+4. リスト内のすべての文字列がスキーマ内の列名に対応している（順序は任意）ことの証拠となる新しい述語を定義することで、練習問題 3 の機能を改良してください。これを使って、任意の順序で行から複数の列を一度に抽出してください。
+
+   ヒント: 結果のスキーマをインデックスとして含めるようにしますが、探索は名前のリストと入力スキーマのみに基づいて行うようにしてください。

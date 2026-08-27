@@ -1,17 +1,20 @@
-# Exercises part 1
+# 述語と証明探索 練習問題 パート1
 
-In these exercises, you'll have to implement several functions making use of auto implicits, to constrain the values accepted as function arguments. The results should be *pure*, that is, not wrapped in a failure type like `Maybe`.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-1. Implement `tail` for lists.
+この練習問題では、関数の引数として受け入れられる値を制約するために、自動暗黙引数（auto implicits）を利用するいくつかの関数を実装します。結果は *純粋（pure）* でなければなりません。つまり、`Maybe` のような失敗を表す型でラップしないでください。
 
-2. Implement `concat1` and `foldMap1` for lists. These should work like `concat` and `foldMap`, but taking only a `Semigroup` constraint on the element type.
+1. リストに対する `tail` を実装してください。
 
-3. Implement functions for returning the largest and smallest element in a list.
+2. リストに対する `concat1` と `foldMap1` を実装してください。これらは `concat` や `foldMap` と同様に動作するべきですが、要素型には `Semigroup` 制約のみを要求するようにしてください。
 
-4. Define a predicate for strictly positive natural numbers and use it to implement a safe and provably total division function on natural numbers.
+3. リスト内の最大要素および最小要素を返す関数を実装してください。
 
-5. Define a predicate for a non-empty `Maybe` and use it to safely extract the value stored in a `Just`. Show that this predicate is decidable by implementing a corresponding conversion function.
+4. 狭義の正の自然数（1以上）に対する述語を定義し、それを使って自然数に対する安全で全域性が証明可能な除算関数を実装してください。
 
-6. Define and implement functions for safely extracting values from a `Left` and a `Right` by using suitable predicates. Show again that these predicates are decidable.
+5. 空でない `Maybe`（値が存在すること）に対する述語を定義し、それを使って `Just` に格納された値を安全に取り出してください。また、対応する変換関数を実装することで、この述語が決定可能（decidable）であることを示してください。
 
-The predicates you implemented in these exercises are already available in the *base* library: `Data.List.NonEmpty`, `Data.Maybe.IsJust`, `Data.Either.IsLeft`, `Data.Either.IsRight`, and `Data.Nat.IsSucc`.
+6. 適切な述語を使用して、`Left` および `Right` から値を安全に取り出す関数を定義・実装してください。さらに、これらの述語が決定可能であることも示してください。
+
+これらの練習問題で実装した述語は、*base* ライブラリですでに提供されています: `Data.List.NonEmpty`、`Data.Maybe.IsJust`、`Data.Either.IsLeft`、`Data.Either.IsRight`、`Data.Nat.IsSucc`。

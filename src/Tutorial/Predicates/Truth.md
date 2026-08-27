@@ -1,4 +1,7 @@
-# The Truth about Interfaces
+# インターフェースの真実 (The Truth about Interfaces)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Truth.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Truth.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Predicates.Truth
@@ -19,7 +22,11 @@ import System.File
 %default total
 ```
 
-Well, here it finally is: The truth about interfaces. Internally, an interface is just a record data type, with its fields corresponding to the members of the interface. An interface implementation is a *value* of such a record, annotated with a `%hint` pragma (see below) to make the value available during proof search. Finally, a constrained function is just a function with one or more auto implicit arguments. For instance, here is the same function for looking up an element in a list, once with the known syntax for constrained functions, and once with an auto implicit argument. The code produced by Idris is the same in both cases:
+いよいよ明かされます。これがインターフェースの真実です。
+
+内部的には、インターフェースは単なる **レコードデータ型（record data type）** であり、そのフィールドがインターフェースのメンバーに対応しています。インターフェースの実装は、そのようなレコードの **値** であり、証明探索で利用できるように `%hint` プラグマ（後述）で修飾されたものです。そして、制約付き関数は単に 1 つ以上の自動暗黙引数（auto implicit arguments）を持つ関数にすぎません。
+
+例えば、以下はリスト内の要素を検索する同一の関数です。一方はおなじみの制約付き関数の構文で、もう一方は自動暗黙引数を使って書かれています。どちらの場合も、Idris が生成するコードは全く同じです：
 
 ```idris
 isElem1 : Eq a => a -> List a -> Bool
@@ -31,16 +38,18 @@ isElem2 v []        = False
 isElem2 v (x :: xs) = x == v || isElem2 v xs
 ```
 
-Being mere records, we can also take interfaces as regular function arguments and dissect them with a pattern match:
+単なるレコードにすぎないため、通常の関数の引数としてインターフェースを受け取り、パターンマッチで分解することもできます：
 
 ```idris
 eq : Eq a -> a -> a -> Bool
 eq (MkEq feq fneq) = feq
 ```
 
-## A manual Interface Definition
+## インターフェースの手動定義 (A manual Interface Definition)
 
-I'll now demonstrate how we can achieve the same behavior with proof search as with a regular interface definition plus implementations. Since I want to finish the CSV example with our new error handling tools, we are going to implement some error handlers. First, an interface is just a record:
+通常のインターフェース定義と実装で得られるのと全く同じ動作を、証明探索を使って実現できることを示します。前節のエラーハンドリングツールを使って CSV の例を仕上げたいので、エラーハンドラを実装してみましょう。
+
+まず、インターフェースは単なるレコードです：
 
 ```idris
 record Print a where
@@ -48,30 +57,30 @@ record Print a where
   print' : a -> String
 ```
 
-In order to access the record in a constrained function, we use the `%search` keyword, which will try to conjure a value of the desired type (`Print a` in this case) by means of a proof search:
+制約付き関数の中でレコードにアクセスするには `%search` キーワードを使用します。これは証明探索によって目的の型（この場合は `Print a`）の値を自動生成しようとします：
 
 ```idris
 print : Print a => a -> String
 print = print' %search
 ```
 
-As an alternative, we could use a named constraint, and access it directly via its name:
+別のアプローチとして、名前付き制約を使用して名前経由で直接アクセスすることもできます：
 
 ```idris
 print2 : (impl : Print a) => a -> String
 print2 = print' impl
 ```
 
-As yet another alternative, we could use the syntax for auto implicit arguments:
+さらに別の方法として、自動暗黙引数の構文を使用することもできます：
 
 ```idris
 print3 : {auto impl : Print a} -> a -> String
 print3 = print' impl
 ```
 
-All three versions of `print` behave exactly the same at runtime. So, whenever we write `{auto x : Foo} ->` we can just as well write `(x : Foo) =>` and vice versa.
+これら 3 つのバージョンの `print` は、実行時にはまったく同一に振る舞います。したがって、`{auto x : Foo} ->` と書く場所はいつでも `(x : Foo) =>` と書くことができ、その逆も同様です。
 
-Interface implementations are just values of the given record type, but in order to be available during proof search, these need to be annotated with a `%hint` pragma:
+インターフェースの実装は指定されたレコード型の単なる値ですが、証明探索で利用可能にするためには `%hint` プラグマで注釈を付ける必要があります：
 
 ```idris
 %hint
@@ -97,7 +106,7 @@ rowErrorPrint = MkPrint $
           "Expected end of input in row \{show r}, column \{show c}."
 ```
 
-We can also write an implementation of `Print` for a union or errors. For this, we first come up with a proof that all types in the union's index come with an implementation of `Print`:
+エラーのユニオンに対する `Print` の実装も記述できます。このために、まずユニオンのインデックス内のすべての型が `Print` の実装を持っているという証明を作成します：
 
 ```idris
 0 All : (f : a -> Type) -> Vect n a -> Type
@@ -113,13 +122,13 @@ unionPrint : All Print ts => Print (Union ts)
 unionPrint = MkPrint unionPrintImpl
 ```
 
-Defining interfaces this way can be an advantage, as there is much less magic going on, and we have more fine grained control over the types and values of our fields. Note also, that all of the magic comes from the search hints, with which our "interface implementations" were annotated. These made the corresponding values and functions available during proof search.
+このようにインターフェースを定義することには利点があります。「魔法のような仕組み」が大幅に減り、フィールドの型や値をより細かく制御できるようになります。また、すべての「魔法」は「インターフェース実装」に付けられた探索ヒント（`%hint`）に由来している点にも注目してください。これらによって、対応する値や関数が証明探索で利用可能になります。
 
-### Parsing CSV Commands
+### CSV コマンドのパース (Parsing CSV Commands)
 
-To conclude this chapter, we reimplement our CSV command parser, using the flexible error handling approach from the last section. While not necessarily less verbose than the original parser, this approach decouples the handling of errors and printing of error messages from the rest of the application: Functions with a possibility of failure are reusable in different contexts, as are the pretty printers we use for the error messages.
+本章の締めくくりとして、前節の柔軟なエラーハンドリング手法を用いて CSV コマンドパーサーを再実装します。元のパーサーよりも記述量が必ずしも少なくなるわけではありませんが、このアプローチによってエラーの処理とエラーメッセージの出力がアプリケーションの他の部分から疎結合になります。失敗する可能性のある関数は異なるコンテキストで再利用でき、エラーメッセージ用のプリティプリンタも同様に再利用可能です。
 
-First, we repeat some stuff from earlier chapters. I sneaked in a new command for printing all values in a column:
+まず、前章の内容をいくつかおさらいします。列のすべての値を出力するための新しいコマンドを追加しました：
 
 ```idris
 record Table where
@@ -154,7 +163,7 @@ applyCommand (MkTable ts n rs) (Delete x)  = case n of
   Z   => absurd x
 ```
 
-Next, below is the command parser reimplemented. In total, it can fail in seven different was, at least some of which might also be possible in other parts of a larger application.
+次に、以下は再実装されたコマンドパーサーです。全部で 7 通りの失敗の可能性があり、そのうちの少なくとも一部は大規模アプリケーションの他の部分でも発生しうるものです。
 
 ```idris
 record UnknownCommand where
@@ -197,9 +206,9 @@ readCommand (MkTable ts n _) s         = case words s of
   _               => fail $ MkUnknownCommand s
 ```
 
-Note, how we could invoke functions like `readFin` or `readSchema` directly, because the necessary error types are part of our list of possible errors.
+必要なエラー型がエラーのリストに含まれているため、`readFin` や `readSchema` などの関数を直接呼び出すことができる点に注目してください。
 
-To conclude this sections, here is the functionality for printing the result of a command plus the application's main loop. Most of this is repeated from earlier chapters, but note how we can handle all errors at once with a single call to `print`:
+本節のまとめとして、コマンドの結果を出力する機能とアプリケーションのメインループを以下に示します。大部分は以前の章で扱った内容ですが、`print` の 1 回の呼び出しですべてのエラーを一度に処理できる点に注目してください：
 
 ```idris
 encodeField : (t : ColType) -> IdrisType t -> String
@@ -249,7 +258,7 @@ main : IO ()
 main = runProg $ MkTable [] _ []
 ```
 
-Here is an example REPL session:
+以下は REPL セッションの例です：
 
 ```repl
 Tutorial.Predicates> :exec main
