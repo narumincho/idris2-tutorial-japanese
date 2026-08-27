@@ -1,67 +1,76 @@
-# Getting Started with pack and Idris2
+# pack と Idris 2 の導入手順 (Getting Started with pack and Idris2)
 
-Here I describe what I find to be the most convenient way to get up and running with Idris2. We are going to install the [pack](https://github.com/stefan-hoeck/idris2-pack) package manager, which will install a recent version of the Idris compiler along the way. However, this means that you need access to a Unix-like operating system such as Linux or macOS. Windows users can make use of [WSL](https://learn.microsoft.com/en-us/windows/wsl/about) to get access to a Linux environment on their system. As a prerequisite, it is assumed that readers know how to start a terminal session on their system, and how to run commands from the terminal's command-line. In addition, readers need to know how to add directories to the [`$PATH` variable](<https://en.wikipedia.org/wiki/PATH_(variable)>) on their system.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/Install.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/Install.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-## Installing pack
+ここでは、Idris 2 を使い始めるにあたって最も便利だと考える方法を説明します。[pack](https://github.com/stefan-hoeck/idris2-pack) パッケージマネージャをインストールすることで、最新バージョンの Idris コンパイラも同時にインストールされます。ただし、これには Linux や macOS などの Unix 系オペレーティングシステムが必要です。Windows ユーザーは [WSL](https://learn.microsoft.com/ja-jp/windows/wsl/about) を利用して Linux 環境を用意することができます。
 
-In order to install the *pack* package manager together with a recent version of the Idris2 compiler, follow the instructions on [pack's GitHub page](https://github.com/stefan-hoeck/idris2-pack/blob/main/INSTALL.md).
+前提条件として、システム上でターミナルセッションを起動し、コマンドラインからコマンドを実行する方法を知っていることを前提としています。さらに、システムの [`$PATH` 環境変数](<https://ja.wikipedia.org/wiki/PATH_(%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0)>) にディレクトリを追加する方法を知っている必要があります。
 
-If all goes well, I suggest you take a moment to inspect the default settings available in your global `pack.toml` file, which can be found at `$XDG_CONFIG_HOME/pack/pack.toml` (unless you explicitly set the `$PACK_USER_DIR` environment variable to a different directory). If possible, I suggest you install the *rlwrap* tool and change the following setting in your global `pack.toml` file to `true`:
+## pack のインストール (Installing pack)
+
+*pack* パッケージマネージャと最新バージョンの Idris 2 コンパイラをインストールするには、[pack の GitHub ページ](https://github.com/stefan-hoeck/idris2-pack/blob/main/INSTALL.md) の手順に従ってください。
+
+すべて順調に完了したら、グローバルの `pack.toml` ファイルで利用可能なデフォルト設定を確認してみることをお勧めします。このファイルは `$XDG_CONFIG_HOME/pack/pack.toml` にあります（`$PACK_USER_DIR` 環境変数を明示的に別のディレクトリに設定していない場合）。可能であれば、*rlwrap* ツールをインストールし、グローバルの `pack.toml` ファイルの以下の設定を `true` に変更することをお勧めします：
 
 ```toml
 repl.rlwrap = true
 ```
 
-This will lead to a nicer experience when running REPL sessions. You might also want to set up your editor to make use of the interactive editing features provided by Idris. Instruction to do this for Neovim can be found [here](Neovim.md).
+これにより、REPL セッションの使い勝手が向上します。また、Idris が提供する対話的編集機能を利用するためにエディタを設定することもできます。Neovim 向けの設定手順は [こちら](Neovim.md) にあります。
 
-### Updating pack and Idris
+### pack と Idris の更新 (Updating pack and Idris)
 
-Both projects, pack and the Idris compiler, are still being actively developed. It is therefore a good idea to update them at regular occasions. To update pack itself, just run the following command:
+pack と Idris コンパイラはどちらも現在も活発に開発が進められています。そのため、定期的に更新することをお勧めします。pack 自体を更新するには、以下のコマンドを実行します：
 
 ```sh
 pack update
 ```
 
-To build and install the latest commit of the Idris compiler and use the latest package collection, run
+Idris コンパイラの最新コミットをビルド・インストールし、最新のパッケージコレクションを使用するには、以下を実行します：
 
 ```sh
 pack switch latest
 ```
 
-## Setting up your Playground
+## プレイグラウンド（練習用プロジェクト）の設定 (Setting up your Playground)
 
-If you are going to solve the exercises in this tutorial (you should!), you'll have to write a lot of code. It is best to setup a small playground project for tinkering with Idris. In a directory of your choice, run the following command:
+本チュートリアルの練習問題を解く場合（ぜひ解いてみてください！）、多くのコードを書くことになります。Idris で色々試すための小さなプレイグラウンド用プロジェクトを用意するのが最適です。任意のディレクトリで以下のコマンドを実行してください：
 
 ```sh
 pack new lib tut
 ```
 
-This will setup a minimal Idris package in directory `tut` together with an `.ipkg` file called `tut.ipkg`, a directory to put your Idris sources called `src`, and a minimal Idris module at `src/Tut.idr`.
+これにより、`tut` ディレクトリ内に最小限の Idris パッケージが作成され、`tut.ipkg` という名前の `.ipkg` ファイル、Idris ソースを配置する `src` ディレクトリ、および `src/Tut.idr` に最小限の Idris モジュールがセットアップされます。
 
-In addition, it sets up a minimal test suite in directory `test`. All of this is put together and made accessible to pack in a `pack.toml` file in the project's root directory. Take your time and quickly inspect the content of every file created by pack: The `.idr` files contain Idris source code. The `.ipkg` files contain detailed descriptions of packages for the Idris compiler including where the sources are located, the modules a package makes available to other projects, and a list of packages the project itself depends on. Finally, the `pack.toml` file informs pack about the local packages in the current project.
+さらに、`test` ディレクトリに最小限のテストスイートもセットアップされます。これらすべてがまとめられ、プロジェクトのルートディレクトリにある `pack.toml` ファイルによって pack からアクセス可能になります。pack によって作成された各ファイルの内容を少し時間を取って確認してみてください：
+- `.idr` ファイルには Idris のソースコードが含まれます。
+- `.ipkg` ファイルには、ソースの配置場所、パッケージが他のプロジェクトに公開するモジュール、プロジェクト自体が依存するパッケージのリストなど、Idris コンパイラ向けの詳細なパッケージ記述が含まれます。
+- `pack.toml` ファイルは、現在のプロジェクト内のローカルパッケージについて pack に伝えます。
 
-With this, here is a bunch of things you can do, but first, make sure you are in the project's root directory (called `tut` if you followed my suggestion) or one of its child folders when running these commands.
+これを使って実行できる操作をいくつか紹介します。ただし、これらのコマンドを実行する際は、プロジェクトのルートディレクトリ（指示に従った場合は `tut`）またはその子フォルダにいることを確認してください。
 
-To typecheck the library sources, run
+ライブラリのソースの型チェックを行うには：
 
 ```sh
 pack typecheck tut
 ```
 
-To build and execute the test suite, run
+テストスイートをビルドして実行するには：
 
 ```sh
 pack test tut
 ```
 
-To start a REPL session with `src/Tut.idr` loaded, run
+`src/Tut.idr` を読み込んだ状態で REPL セッションを開始するには：
 
 ```sh
 pack repl src/Tut.idr
 ```
 
-## Conclusion
+## おわりに (Conclusion)
 
-In this very short tutorial you set up an environment for working on Idris projects and following along with the main part of the tutorial. You are now ready to start with the [first chapter](../Tutorial/Intro.md), or - if you already wrote some Idris code - to learn about the details of the [Idris module system](Modules.md).
+この短い付録では、Idris プロジェクトで作業し、チュートリアルのメインパートを進めるための環境をセットアップしました。これで [最初の章](../Tutorial/Intro.md) を開始する準備が整いました。すでに Idris コードを書いたことがある場合は、[Idris プロジェクトの構成方法](Projects.md) でモジュールシステムの詳細を学ぶこともできます。
 
-Please note that this tutorial itself is setup as a pack project: It contains a `pack.toml` and `tutorial.ipkg` file in its root directory (have a look at them to get a feel for how such projects are setup) and a lot of Idris sources in the subfolders of directory `src`.
+なお、本チュートリアル自体も pack プロジェクトとして構成されています。ルートディレクトリに `pack.toml` と `tutorial.ipkg` ファイルがあり（どのような構成になっているか確認してみてください）、`src` ディレクトリのサブフォルダに多数の Idris ソースが含まれています。
+

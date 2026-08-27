@@ -1,8 +1,11 @@
-# Structuring Idris Projects
+# Idris プロジェクトの構成方法 (Structuring Idris Projects)
 
-In this section I'm going to show how to organize, install, and depend on larger Idris projects. We will have a look at Idris packages, the module system, visibility of types and functions, writing comments and doc strings, and using pack for managing our libraries.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/Projects.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/Projects.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-This section should be useful for all readers who have already written a bit of Idris code. We will not do any fancy type level wizardry in here, but I'll demonstrate several concepts using `failing` code blocks, which you might not have seen before. This rather new addition to the language allows us to write code that is expected to fail during elaboration (type checking). For instance:
+本節では、規模の大きい Idris プロジェクトの整理、インストール、および依存関係の管理方法について説明します。Idris パッケージ、モジュールシステム、型や関数の可視性（スコープ）、コメントやドキュメント文字列の書き方、そしてライブラリ管理に pack を使用する方法を見ていきます。
+
+この節は、すでに Idris コードを少し書いたことのあるすべての読者にとって役立つはずです。ここでは高度な型レベルの魔法は行いませんが、これまで見たことがないかもしれない `failing` コードブロックを使用していくつかの概念を説明します。この比較的新しい言語機能により、エラボレーション（型チェック）中に失敗することが期待されるコードを記述できます。例えば：
 
 ```repl
 failing "Can't find an implementation for FromString Bits8."
@@ -10,25 +13,25 @@ failing "Can't find an implementation for FromString Bits8."
   ohno = "Oh no!"
 ```
 
-As part of a failing block, we can give a substring of the compiler's error message for documentation purposes and to make sure the block fails with the expected error.
+`failing` ブロックの一部として、ドキュメント目的およびブロックが期待通りのエラーで失敗することを確認するために、コンパイラのエラーメッセージの部分文字列を指定できます。
 
-## Modules
+## モジュール (Modules)
 
-Every Idris source file defines a *module*, typically starting with a module header like the one below:
+すべての Idris ソースファイルは **モジュール（module）** を定義し、通常は以下のようなモジュールヘッダーで始まります：
 
 ```idris
 module Appendices.Projects
 ```
 
-A module's name consists of several upper case identifiers separated by dots, which must reflect the path of the `.idr` file where the module is stored. For instance, this module is stored in file `Appendices/Projects.md`, so the module's name is `Appendices.Projects`.
+モジュール名はドットで区切られたいくつかの大文字で始まる識別子で構成され、モジュールが格納されている `.idr` ファイルのパスを反映している必要があります。例えば、このモジュールは `Appendices/Projects.md` に格納されているため、モジュール名は `Appendices.Projects` になります。
 
-"But wait!", I hear you say, "What about the parent folder(s) of `Appendices`? Why aren't those part of the module's name?" In order to understand this, we must talk about the concept of the *source directory*. The source directory is where Idris is looking for source files. It defaults to the directory, from which the Idris executable is run. For instance, when in folder `src` of this project, you can open this source file like so:
+「ちょっと待って！」と思われるかもしれません。「`Appendices` の親フォルダはどうしてモジュール名の一部になっていないの？」と。これを理解するためには、**ソースディレクトリ（source directory）** の概念について説明する必要があります。ソースディレクトリとは、Idris がソースファイルを探す場所のことです。デフォルトでは、Idris 実行ファイルが実行されたディレクトリになります。例えば、このプロジェクトの `src` フォルダにいる場合、以下のようにソースファイルを開くことができます：
 
 ```sh
 idris2 Appendices/Projects.md
 ```
 
-This will not work, however, if you try the same thing from this project's root folder:
+しかし、このプロジェクトのルートフォルダから同じことを試みても動作しません：
 
 ```sh
 $ idris2 src/Appendices/Projects.md
@@ -37,23 +40,23 @@ Error: Module name Appendices.Projects does not match file name "src/Appendices/
 ...
 ```
 
-So, which folder names to include in a module name depends on the parent folder we consider to be our source directory. It is common practice to name the source directory `src`, although this is not mandatory (as I said above, the default is actually the directory, from which we run Idris). It is possible to change the source directory with the `--source-dir` command-line option. The following works from within this project's root directory:
+つまり、モジュール名にどのフォルダ名を含めるかは、ソースディレクトリと見なす親フォルダに依存します。ソースディレクトリに `src` という名前を付けるのが一般的な慣習ですが、これは必須ではありません（上記のように、デフォルトは Idris を実行するディレクトリです）。`--source-dir` コマンドラインオプションを使用すると、ソースディレクトリを変更できます。以下はプロジェクトのルートディレクトリから動作します：
 
 ```sh
 idris2 --source-dir src src/Appendices/Projects.md
 ```
 
-And the following would work from a parent directory (assuming this tutorial is stored in folder `tutorial`):
+また、以下は親ディレクトリから動作します（このチュートリアルが `tutorial` フォルダに保存されていると仮定）：
 
 ```sh
 idris2 --source-dir tutorial/src tutorial/src/Appendices/Projects.md
 ```
 
-Most of the time, however, you will specify an `.ipkg` file for your project (see later in this section) and define the source directory there. Afterwards, you can use pack (instead of the `idris2` executable) to start REPL sessions and load your source files.
+ただし、通常はプロジェクト用の `.ipkg` ファイルを用意し（本節の後半で説明）、そこでソースディレクトリを定義します。その後は、（`idris2` 実行ファイルの代わりに）pack を使用して REPL セッションを開始したりソースファイルを読み込んだりできます。
 
-### Module Imports
+### モジュールのインポート (Module Imports)
 
-You often need to import functions and data types from other modules when writing Idris code. This can be done with an `import` statement. Here are several examples showing how these might look like:
+Idris コードを書く際、他のモジュールから関数やデータ型をインポートする必要が頻繁に生じます。これは `import` 文で行うことができます。以下にいくつかの例を示します：
 
 ```idris
 import Data.String
@@ -64,29 +67,29 @@ import Data.Vect as V
 import public Data.List1 as L
 ```
 
-The first two lines import modules from another *package* (we will learn about packages below): `Data.List` from the *base* package, which will be installed as part of your Idris installation.
+最初の 2 行は、別の **パッケージ（package）**（パッケージについては後述）からモジュールをインポートしています。*base* パッケージの `Data.List` は、Idris インストールの一部としてインストールされます。
 
-The second line imports module `Text.CSV` from within our own source directory `src`. It is always possible to import modules that are part of the same source directory as the file we are working on.
+2 行目は、自分たちのソースディレクトリ `src` 内から `Text.CSV` モジュールをインポートしています。作業中のファイルと同じソースディレクトリの一部であるモジュールは常にインポート可能です。
 
-The third line imports module `Appendices.Neovim`, again from our own source directory. Note, however, that this `import` statement comes with an additional `public` keyword. This allows us to *re-export* a module, so that it is available from within other modules in addition to the current module: If another module imports `Appendices.Projects`, module `Appendices.Neovim` will be imported as well without the need of an additional `import` statement. This is useful when we split some complex functionality across different modules and want to import the lot via a single catch-all module See module `Control.Monad.State` in *base* for an example. You can look at the Idris sources on GitHub or locally after cloning the [Idris2 project](https://github.com/idris-lang/Idris2). The base library can be found in the `libs/base` subfolder.
+3 行目は、再び自分たちのソースディレクトリから `Appendices.Neovim` モジュールをインポートしています。ただし、この `import` 文には `public` キーワードが付いている点に注目してください。これによりモジュールを **再エクスポート（re-export）** することができ、現在のモジュールに加えて他のモジュールからも利用可能になります。別のモジュールが `Appendices.Projects` をインポートした場合、追加の `import` 文なしで `Appendices.Neovim` もインポートされます。これは、複雑な機能を複数のモジュールに分割し、単一の統括モジュール経由ですべてをインポートしたい場合に便利です（*base* の `Control.Monad.State` モジュールを参照）。
 
-It often happens that in order to make use of functions from some module `A` we also require utilities from another module `B`, so `A` should re-export `B`. For instance, `Data.Vect` in *base* re-exports `Data.Fin`, because the latter is often required when working with vectors.
+あるモジュール `A` の関数を使用するために別のモジュール `B` のユーティリティも必要となる場合、`A` は `B` を再エクスポートするべきです。例えば、*base* の `Data.Vect` は `Data.Fin` を再エクスポートしています。ベクトルを操作する際に後者が頻繁に必要となるためです。
 
-The fourth line imports module `Data.Vect`, giving it a new name `V`, to be used as a shorter prefix. If you often need to disambiguate identifiers by prefixing them with a module's name, this can help making your code more concise:
+4 行目は `Data.Vect` モジュールをインポートし、より短いプレフィックスとして使用するために `V` という新しい名前を付けています。モジュール名でプレフィックスを付けて識別子の曖昧さを解消する必要がある場合、これによりコードをより簡潔にすることができます：
 
 ```idris
 vectSum : Nat
 vectSum = sum $ V.fromList [1..10]
 ```
 
-Finally, on the fifth line we publicly import a module and give it a new name. This name will then be the one seen when we transitively import `Data.List1` via `Appendices.Projects`. To see this, start a REPL session (after type checking the tutorial) without loading a source file from this project's root folder:
+最後に、5 行目ではモジュールを公開インポートし、新しい名前を付けています。この名前は、`Appendices.Projects` を経由して推移的に `Data.List1` をインポートした際に見える名前になります。これを確認するために、プロジェクトのルートフォルダからソースファイルを読み込まずに（チュートリアルの型チェック後に）REPL セッションを開始してみましょう：
 
 ```sh
 pack typecheck tutorial
 pack repl
 ```
 
-Now load module `Appendices.Projects` and checkout the type of `singleton`:
+モジュール `Appendices.Projects` をロードし、`singleton` の型を確認します：
 
 ```repl
 Main> :module Appendices.Projects
@@ -97,7 +100,7 @@ Data.List.singleton : a -> List a
 L.singleton : a -> List1 a
 ```
 
-As you can see, the `List1` version of `singleton` is now prefixed with `L` instead of `Data.List1`. It is still possible to use the "official" prefix, though:
+`singleton` の `List1` バージョンが `Data.List1` ではなく `L` というプレフィックスになっていることが分かります。もちろん「公式」のプレフィックスを使用することも可能です：
 
 ```repl
 Main> List1.singleton 12
@@ -106,11 +109,11 @@ Main> L.singleton 12
 12 ::: []
 ```
 
-### Namespaces
+### 名前空間 (Namespaces)
 
-At times, we want to define several functions or data types with the same name in a single module. Idris does not allow this, because every name must be unique in its *namespace*, and the namespace of a module is just the fully qualified module name. However, it is possible to define additional namespaces within a module by using the `namespace` keyword followed by the name of the namespace. All functions which should belong to this namespace must then be indented by the same amount of whitespace.
+時には、単一のモジュール内で同じ名前を持つ複数の関数やデータ型を定義したい場合があります。すべての名前はその **名前空間（namespace）** 内で一意でなければならず、モジュールの名前空間は完全修飾されたモジュール名そのものであるため、Idris は通常これを許可しません。しかし、`namespace` キーワードに続いて名前空間の名前を指定することで、モジュール内に追加の名前空間を定義することができます。この名前空間に属するすべての関数は、同じ量の空白でインデントされる必要があります。
 
-Here's an example:
+例を示します：
 
 ```idris
 data HList : List Type -> Type where
@@ -138,7 +141,7 @@ namespace HVect
   tail (_ :: vs) = vs
 ```
 
-Function names `HVect.head` and `HVect.tail` as well as constructors `HVect.Nil` and `HVect.(::)` would clash with functions and constructors of the same names from the outer namespace (`Appendices.Projects`), so we had to put them in their own namespace. In order to be able to use them from outside their namespace, they need to be exported (see the section on visibility below). In case we need to disambiguate between these names, we can prefix them with part of their namespace. For instance, the following fails with a disambiguation error, because there are several functions called `head` in scope and it is not clear from `head`'s argument (some data type supporting list syntax, of which again several are in scope), which version we want:
+関数名 `HVect.head` と `HVect.tail`、およびコンストラクタ `HVect.Nil` と `HVect.(::)` は、外側の名前空間（`Appendices.Projects`）の同名の関数やコンストラクタと衝突するため、独自の名前空間に配置する必要がありました。名前空間の外側から使用できるようにするには、それらをエクスポートする必要があります（以下の可視性の節を参照）。これらの名前の間の曖昧さを解消する必要がある場合は、名前空間の一部をプレフィックスとして付加できます。例えば、以下は曖昧性エラーで失敗します。スコープ内に `head` という名前の関数が複数存在し、`head` の引数（リスト構文をサポートするデータ型で、これも複数スコープにあります）からどのバージョンを求めているのか明確ではないためです：
 
 ```idris
 failing "Ambiguous elaboration."
@@ -146,18 +149,18 @@ failing "Ambiguous elaboration."
   whatHead = head [12,"foo"]
 ```
 
-By prefixing `head` with part of its namespace, we can resolve both ambiguities. It is now immediately clear, that `[12,"foo"]` must be an `HVect`, because that's the type of `HVect.head`'s argument:
+`head` にその名前空間の一部をプレフィックスとして付けることで、両方の曖昧さを解消できます。`[12,"foo"]` が `HVect` であることが即座に明確になります。それが `HVect.head` の引数の型だからです：
 
 ```idris
 thisHead : Nat
 thisHead = HVect.head [12,"foo"]
 ```
 
-In the following subsection I'll make use of namespaces to demonstrate the principles of visibility.
+以降の節では、名前空間を利用して可視性の原則を説明します。
 
-### Visibility
+### 可視性 (Visibility)
 
-In order to use functions and data types outside of the module or namespace they were defined in, we need to change their *visibility*. The default visibility is `private`: Such a function or data type is not visible from outside its module or namespace:
+関数やデータ型をそれが定義されたモジュールや名前空間の外側で使用するには、その **可視性（visibility）** を変更する必要があります。デフォルトの可視性は `private` です。このような関数やデータ型は、そのモジュールや名前空間の外側からは見えません：
 
 ```idris
 namespace Foo
@@ -169,7 +172,7 @@ failing "Name Appendices.Projects.Foo.foo is private."
   bar = 2 * foo
 ```
 
-To make a function visible, annotate it with the `export` keyword:
+関数を可視にするには、`export` キーワードで修飾します：
 
 ```idris
 namespace Square
@@ -178,14 +181,14 @@ namespace Square
   square v = v * v
 ```
 
-This will allow us to invoke function `square` from within other modules or namespaces (after importing `Appendices.Projects`):
+これにより、（`Appendices.Projects` をインポートした後で）他のモジュールや名前空間から `square` 関数を呼び出すことができるようになります：
 
 ```idris
 OneHundred : Bits8
 OneHundred = square 10
 ```
 
-However, the *implementation* of `square` will not be exported, so `square` will not reduce during elaboration:
+しかし、`square` の **実装（implementation）** はエクスポートされないため、`square` はエラボレーション中に簡約（reduce）されません：
 
 ```idris
 failing "Can't solve constraint between: 100 and square 10."
@@ -193,7 +196,7 @@ failing "Can't solve constraint between: 100 and square 10."
   checkOneHundred = Refl
 ```
 
-For this to work, we need to *publicly export* `square`:
+これを動作させるには、`square` を **公開エクスポート（publicly export）** する必要があります：
 
 ```idris
 namespace SquarePub
@@ -208,7 +211,7 @@ checkOneHundredAgain : OneHundredAgain === 100
 checkOneHundredAgain = Refl
 ```
 
-Therefore, if you need a function to reduce during elaboration, annotate it with `public export` instead of `export`. This is especially important if you use a function to compute a type. Such function's *must* reduce during elaboration, otherwise they are completely useless:
+したがって、エラボレーション中に関数を簡約する必要がある場合は、`export` の代わりに `public export` で修飾してください。これは型を計算するために関数を使用する場合に特に重要です。そのような関数はエラボレーション中に簡約されなければ完全に無意味になってしまうためです：
 
 ```idris
 namespace Stupid
@@ -221,7 +224,7 @@ failing "Can't solve constraint between: Either String ?b and NatOrString."
   natOrString = Left "foo"
 ```
 
-If we publicly export our type alias, everything type checks fine:
+型エイリアスを公開エクスポートすれば、すべて正常に型チェックを通過します：
 
 ```idris
 namespace Better
@@ -233,9 +236,9 @@ natOrString : Better.NatOrString
 natOrString = Left "bar"
 ```
 
-### Visibility of Data Types
+### データ型の可視性 (Visibility of Data Types)
 
-Visibility of data types behaves slightly differently. If set to `private` (the default), neither the *type constructor* nor the *data constructors* are visible outside of the namespace they where defined in. If annotated with `export`, the type constructor is exported but not the data constructors:
+データ型の可視性は少し異なった振る舞いをします。`private`（デフォルト）に設定されている場合、*型コンストラクタ* も *データコンストラクタ* も定義された名前空間の外側からは見えません。`export` で修飾された場合、型コンストラクタはエクスポートされますが、データコンストラクタはエクスポートされません：
 
 ```idris
 namespace Export
@@ -252,7 +255,7 @@ foo1 : Export.Foo
 foo1 = mkFoo1 "foo"
 ```
 
-As you can see, we can use the type `Foo` as well as function `mkFoo1` outside of namespace `Export`. However, we cannot use the `Foo1` constructor to create a value of type `Foo` directly:
+名前空間 `Export` の外側で型 `Foo` および関数 `mkFoo1` を使用できることが分かります。しかし、`Foo1` コンストラクタを使って直接 `Foo` 型の値を作成することはできません：
 
 ```idris
 failing "Export.Foo1 is private."
@@ -260,7 +263,7 @@ failing "Export.Foo1 is private."
   foo = Foo1 "foo"
 ```
 
-This changes when we publicly export the data type:
+データ型を公開エクスポートすると、この動作が変わります：
 
 ```idris
 namespace PublicExport
@@ -273,7 +276,7 @@ foo2 : PublicExport.Foo
 foo2 = Foo2 12
 ```
 
-The same goes for interfaces: If they are publicly exported, the interface (a type constructor) plus all its functions are exported and you can write implementations outside the namespace where they where defined:
+インターフェースについても同様です。公開エクスポートされている場合、インターフェース（型コンストラクタ）とそのすべての関数がエクスポートされ、定義された名前空間の外側で実装を記述できます：
 
 ```idris
 namespace PEI
@@ -287,7 +290,7 @@ sumSizes : Foldable t => Sized a => t a -> Nat
 sumSizes = foldl (\n,e => n + size e) 0
 ```
 
-If they are not publicly exported, you will not be able to write implementations outside the namespace they were defined in (but you can still use the type and its functions in your code):
+公開エクスポートされていない場合、定義された名前空間の外側で実装を記述することはできません（ただし、コード内でその型や関数を使用することは可能です）：
 
 ```idris
 namespace EI
@@ -309,9 +312,9 @@ nonEmpty : Empty a => a -> Bool
 nonEmpty = not . empty
 ```
 
-### Child Namespaces
+### 子名前空間 (Child Namespaces)
 
-Sometimes, it is necessary to access a private function in another module or namespace. This is possible from within child namespaces (for want of a better name): Modules and namespaces sharing the parent module's or namespace's prefix. For instance:
+時には、別のモジュールや名前空間にあるプライベート関数にアクセスする必要が生じることがあります。これは **子名前空間（child namespaces）**（親モジュールや名前空間のプレフィックスを共有するモジュールや名前空間）から可能です。例えば：
 
 ```idris
 namespace Inner
@@ -319,17 +322,17 @@ namespace Inner
   testEmpty = nonEmpty (the (List Nat) [12])
 ```
 
-As you can see, we can access function `nonEmpty` from within namespace `Appendices.Projects.Inner`, although it is a private function of module `Appendices.Projects`. This is even possible for modules: If we were to write a module `Data.List.Magic`, we'd have access to private utility functions defined in module `Data.List` in *base*. Actually, I did just that and added module `Data.List.Magic` demonstrating this quirk of the Idris module system (go have a look!). In general, this is a rather hacky way to work around visibility constraints, but it can be useful at times.
+名前空間 `Appendices.Projects.Inner` の内側から `nonEmpty` 関数にアクセスできることが分かります。これはモジュール `Appendices.Projects` のプライベート関数であるにもかかわらずです。これはモジュール間でも可能です。もし `Data.List.Magic` というモジュールを作成した場合、*base* の `Data.List` モジュールで定義されたプライベートなユーティリティ関数にアクセスできます。実際に `Data.List.Magic` モジュールを追加して Idris モジュールシステムのこの仕様を実演しています（ぜひ覗いてみてください！）。一般に、これは可視性の制約を回避するためのやや裏技的な方法ですが、時には役立ちます。
 
-## Parameter Blocks
+## パラメータブロック (Parameter Blocks)
 
-In this subsection, we are going to have a look at a language construct called a `parameters` block, which enables us to share a set of common read-only arguments (parameters) across several functions, thus allowing us to write more concise function signatures. I'm going to demonstrate their usability with a small example program.
+ここでは、複数の関数にわたって一連の共通の読み取り専用引数（パラメータ）を共有できる `parameters` ブロックという言語機能を見ていきます。これにより、より簡潔な関数シグネチャを記述できます。小さなサンプルプログラムを使ってその有用性を実演します。
 
-The most basic way to make some piece of external information available to a function is by passing it as an additional argument. In object-orientied programming, this principle is sometimes called [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection), and a lot of fuss is being made about it, and whole libraries and frameworks have been built around it.
+ある外部情報を関数で利用可能にする最も基本的な方法は、それを追加の引数として渡すことです。オブジェクト指向プログラミングでは、この原則は [依存性の注入（DI / dependency injection）](https://ja.wikipedia.org/wiki/%E4%BE%9D%E5%AD%98%E6%80%A7%E3%81%AE%E6%B3%A8%E5%85%A5) と呼ばれ、多くのライブラリやフレームワークがこれを取り巻いて構築されています。
 
-In functional programming, we can be perfectly relaxed about all of this: Need access to some configuration data for your application? Pass it as an additional argument to your functions. Want to use some local mutable state? Pass the corresponding `IORef` as an additional argument to your functions. This is both highly efficient and incredibly simple. The only drawback it has: It can blow up our function signatures. There is even a monad for abstracting over this concept, called the `Reader` monad. It can be found in module `Control.Monad.Reader`, in the base library.
+関数型プログラミングでは、これらすべてを非常にシンプルに扱えます。アプリケーションの設定データが必要なら、関数に追加の引数として渡すだけです。ローカルな可変状態を使いたいなら、対応する `IORef` を追加の引数として関数に渡します。これは非常に効率的で信じられないほどシンプルです。唯一の欠点は、関数のシグネチャが肥大化する可能性があることです（この概念を抽象化するための `Reader` モナドも存在し、base ライブラリの `Control.Monad.Reader` モジュールにあります）。
 
-In Idris, however, there is an even simpler approach: We can use proof search with auto implicit arguments for dependency injection. Here's some example code:
+しかし Idris では、さらにシンプルなアプローチが可能です。自動暗黙引数を用いた証明探索を依存性の注入に活用できます。以下に例を示します：
 
 ```idris
 data Error : Type where
@@ -364,11 +367,11 @@ prog' = do
   c.put "Read \{show n} lines and \{show . sum $ map length ls} characters."
 ```
 
-The example program reads input from and prints output to some `Console` type, the implementation of which is left to the caller of the function. This is a typical example of dependency injection: Our `IO` actions know nothing about how to read and write lines of text (they do, for instance, not invoke `putStrLn` or `getLine` directly), but rely on an external *object* to handle these tasks for us. This allows us to use a simple *mock object* during testing, while using - for instance - two file handles or data base connections when running the application for real. These are typical techniques often found in object-oriented programming, and in fact, this example emulates typical object-oriented patterns in a purely functional programming language: A type like `Console` can be viewed as a *class* providing pieces of functionality (*methods* `read` and `put`), and a value of type `Console` can be viewed as an *object* of this class, on which we can invoke those methods.
+このサンプルプログラムは、ある `Console` 型から入力を読み込み、出力を表示します。その実装は関数の呼び出し元に委ねられています。これは依存性の注入の典型例です。私たちの `IO` アクションはテキスト行をどのように読み書きするかについて何も知らず（`putStrLn` や `getLine` を直接呼び出したりしません）、これらのタスクを処理するために外部の *オブジェクト* に依存しています。これにより、テスト中はシンプルな *モックオブジェクト* を使用し、実際のアプリケーション実行時には 2 つのファイルハンドルやデータベース接続などを使用することができます。これらはオブジェクト指向プログラミングでよく見られる典型的な技法であり、事実、この例は純粋関数型言語において典型的なオブジェクト指向パターンをエミュレートしています。`Console` のような型は機能（メソッド `read` と `put`）を提供する *クラス* と見なすことができ、`Console` 型の値はそのクラスの *オブジェクト* と見なすことができます。
 
-The same goes for error handling: Our error handler could just silently ignore any error that occurs, or it could print it to `stderr` and write it to a log file at the same time. Whatever it does, our functions need not care.
+エラーハンドリングについても同様です。エラーハンドラは発生したエラーを単に無視することもできますし、同時に `stderr` に出力してログファイルに書き込むこともできます。それが何をするにせよ、私たちの関数は気にする必要がありません。
 
-Note, however, that even in this very simple example we already introduced two additional function arguments, and we can easily see how in a real-world application we might need many more of those and how this would quickly blow up our function signatures. Luckily, there is a very clean and simple solution to this in Idris: `parameter` blocks. These allow us to specify lists of *parameters* (unchanging function arguments) shared by all functions listed inside the block. These arguments need then no longer be listed with each function, thus decluttering our function signatures. Here's the example from above in a parameter block:
+しかし、この非常に単純な例でさえすでに 2 つの追加の関数引数を導入しており、実際のアプリケーションではさらに多くの引数が必要になり、関数のシグネチャがあっという間に肥大化することが容易に想像できます。幸いなことに、Idris にはこれに対する非常にクリーンでシンプルな解決策があります。それが **`parameters` ブロック** です。これにより、ブロック内に列挙されたすべての関数によって共有される **パラメータ**（変化しない関数引数）のリストを指定できます。これらの引数は各関数ごとに個別に列挙する必要がなくなり、関数シグネチャをすっきりと保つことができます。上記の例をパラメータブロックで書き直したものが以下です：
 
 ```idris
 parameters {auto c : Console} {auto h : ErrorHandler}
@@ -391,9 +394,9 @@ parameters {auto c : Console} {auto h : ErrorHandler}
     c.put "Read \{show n} lines and \{show . sum $ map length ls} characters."
 ```
 
-We are free to list arbitrary arguments (implicit, explicit, auto-implicit, named and unnamed) of any quantity as the parameters in a `parameters` block, but it works best with implicit and auto implicit arguments. Explicit arguments will have to be passed explicitly to functions in a parameter block, even when invoking them from other parameter blocks with the same explicit argument. This can be rather confusing.
+`parameters` ブロック内のパラメータとして、任意の多重度、明示的、暗黙的、自動暗黙的、名前付き、名前なしの引数を自由に指定できますが、暗黙引数や自動暗黙引数で最も効果的に機能します。明示的な引数は、同じ明示的引数を持つ他のパラメータブロックから呼び出す場合でも関数に明示的に渡す必要があり、やや混乱を招く可能性があります。
 
-To complete this example, here is a main function for running the program. Note, how we explicitly assemble the `Console` and `ErrorHandler` to be used when invoking `prog`.
+この例を完成させるために、プログラムを実行する main 関数を以下に示します。`prog` を呼び出す際に使用する `Console` と `ErrorHandler` を明示的に組み立てている点に注目してください。
 
 ```idris
 main : IO ()
@@ -403,112 +406,108 @@ main =
    in prog
 ```
 
-Dependency injection via auto-implicit arguments is only one possible application of parameter blocks. They are useful in general whenever we have repeating argument lists for several functions.
+自動暗黙引数による依存性の注入は、パラメータブロックの可能な応用のひとつにすぎません。複数の関数に対して繰り返される引数リストが存在するあらゆる場面で有用です。
 
-## Documentation
+## ドキュメンテーション (Documentation)
 
-Documentation is key. Be it for other programmers using a library we wrote, or for people (including our future selves) trying to understand our code, it is important to annotate our code with comments explaining non-trivial implementation details and docstrings describing the intent and functionality of exported data types and functions.
+ドキュメントは極めて重要です。私たちが書いたライブラリを利用する他のプログラマのためであれ、（将来の自分自身を含む）コードを理解しようとする人たちのためであれ、自明でない実装の詳細を説明するコメントや、エクスポートされたデータ型や関数の意図と機能を説明する docstring でコードを注釈することは不可欠です。
 
-### Comments
+### コメント (Comments)
 
-Writing a comment in an Idris source file is as simple as adding some text after two hyphens:
+Idris ソースファイルでコメントを書くのは、2 つのハイフンの後にテキストを追加するだけです：
 
 ```idris
--- this is a truly boring comment
+-- これは実に退屈なコメントです
 boring : Bits8 -> Bits8
-boring a = a -- probably I should just use `id` from the Prelude
+boring a = a -- Prelude の `id` を使うべきかもしれません
 ```
 
-Whenever a line contains two hyphens that are not part of a string literal, the remainder of the line will be interpreted as a comment by Idris.
+文字列リテラルの一部ではない 2 つのハイフンが含まれる行では、その行の残りが Idris によってコメントとして解釈されます。
 
-It is also possible to write multiline comments using delimiters `{-` and `-}`:
+また、デリミタ `{-` と `-}` を使用して複数行コメントを書くことも可能です：
 
 ```idris
 {-
-  This is a multiline comment. It can be used to comment
-  out whole blocks of code, for instance if we get several
-  type errors in a larger source file.
+  これは複数行コメントです。
+  大規模なソースファイルで複数の型エラーが発生した場合などに、
+  コードブロック全体をコメントアウトするために使用できます。
 -}
 ```
 
-### Doc Strings
+### ドキュメント文字列 (Doc Strings)
 
-While comments are targeted at programmers reading and trying to understand our source code, doc strings provide documentation for exported functions and data types, explaining their intent and behavior to others.
+コメントがソースコードを読んで理解しようとするプログラマ向けであるのに対し、ドキュメント文字列（doc strings）はエクスポートされた関数やデータ型に対するドキュメントを提供し、その意図や動作を他者に説明します。
 
-Here's and example of a documented function:
+以下はドキュメント付き関数の例です：
 
 ```idris
-||| Tries to extract the first two elements from the beginning
-||| of a list.
+||| リストの先頭から最初の 2 つの要素を抽出しようとします。
 |||
-||| Returns a pair of values wrapped in a `Just` if the list has
-||| two elements or more. Returns `Nothing` if the list has fewer
-||| than two elements.
+||| リストに 2 つ以上の要素がある場合、`Just` でラップされた値のペアを返します。
+||| リストの要素が 2 つ未満の場合、`Nothing` を返します。
 export
 firstTwo : List a -> Maybe (a,a)
 firstTwo (x :: y :: _) = Just (x,y)
 firstTwo _             = Nothing
 ```
 
-We can view a doc string at the REPL:
+REPL でドキュメント文字列を確認できます：
 
 ```repl
 Appendices.Projects> :doc firstTwo
 Appendices.Projects.firstTwo : List a -> Maybe (a,a)
-  Tries to extract the first two elements from the beginning
-  of a list.
+  リストの先頭から最初の 2 つの要素を抽出しようとします。
 
-  Returns a pair of values wrapped in a `Just` if the list has
-  two elements or more. Returns `Nothing` if the list has fewer
-  than two elements.
+  リストに 2 つ以上の要素がある場合、`Just` でラップされた値のペアを返します。
+  リストの要素が 2 つ未満の場合、`Nothing` を返します。
   Visibility: export
 ```
 
-We can document data types and their constructors in a similar manner:
+データ型とそのコンストラクタも同様の方法でドキュメント化できます：
 
 ```idris
-||| A binary tree index by the number of values it holds.
+||| 保持する値の数でインデックス付けされた二分木。
 |||
-||| @param `n` : Number of values stored in the `Tree`
-||| @param `a` : Type of values stored in the `Tree`
+||| @param `n` : `Tree` に格納されている値の数
+||| @param `a` : `Tree` に格納されている値の型
 public export
 data Tree : (n : Nat) -> (a : Type) -> Type where
-  ||| A single value stored at the leaf of a binary tree.
+  ||| 二分木の葉に格納された単一の値。
   Leaf   : (v : a) -> Tree 1 a
 
-  ||| A branch unifying two subtrees.
+  ||| 2 つの部分木を統合する枝。
   Branch : Tree m a -> Tree n a -> Tree (m + n) a
 ```
 
-Go ahead and have a look at the doc strings this generates at the REPL.
+実際に REPL でこれが生成するドキュメント文字列を確認してみてください。
 
-Documenting our code is very important. You will realize this, once you try to understand other people's code, or when you come back to a non-trivial piece of source code you wrote yourself a couple of months a ago and since then haven't looked at. If it is not well documented, this can be an unpleasant experience. Idris provides us with the tools necessary to document and annotate our code, so should take our time and do so. It is time well spent.
+コードのドキュメント化は非常に重要です。他人のコードを理解しようとしたときや、数か月前に自分で書いて以来見ていなかった自明でないソースコードに戻ってきたときに、その重要性を痛感するはずです。適切にドキュメント化されていないコードを読み解くのは苦痛を伴います。Idris はコードをドキュメント化・注釈するために必要なツールを提供してくれているので、時間をかけてドキュメントを残しましょう。それは十分に価値のある投資です。
 
-## Packages
+## パッケージ (Packages)
 
-Idris packages allow us to assemble several modules into a logical unit and make them available to other Idris projects by *installing* the packages. In this section, we are going to learn about the structure of an Idris package and how to depend on other packages in our projects.
+Idris パッケージを使用すると、複数のモジュールを論理的な単位にまとめ、パッケージを **インストール** することで他の Idris プロジェクトから利用可能にすることができます。本節では、Idris パッケージの構造と、プロジェクト内で他のパッケージに依存する方法について学びます。
 
-### The `.ipkg` File
+### `.ipkg` ファイル (The `.ipkg` File)
 
-At the heart of an Idris package lies its `.ipkg` file, which is usually but not necessarily stored at a project's root directory. For instance, for this Idris tutorial, there is file `tutorial.ipkg` at the tutorial's root directory.
+Idris パッケージの中心にあるのが `.ipkg` ファイルであり、通常（必須ではありませんが）プロジェクトのルートディレクトリに配置されます。例えば、この Idris チュートリアルの場合、ルートディレクトリに `tutorial.ipkg` ファイルが存在します。
 
-An `.ipkg` file consists of several key-value pairs (most of them optional), the most important of which I'll describe here. By far the easiest way to setup a new Idris project is by letting pack or Idris itself do it for you. Just run
+`.ipkg` ファイルはいくつかのキー・値のペア（その大半はオプション）で構成されており、ここでは最も重要なものを説明します。新しい Idris プロジェクトをセットアップする最も簡単な方法は、pack や Idris 自体に任せることです。新しいライブラリのスケルトンを作成するには：
 
 ```sh
 pack new lib pkgname
 ```
 
-to create the skeleton of a new library or
+新しいアプリケーションをセットアップするには：
 
 ```sh
 pack new bin appname
 ```
 
-to setup a new application. In addition to creating a new directory plus a suitable `.ipkg` file, these commands will also add a `pack.toml` file, which we will discuss further below.
+を実行します。これらのコマンドは、新しいディレクトリと適切な `.ipkg` ファイルを作成するだけでなく、後述する `pack.toml` ファイルも追加します。
 
-### Dependencies
+### 依存関係 (Dependencies)
 
-One of the most important aspects of an `.ipkg` file is listing the packages the library depends on in the `depends` field. Here is an example from the [*hedgehog* package](https://github.com/stefan-hoeck/idris2-hedgehog), a framework for writing property tests in Idris:
+`.ipkg` ファイルの最も重要な側面のひとつは、`depends` フィールドにライブラリが依存するパッケージを列挙することです。以下は、Idris でプロパティテストを作成するためのフレームワークである [*hedgehog* パッケージ](https://github.com/stefan-hoeck/idris2-hedgehog) からの抜粋です：
 
 ```ipkg
 depends    = base         >= 0.5.1
@@ -518,13 +517,13 @@ depends    = base         >= 0.5.1
            , sop          >= 0.5.0
 ```
 
-As you can see, *hedgehog* depends on *base* and *contrib*, both of which are part of every Idris installation, but also on [*elab-util*](https://github.com/stefan-hoeck/idris2-elab-util), a library of utilities for writing elaborator scripts (a powerful technique for creating Idris declarations by writing Idris code; it comes with its own lengthy tutorial if you are interested), [*sop*](https://github.com/stefan-hoeck/idris2-sop), a library for generically deriving interface implementations via a *sum of products* representation (this is a useful thing you might want to check out some day), and [*pretty-show*](https://github.com/stefan-hoeck/idris2-pretty-show), a library for pretty printing Idris values (*hedgehog* makes use of this in case a test fails).
+*hedgehog* は、すべての Idris インストールに含まれる *base* や *contrib* だけでなく、エラボレータスクリプト（Idris コードを書いて Idris 宣言を生成する強力な技術）用ユーティリティライブラリである [*elab-util*](https://github.com/stefan-hoeck/idris2-elab-util)、直積の直和（SOP）表現を介してインターフェース実装をジェネリックに導出するためのライブラリ [*sop*](https://github.com/stefan-hoeck/idris2-sop)、および Idris 値のプリティプリント用ライブラリ [*pretty-show*](https://github.com/stefan-hoeck/idris2-pretty-show)（テスト失敗時に *hedgehog* が使用）にも依存しています。
 
-So, before you actually can use *hedgehog* to write some property tests for your own project, you will need to install the packages it depends on before installing *hedgehog* itself. Since this can be tedious to do manually, it is best let a package manager like pack handle this task for you.
+したがって、自分のプロジェクトで *hedgehog* を使ってプロパティテストを書く前に、*hedgehog* 自体をインストールする前にそれが依存するパッケージをインストールする必要があります。これを手動で行うのは骨が折れるため、pack のようなパッケージマネージャに任せるのが最善です。
 
-#### Dependency Versions
+#### 依存関係のバージョン (Dependency Versions)
 
-You might want to specify a certain version (or a range) Idris should use for your dependencies. This might be useful if you have several versions of the same package installed and not all of them are compatible with your project. Here are several examples:
+依存関係に対して Idris が使用すべき特定のバージョン（または範囲）を指定したい場合があります。同じパッケージの複数のバージョンがインストールされており、そのすべてがプロジェクトと互換性があるわけではない場合に役立ちます。以下にいくつかの例を示します：
 
 ```ipkg
 depends    = base         == 0.5.1
@@ -534,9 +533,9 @@ depends    = base         == 0.5.1
            , sop          >= 0.5.0 && < 0.6.0
 ```
 
-This will look for packages *base* and *contrib* of exactly the given version, package *elab-util* of a version greater than or equal to `0.5.0`, package *pretty-show* of any version, and package *sop* of a version in the given range. In all cases, if several installed versions of a package match the specified range, the latest version will be used.
+これは、指定された正確なバージョンの *base* および *contrib*、バージョン `0.5.0` 以上の *elab-util*、任意のバージョンの *pretty-show*、および指定された範囲内のバージョンの *sop* を探します。いずれの場合も、インストールされているパッケージの複数のバージョンが指定された範囲に一致する場合、最新のバージョンが使用されます。
 
-In order to make use of this for your own packages, every `.ipkg` file should give the package's name and current version:
+自身のパッケージでこれを活用できるように、すべての `.ipkg` ファイルにはパッケージの名前と現在のバージョンを記載するべきです：
 
 ```ipkg
 package tutorial
@@ -544,13 +543,13 @@ package tutorial
 version    = 0.1.0
 ```
 
-As I'll show below, package versions play a much less crucial role when using pack and its curated package collection. But even then you might want to consider restricting the versions of packages you accept in order to make sure you catch any braking changes introduced upstream.
+後述するように、pack とその精選されたパッケージコレクションを使用する場合、パッケージバージョンの重要性は大幅に低下します。それでも、上流で導入された破壊的変更を確実に検知するために、受け入れるパッケージのバージョンを制限することを検討してもよいでしょう。
 
-### Library Modules
+### ライブラリモジュール (Library Modules)
 
-Many if not most Idris packages available on GitHub are programming *libraries*: They implement some piece of functionality and make it available to all projects depending on the given package. This is unlike Idris *applications*, which are supposed to be compiled to an executable that can then be run on your computer. The Idris project itself provides both: The Idris compiler application, which we use to type check and build other Idris libraries and applications, and several libraries like *prelude*, *base*, and *contrib*, which provide basic data types and functions useful in most Idris projects.
+GitHub で公開されている多くの（おそらく大半の）Idris パッケージはプログラミング **ライブラリ** です。これらは何らかの機能を実装し、そのパッケージに依存するすべてのプロジェクトで利用できるようにします。これは、コンピュータ上で実行できる実行可能ファイルにコンパイルされる Idris **アプリケーション** とは異なります。Idris プロジェクト自体はその両方を提供しています。他の Idris ライブラリやアプリケーションを型チェックおよびビルドするために使用する Idris コンパイラアプリケーションと、大半の Idris プロジェクトで有用な基本的なデータ型や関数を提供する *prelude*、*base*、*contrib* などのいくつかのライブラリです。
 
-In order to type check and install the modules you wrote in a library, you must list them in the `.ipkg` file's `modules` field. Here is an excerpt from the *sop* package:
+ライブラリで作成したモジュールを型チェックおよびインストールするには、`.ipkg` ファイルの `modules` フィールドにそれらを列挙する必要があります。以下は *sop* パッケージからの抜粋です：
 
 ```ipkg
 modules = Data.Lazy
@@ -563,15 +562,15 @@ modules = Data.Lazy
         , Data.SOP.Utils
 ```
 
-Modules missing from this list will *not* be installed and hence will not be available for other packages depending on the sop library.
+このリストに含まれていないモジュールはインストール **されず**、したがって sop ライブラリに依存する他のパッケージからは利用できません。
 
-### Pack and its curated Collection of Packages
+### pack と精選されたパッケージコレクション (Pack and its curated Collection of Packages)
 
-When the dependency graph of your project is getting large and complex, that is, when your project depends on many libraries, which themselves depend on yet other libraries, it can happen that two packages depend both on different - and, possibly, incompatible - versions of a third package. This situation can be nigh to impossible to resolve, and can lead to a lot of frustration when working with conflicting libraries.
+プロジェクトの依存関係グラフが大きく複雑になってくると、すなわちプロジェクトが多くのライブラリに依存し、それらのライブラリがさらに別のライブラリに依存している場合、2 つのパッケージが第 3 のパッケージの異なる（そして潜在的に互換性のない）バージョンに同時に依存してしまうことがあります。この状況を解決するのはほぼ不可能であり、競合するライブラリを操作する際に多くのフラストレーションの原因となります。
 
-It is therefore the philosophy of the pack project to avoid such a situation from the very beginning by making use of *curated package collections*. A pack collection consists of a specific Git commit of the Idris compiler and a set of packages, again each at a specific Git commit, all of which have been tested to work well and without issues together. You can see a list of packages available to pack [here](https://github.com/stefan-hoeck/idris2-pack-db/blob/main/STATUS.md).
+したがって、**精選されたパッケージコレクション（curated package collections）** を利用することで、最初からそのような状況を回避することが pack プロジェクトの哲学です。pack コレクションは、Idris コンパイラの特定の Git コミットと、それぞれ特定の Git コミットにおける一連のパッケージで構成され、それらすべてが相互に問題なく連携して動作することがテストされています。pack で利用可能なパッケージの一覧は [こちら](https://github.com/stefan-hoeck/idris2-pack-db/blob/main/STATUS.md) で確認できます。
 
-Whenever a project you are working on depends on one of the libraries listed in pack's package collection, pack will automatically install it and all of its dependencies for you. However, you might also want to depend on a library that is not yet part of pack's collection. In that case, you must specify the library in question in one of your `pack.toml` files - the global one found at `$HOME/.pack/user/pack.toml`, or one local to your current project or one of its parent directories (if any). There, you can either specify a dependency local to your system or a Git project (local or remote). An example for each is shown below:
+作業中のプロジェクトが pack のパッケージコレクションに掲載されているライブラリのいずれかに依存している場合、pack は自動的にそのライブラリとすべての依存関係をインストールします。しかし、pack のコレクションにまだ含まれていないライブラリに依存したい場合もあります。その場合、`pack.toml` ファイル（`$HOME/.pack/user/pack.toml` にあるグローバルなもの、または現在のプロジェクトやその親ディレクトリにあるローカルなもの）に対象のライブラリを指定する必要があります。そこでは、システム上のローカルな依存関係か、Git プロジェクト（ローカルまたはリモート）のいずれかを指定できます。それぞれの例を以下に示します：
 
 ```toml
 [custom.all.foo]
@@ -586,13 +585,13 @@ commit = "latest:main"
 ipkg   = "bar.ipkg"
 ```
 
-As you can see, in both cases you have to specify where the project can be found as well as the name and location of its `.ipkg` file. In case of a Git project, you also need to tell pack the commit it should use. In the example above, we want to use the latest commit from the `main` branch. We can use `pack fetch` to fetch and store the currently latest commit hash.
+どちらの場合も、プロジェクトが存在する場所と、その `.ipkg` ファイルの名前および場所を指定する必要があります。Git プロジェクトの場合、使用すべきコミットも pack に伝える必要があります。上記の例では、`main` ブランチの最新コミットを使用したいと考えています。`pack fetch` を使用して、現在最新のコミットハッシュを取得して保存できます。
 
-Entries like the ones given above are all that is needed to add support to custom libraries to pack. You can now list these libraries as dependencies in your own project's `.ipkg` file and pack will automatically install them for you.
+上記のようなエントリを追加するだけで、カスタムライブラリのサポートを pack に追加できます。これで、自身のプロジェクトの `.ipkg` ファイルにこれらのライブラリを依存関係として列挙できるようになり、pack が自動的にインストールしてくれるようになります。
 
-## Conclusion
+## おわりに (Conclusion)
 
-This concludes our section about structuring Idris projects. We have learned about several types of code blocks - `failing` blocks for showing that a piece of code fails to elaborate, `namespace`s for having overloaded names in the same source file, and parameter blocks for sharing lists of parameters between functions - and how to group several source files into an Idris library or application. Finally, we learned how to include external libraries in an Idris project and how to use pack to help us keep track of these dependencies.
+これで Idris プロジェクトの構成に関する節を終わります。エラボレーションの失敗を示す `failing` ブロック、同一ソースファイル内で名前をオーバーロードするための `namespace`、関数間でパラメータリストを共有するための `parameters` ブロックなど、いくつかの種類のコードブロックについて学び、複数のソースファイルを Idris ライブラリやアプリケーションにグループ化する方法を学びました。最後に、Idris プロジェクトに外部ライブラリを含める方法と、それらの依存関係を管理するために pack を活用する方法を学びました。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

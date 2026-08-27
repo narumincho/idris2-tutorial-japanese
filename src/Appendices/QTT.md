@@ -1,16 +1,19 @@
-# A Deep Dive into Quantitative Type Theory
+# 量的型理論の深層探求 (A Deep Dive into Quantitative Type Theory)
 
-In the tutorial proper, when discussing functions, Idris 2's quantity system was introduced. The description was intentionally a bit simplified - the inner workings of quantities are complicated, and that complication would have only confused any newcomers to Idris 2.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/QTT.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/QTT.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-Here, we'll provide a more proper and thorough treatment of Quantitative Type Theory (QTT), including how quantity checking is performed and the theory behind it. Most of the information here will be unnecessary for understanding and writing Idris programs, and you are free to keep thinking about quantities like they were explained before. When working with quantities in their full complexity, however, a better understanding of how they work can be helpful to avoid misconceptions.
+チュートリアルの本文において関数を解説した際、Idris 2 の多重度（quantity）システムを紹介しました。そこでの説明は意図的に簡略化されていました。多重度の内部の仕組みは複雑であり、その複雑さは Idris 2 の初心者にとって混乱の元にしかならないためです。
 
-## The Quantity Semiring
+ここでは、多重度チェックがどのように実行されるか、およびその背後にある理論を含め、量的型理論（Quantitative Type Theory / QTT）についてより適切で徹底的な解説を提供します。ここにある情報の大部分は Idris プログラムを理解して書くためには不要であり、以前説明されたように多重度について考え続けてもまったく問題ありません。しかし、多重度をその完全な複雑さの中で扱う場合、誤解を避けるためにそれらがどのように機能するのかをより深く理解することが役立ちます。
 
-Quantitative Type Theory is based on a set of quantities. The core theory allows for any quantities to be used, but Idris 2 in particular has three: erased, linear, and unrestricted. These are usually written as `0`, `1`, and `ω` (the Greek lowercase omega) respectively.
+## 多重度半環 (The Quantity Semiring)
 
-As QTT requires, these three quantities are equipped with the structure of an *ordered semiring*. The exact mathematical details of what that means aren't important; what it means for us is that quantities can be added and multiplied together, and that there is an ordering relation on them. Here are the tables for each of these operations, where the first argument is on the left and the second is on the top:
+量的型理論は、多重度の集合に基づいています。コアとなる理論では任意の多重度を使用できますが、Idris 2 では特に次の 3 つを備えています: 消去（erased）、線形（linear）、無制限（unrestricted）。これらは通常、それぞれ `0`、`1`、`ω`（ギリシャ小文字のオメガ）と表記されます。
 
-### Addition
+QTT の要請により、これら 3 つの多重度には **順序半環（ordered semiring）** の構造が備わっています。その厳密な数学的詳細を把握することは重要ではありません。私たちにとって重要なのは、多重度同士を加算および乗算でき、それらの間に順序関係が存在するということです。以下にこれらの各演算の表を示します。第 1 引数が左側、第 2 引数が上側です：
+
+### 加算 (Addition)
 
 |   `+`   | `0` | `1` | `ω` |
 | :-----: | :-: | :-: | :-: |
@@ -18,7 +21,7 @@ As QTT requires, these three quantities are equipped with the structure of an *o
 | **`1`** | `1` | `ω` | `ω` |
 | **`ω`** | `ω` | `ω` | `ω` |
 
-### Multiplication
+### 乗算 (Multiplication)
 
 |   `*`   | `0` | `1` | `ω` |
 | :-----: | :-: | :-: | :-: |
@@ -26,7 +29,7 @@ As QTT requires, these three quantities are equipped with the structure of an *o
 | **`1`** | `0` | `1` | `ω` |
 | **`ω`** | `0` | `ω` | `ω` |
 
-### Order
+### 順序 (Order)
 
 |   `≤`   |  `0`  |  `1`  | `ω`  |
 | :-----: | :---: | :---: | :--: |
@@ -34,13 +37,13 @@ As QTT requires, these three quantities are equipped with the structure of an *o
 | **`1`** | false | true  | true |
 | **`ω`** | false | false | true |
 
-These operations behave mostly how you might expect, with `0` and `1` being the usual numbers and `ω` being a sort of "infinity" value. (We have `1 + 1 = ω` instead of `2` because there isn't a `2` quantity in our system.)
+これらの演算は概ね直感通りに振る舞います。`0` と `1` は通常の数値であり、`ω` はある種の「無限大」の値です（システム内に `2` という多重度が存在しないため、`1 + 1 = 2` ではなく `1 + 1 = ω` となります）。
 
-There is one big difference in our ordering, though: `0 ≤ 1` is false! We have that `0 ≤ ω` and `1 ≤ ω`, but not `0 ≤ 1`, or `1 ≤ 0` for that matter. In the language of mathematics, we say that `0` and `1` are *incomparable*. We'll get into why this is the case later, when we talk about what these operations mean and how they're used.
+ただし、順序関係には 1 つ大きな違いがあります。**`0 ≤ 1` は偽（false）です！** `0 ≤ ω` と `1 ≤ ω` は成り立ちますが、`0 ≤ 1` や `1 ≤ 0` は成り立ちません。数学の用語では、`0` と `1` は **比較不能（incomparable）** であると言います。なぜそうなるのかについては、これらの演算が何を意味しどのように使われるかを説明する際にあらためて触れます。
 
-## Variables and Contexts
+## 変数とコンテキスト (Variables and Contexts)
 
-In QTT, each variable in each context has an associated quantity. These quantities can be plainly seen when inspecting holes in the REPL. Here's an example from the tutorial:
+QTT では、各コンテキスト内の各変数に関連付けられた多重度が存在します。これらの多重度は、REPL でホールをインスペクトした際にはっきりと確認できます。チュートリアルからの例を挙げます：
 
 ```repl
  0 b : Type
@@ -53,32 +56,32 @@ In QTT, each variable in each context has an associated quantity. These quantiti
 mll1 : S (length xs) = S (length (map f xs))
 ```
 
-In this hole's context, The type variables `a` and `b` have `0` quantity, while the others have `ω` quantity.
+このホールのコンテキストでは、型変数 `a` と `b` の多重度は `0` であり、他の変数の多重度は `ω` です。
 
-Since the context is what stores quantities, only names that appear in the context can have a quantity, including:
+多重度を保持するのはコンテキストであるため、コンテキストに出現する名前のみが多重度を持つことができます。これには以下が含まれます：
 
-- Function/lambda parameters
-- Pattern matching bindings
-- `let` bindings
+- 関数やラムダのパラメータ
+- パターンマッチのバインディング
+- `let` バインディング
 
-These do not appear in the context, and thus do NOT have quantities:
+以下はコンテキストに出現しないため、多重度を持ち **ません**：
 
-- Top-level definitions
-- `where` definitions
-- All non-variable expressions
+- トップレベル定義
+- `where` 定義
+- 変数以外のすべての式
 
-### A Change in Perspective
+### 視点の転換 (A Change in Perspective)
 
-When writing Idris programs using holes, we tend to use a top-to-bottom approach: we start with looking at the context for the whole function, and then we look at smaller and smaller sub-expressions as we fill in the code. This means that quantities in the context tend to decrease over time - if the variable `x` has quantity `1` and you use it once, the quantity will decrease to `0`.
+ホールを使って Idris プログラムを書く際、私たちは通常トップダウン（上から下）のアプローチをとります。まず関数全体のコンテキストを確認し、コードを埋めるにつれて次第に小さな部分式を見ていきます。これは、コンテキスト内の多重度が時間とともに減少していく傾向があることを意味します。変数 `x` の多重度が `1` であり、それを 1 回使用すると、多重度は `0` に減少します。
 
-When looking at how typechecking works, however, it's more natural to look at contexts in the other direction, from smaller sub-expressions to larger ones. This means that the quantities we're looking at will tend to increase instead. As an example, let's look at this simple function:
+しかし、型チェックがどのように動作するかを観察する場合、逆の方向、つまり小さな部分式から大きな式へとコンテキストを見る方が自然です。これは、私たちが注目する多重度が逆に増加する傾向があることを意味します。例として、以下の単純な関数を見てみましょう：
 
 ```idris
 square : Num a => a -> a
 square x = x * x
 ```
 
-Let's first look at the context for the smallest sub-expression of this function, just the variable `x`:
+まず、この関数の最小の部分式である変数 `x` 単体のコンテキストを見てみます：
 
 ```repl
  0 a : Type
@@ -87,7 +90,7 @@ Let's first look at the context for the smallest sub-expression of this function
 x : a
 ```
 
-Now let's look at the context for the larger expression `x * x`:
+次に、より大きな式 `x * x` のコンテキストを見てみます：
 
 ```repl
  0 a : Type
@@ -96,15 +99,15 @@ Now let's look at the context for the larger expression `x * x`:
 (x * x) : a
 ```
 
-The quantity of the parameter `x` increased from `1` to `ω`, since we went from using it once to using it multiple times. When looking at expressions like this, we can think of the quantity `q` as saying that the variable is "used `q` times" in the expression.
+パラメータ `x` の多重度は、1 回の使用から複数回の使用へと移行したため、`1` から `ω` に増加しました。このように式を見る場合、多重度 `q` はその式の中で変数が「`q` 回使用されている」ことを表すと考えることができます。
 
-## Quantity Checking
+## 多重度チェック (Quantity Checking)
 
-With all of that background information established, we can finally see how quantity checking actually works. Let's follow what happens to a single variable `x` in our context as we perform different operations.
+ここまでの背景を踏まえて、多重度チェックが実際にどのように機能するかを見ていきましょう。さまざまな演算を実行する際に、コンテキスト内の単一の変数 `x` に何が起こるかを追跡します。
 
-To illustrate how quantities evolve, we will provide Idris-style context diagrams showing the various cases. In these, capital-letter names `T`, `E`, etc. stand for any expression, and `q`, `r`, etc. stand for any quantity.
+多重度がどのように推移するかを説明するために、Idris スタイルのコンテキスト図を示します。これらにおいて、大文字の名前 `T` や `E` などは任意の式を表し、`q` や `r` などは任意の多重度を表します。
 
-### Variables and Literals
+### 変数とリテラル (Variables and Literals)
 
 ```repl
  1 x : T
@@ -112,7 +115,7 @@ To illustrate how quantities evolve, we will provide Idris-style context diagram
 x : T
 ```
 
-In the simplest case, an expression is just a single variable. That variable will have quantity `1` in the context, while all others have quantity `0`. (Other variables may also be missing entirely, which for quantity checking is equivalent to them having `0` quantity.)
+最も単純なケースでは、式は単一の変数です。その変数はコンテキスト内で多重度 `1` を持ち、他のすべての変数は多重度 `0` を持ちます（他の変数は完全に省略されることもありますが、多重度チェックにおいては多重度 `0` を持つことと同等です）。
 
 ```repl
  0 x : T
@@ -120,9 +123,9 @@ In the simplest case, an expression is just a single variable. That variable wil
 True : Bool
 ```
 
-For literals such as `1`, or constructors such as `True`, all variables in the context have quantity 0, since all variables are used 0 times in a constructor.
+`1` のようなリテラルや `True` のようなコンストラクタの場合、コンストラクタ内で変数は 0 回使用されるため、コンテキスト内のすべての変数は多重度 0 を持ちます。
 
-### Function Application
+### 関数適用 (Function Application)
 
 ```repl
  qf x : T
@@ -138,9 +141,9 @@ E : A
 (F E) : B
 ```
 
-This is the most complicated of QTT's rules. We have a function `F` whose parameter has `r` quantity, and we're applying it to `E`. If our variable `x` is used `qf` times in `F` and `qe` times in `E`, then it is used `qf + r*qe` times in the full expression.
+これは QTT の規則の中で最も複雑なものです。パラメータが多重度 `r` を持つ関数 `F` があり、それを `E` に適用します。変数 `x` が `F` 内で `qf` 回使用され、`E` 内で `qe` 回使用されている場合、式全体では `qf + r*qe` 回使用されます。
 
-To better understand this rule, let's look at some simpler cases. First, let's assume that `x` is not used in the function `F`, so that `qf = 0`. Then, `x`'s full quantity is `r * qe`. For example, let's look at these two functions:
+この規則をよりよく理解するために、いくつかの単純なケースを見てみましょう。まず、`x` が関数 `F` 内で使用されていないと仮定します（`qf = 0`）。このとき、`x` の全体の多重度は `r * qe` になります。例えば、以下の 2 つの関数を見てみましょう：
 
 ```idris
 f x = id x
@@ -148,17 +151,17 @@ f x = id x
 g x = id 1
 ```
 
-Here, `id` has type `a -> a`, where its input is unrestricted (`ω`). In the first function, we can see that `x` is used once in the input of `id`, so the quantity of `x` in the whole expression is `ω * 1 = ω`. In the second function, `x` is used zero times in the input of `id`, so its quantity in the whole expression is `ω * 0 = 0`. The function `g` will typecheck if you mark its input as erased, but not `f`.
+ここで `id` は型 `a -> a` を持ち、その入力は無制限（`ω`）です。最初の関数では、`x` は `id` の入力内で 1 回使用されているため、式全体における `x` の多重度は `ω * 1 = ω` です。2 番目の関数では、`x` は `id` の入力内で 0 回使用されているため、式全体における多重度は `ω * 0 = 0` です。関数 `g` はその入力を消去（erased）としてマークしても型チェックを通過しますが、`f` は通過しません。
 
-As another simplified case, let's assume that `F` is a linear function, meaning that `r = 1`. Then `x`'s full quantity is `qf + qe`, the simple sum of the quantities of each part. Here's a function that demonstrates this:
+もうひとつの単純化されたケースとして、`F` が線形関数である（`r = 1`）と仮定します。このとき、`x` の全体の多重度は `qf + qe` となり、各部分の多重度の単純な和になります。これを示す関数が以下です：
 
 ```idris
 ldup x = (#) x x
 ```
 
-The linear pair constructor `(#)` is linear in both arguments, so to find the quantity of `x` in the full expression we can just add up the quantities in each part. `x` is used zero times in `(#)` and one time in `x`, so the total quantity is `0 + 1 + 1 = ω`. If the second `x` were replaced by something else, like a literal, the quantity would only be `0 + 1 + 0 = 1`. Intuitively, you can think of these as "parallel expressions", and the addition operation tells you how quantities combine in parallel.
+線形ペアコンストラクタ `(#)` は両方の引数において線形であるため、式全体における `x` の多重度を求めるには各部分の多重度を足し合わせるだけです。`x` は `(#)` 内で 0 回、各 `x` 内で 1 回使用されているため、合計多重度は `0 + 1 + 1 = ω` になります。2 番目の `x` がリテラルのような別のものに置き換えられた場合、多重度は `0 + 1 + 0 = 1` になります。直感的には、これらを「並行な式」と考えることができ、加算演算は多重度が並行してどのように結合するかを示します。
 
-### Subusaging
+### サブユース (Subusaging)
 
 ```repl
  q x : T
@@ -172,27 +175,27 @@ E : T'
 E : T'
 ```
 
-This rule is where the order relation on quantities comes in. It allows us to convert a quantity in our context to another one, given that the new context is greater than or equal to the old one. Type theorists call this *subusaging*, as it lets us use variables less often than we claim in our types.
+この規則において、多重度に対する順序関係が登場します。新しいコンテキストが古いコンテキスト以上である場合、コンテキスト内の多重度を別の多重度に変換できます。型理論学者はこれを **サブユース（subusaging）** と呼びます。型で主張しているよりも少ない頻度で変数を使用することを許容するためです。
 
-Subusaging is why this function definition is allowed:
+サブユースがあるおかげで、以下の関数定義が許可されます：
 
 ```idris
 ignore : a -> Int
 ignore x = 42
 ```
 
-The input `x` is used zero times, which would normally mean its quantity would have to be `0`; however, since `0 ≤ ω`, we can use subusaging to increase the quantity to `ω`.
+入力 `x` は 0 回使用されており、これは通常その多重度が `0` でなければならないことを意味します。しかし、`0 ≤ ω` であるため、サブユースを使用して多重度を `ω` に増やすことができます。
 
-This also explains the mysterious fact we pointed out earlier, that `0 ≰ 1` in our quantity ordering. If it were true that `0 ≤ 1`, then we could also increase the quantity of `x` from `0` to `1`:
+これは、先ほど指摘した「多重度の順序において `0 ≰ 1` である」という興味深い事実の理由も説明しています。もし `0 ≤ 1` が真であった場合、`x` の多重度を `0` から `1` に増やすことも可能になってしまいます：
 
 ```idris
 ignoreLinear : (1 x : a) -> Int
 ignoreLinear x = 42
 ```
 
-This would mean that the quantity `1` would be for variables used *at most* once, rather than *exactly* once. Idris's designers decided that they wanted linearity to have the second meaning, not the first.
+こうなると、多重度 `1` は「**正確に** 1 回」ではなく「**最大で** 1 回」使用される変数を意味することになります。Idris の設計者は、線形性に前者の意味を持たせることを決定しました。
 
-### Lambdas and Other Bindings
+### ラムダとその他の束縛 (Lambdas and Other Bindings)
 
 ```repl
  q x : A
@@ -202,41 +205,41 @@ E : B
 (\q x => E) : (q x : A) -> B
 ```
 
-This rule is the most important, as it is the only one in which quantities actually impact typechecking. It is also one of the most straightforward: a lambda expression `\q x => E` is only valid if `x` is used `q` times inside `E`. This rule doesn't only apply to lambdas, actually - it applies to any syntax where a variable that has a quantity is bound, such as function parameters, `let`, `case`, `with`, and so on.
+この規則は最も重要です。多重度が型チェックに実際に影響を与える唯一の規則だからです。また、最もわかりやすい規則のひとつでもあります。ラムダ式 `\q x => E` は、`x` が `E` の内部で `q` 回使用されている場合にのみ有効です。この規則はラムダだけでなく、関数のパラメータ、`let`、`case`、`with` など、多重度を持つ変数が束縛される任意の構文に適用されます。
 
 ```idris
 let x = 1 in x + x
 ```
 
-To see how quantity checking would work with this let-expression, we can simply desugar it into its equivalent lambda form:
+この let 式で多重度チェックがどのように機能するかを確認するには、同等のラムダ形式に脱糖（desugar）します：
 
 ```idris
 (\x => x + x) 1
 ```
 
-An explicit quantity `q` isn't given for the lambda in this expression, so Idris will try to infer the quantity, then check to see if it's valid. In this case, Idris will infer that `x` is unrestricted.
+この式のラムダには明示的な多重度 `q` が与えられていないため、Idris は多重度を推論し、それが有効かどうかをチェックします。この場合、Idris は `x` が無制限であると推論します。
 
-#### Pattern Matching
+#### パターンマッチ (Pattern Matching)
 
-All of the binding constructs that this rule applies to support pattern matching, so we need to determine how quantities interact with patterns. To be more specific, if we have a function that pattern-matches like this:
+この規則が適用されるすべての束縛構文はパターンマッチをサポートしているため、多重度がパターンとどのように相互作用するかを決定する必要があります。具体的には、以下のようにパターンマッチを行う関数があるとします：
 
 ```idris
 func : (1 _ : LPair a b) -> c
 func (x # y) = ?impl
 ```
 
-How does the linear quantity of this function's input "descend" into the bindings `x` and `y`?
+この関数の入力の線形多重度は、どのようにして束縛 `x` と `y` に「伝播」するのでしょうか？
 
-A simple rule is to apply the same function-application rule we looked at earlier, but to the left side of the equation. For example, here's how we compute the quantity required for `x` in this function definition:
+単純な規則は、先ほど見た関数適用規則を方程式の左辺に適用することです。例えば、この関数定義で `x` に要求される多重度は以下のように計算されます：
 
 ```idris
 func      (((#)      x)       y)
   0 + 1 * (( 0 + 1 * 1) + 1 * 0)  = 1
 ```
 
-We start from the outside and work our way inwards, applying the `qf + r*qe` rule as we go. `x` is used zero times in the constant `func`, and its argument is linear. We know that `x` is used once inside of the linear pair `(x # y)` (aside from being obvious, we can compute this fact ourselves), so the number of times `x` must be used in `func`'s definition is `0 + 1 * 1 = 1`.
+外側から内側へと進みながら、`qf + r*qe` の規則を適用していきます。`x` は定数 `func` 内で 0 回使用され、その引数は線形です。`x` が線形ペア `(x # y)` の内部で 1 回使用されていることが分かっているため、`func` の定義内で `x` が使用されなければならない回数は `0 + 1 * 1 = 1` になります。
 
-The same argument applies to `y`, meaning that `y` should also be used once inside of `func` for this definition to pass quantity checking. And in fact, if we look at the context of the hole `?impl`, that's exactly what we see!
+同じ議論が `y` にも適用されるため、この定義が多重度チェックを通過するには `y` も `func` 内で 1 回使用される必要があります。そして実際、ホール `?impl` のコンテキストを見ると、まさにその通りになっていることが分かります！
 
 ```repl
  0 a : Type
@@ -248,7 +251,7 @@ The same argument applies to `y`, meaning that `y` should also be used once insi
 impl : c
 ```
 
-As a final note, pattern matching in Idris 2 is only allowed when the value in question exists at runtime, meaning that it isn't erased. This is because in QTT, a value must be constructed before it can be pattern-matched: if you match on a variable `x`, the resources required to make that variable's value are added to the total count.
+最後に注意点として、Idris 2 でのパターンマッチは、対象の値が実行時に存在する場合（すなわち消去されていない場合）にのみ許可されます。QTT では、値をパターンマッチする前にその値を構築する必要があるためです。変数 `x` に対してマッチを行うと、その変数の値を作成するために必要なリソースが合計カウントに追加されます。
 
 ```repl
  1 x : T
@@ -264,23 +267,23 @@ E : T'
 (case x of ... => E) : T'
 ```
 
-For this reason, the total uses of the variable `x` when pattern-matching on it must be `1 + q`, where `q` is the uses of `x` after the pattern-match (`x` is still possible to use with an as-pattern `x@...`). This prevents the quantity from being `0`.
+このため、変数 `x` に対してパターンマッチを行う際の合計使用回数は `1 + q` でなければなりません。ここで `q` はパターンマッチ後の `x` の使用回数です（`x@...` のような as-pattern で `x` を使用することも可能です）。これにより、多重度が `0` になることが防止されます。
 
-## The Erased Fragment
+## 消去された断片 (The Erased Fragment)
 
-Earlier we stated that only variables in the context can have quantities, which in particular means top-level definitions cannot have them. This is *mostly* true, but there is one slight exception: a function can be marked as erased by placing a `0` before its name.
+先ほど、コンテキスト内の変数のみが多重度を持つことができ、トップレベルの定義は多重度を持てないと述べました。これは **ほぼ** 事実ですが、1 つだけわずかな例外があります。関数の名前の前に `0` を置くことで、関数を消去された（erased）ものとしてマークできます。
 
 ```idris
 0 erasedId : (0 x : a) -> a
 erasedId x = x
 ```
 
-This tells the type system to define this function within the *erased fragment*, which is a fragment of the type system wherein all quantity checks are ignored. In the `erasedId` function above, we use the function's input `x` once despite labeling it as erased. This would normally result in a quantity error, but this function is allowed due to being defined in the erased fragment.
+これは型システムに対し、この関数を **消去された断片（erased fragment）** 内で定義するよう指示します。これは、すべての多重度チェックが無視される型システムの領域です。上記の `erasedId` 関数では、入力 `x` を消去済みとラベル付けしているにもかかわらず 1 回使用しています。通常であれば多重度エラーになりますが、この関数は消去された断片内で定義されているため許可されます。
 
-This quantity freedom the erased fragment gives us comes with a big drawback, though - erased functions are banned from being used at runtime. In terms of the type theory, what this means is that an erased function can only ever be used in these two places:
+しかし、消去された断片がもたらすこの多重度の自由度には大きな代償が伴います。消去された関数は実行時に使用することが禁止されます。型理論の観点から言えば、消去された関数は以下の 2 つの場所でしか使用できません：
 
-1. Inside of another erased-fragment function or expression;
-2. Inside of a function argument that's erased:
+1. 別の消去された断片の関数または式の内部
+2. 消去されている関数の引数の内部：
 
 ```idris
 constInt : (0 _ : a) -> Int
@@ -290,30 +293,31 @@ erased2 : Int
 erased2 = constInt (erasedId 1)
 ```
 
-This makes sure that quantities are always handled correctly at runtime, which is where it matters!
+これにより、実行時（多重度が実際に重要となる場所）において多重度が常に正しく扱われることが保証されます！
 
-There is another important place where the erased fragment comes into play, and that's in type signatures. The type signatures of definitions are always erased, so erased functions can be used inside of them.
+消去された断片が活躍するもうひとつの重要な場所は型シグネチャです。定義の型シグネチャは常に消去されるため、その内部で消去された関数を使用できます。
 
 ```idris
 erasedPrf : erasedId 0 = 0
 erasedPrf = Refl
 ```
 
-For this reason, erased functions are sometimes thought of as "exclusively type-level functions", though as we've seen, that's not entirely accurate.
+このため、消去された関数は「型レベル専用の関数」と見なされることがありますが、これまで見てきたように、それは完全に正確というわけではありません。
 
-## Conclusion
+## おわりに (Conclusion)
 
-This concludes our thorough discussion of Quantitative Type Theory. In this section, we learned about the various operations on quantities: their addition, multiplication, and ordering. We saw how quantities were linked to the context, and how to properly think about the context when analyzing type systems (bottom-to-top instead of top-to-bottom). We then moved on to studying QTT proper, and we saw how the quantities in our context change as the expressions we write grow more complex. Finally, we looked at the erased fragment, and how we can define erased functions.
+これで量的型理論に関する徹底的な解説を終わります。本節では、多重度に対する各種の演算（加算、乗算、順序）について学びました。多重度がコンテキストとどのように結びついているか、型システムを分析する際にコンテキストをどのように捉えるべきか（トップダウンではなくボトムアップ）を見ました。その後、QTT そのものの学習に進み、記述する式が複雑になるにつれてコンテキスト内の多重度がどのように変化するかを確認しました。最後に、消去された断片と、消去された関数を定義する方法について見ました。
 
-In Idris 2's current state, most of this information is still entirely unnecessary for learning the language. That may not always be the case, though: there have been some discussions to change the quantity semiring that Idris 2 uses, or even to allow the programmer to choose which set of quantities to use. Whether those discussions lead to anything or not, it can still useful to better understand how Quantitative Type Theory functions in order to write better Idris 2 code.
+Idris 2 の現状においては、この情報の大部分は言語を学ぶためには依然として不要です。しかし、将来にわたって常にそうであるとは限りません。Idris 2 が使用する多重度半環を変更したり、どの多重度のセットを使用するかをプログラマが選択できるようにする議論が行われています。それらの議論がどのような結末を迎えるかにかかわらず、より良い Idris 2 コードを書くために量的型理論がどのように機能するかを深く理解しておくことは有益です。
 
-### A Note on Mathematical Accuracy
+### 数学的な正確さに関する補足 (A Note on Mathematical Accuracy)
 
-The information in this appendix is partially based on Robert Atkey's 2018 paper [Syntax and Semantics of Quantitative Type Theory](https://bentnib.org/quantitative-type-theory.pdf), which outlines QTT in the standard language of type theory. The QTT presented in Atkey's paper is roughly similar to Idris 2's type system except for these differences:
+この付録の情報は、Robert Atkey の 2018 年の論文 [*Syntax and Semantics of Quantitative Type Theory*](https://bentnib.org/quantitative-type-theory.pdf)（標準的な型理論の言語で QTT を概説したもの）に部分的に基づいています。Atkey の論文で提示された QTT は、以下の違いを除いて Idris 2 の型システムとおおむね類似しています：
 
-1. Atkey's theory does not have subusaging, and so the quantity semiring in Atkey's paper is not ordered.
-2. In Atkey's theory, types can only be constructed in the erased fragment, which means it is impossible to construct a type at runtime. Idris 2 allows constructing types at runtime, but still uses the erased fragment when inside of type signatures.
+1. Atkey の理論にはサブユースが存在しないため、Atkey の論文における多重度半環は順序付けられていません。
+2. Atkey の理論では、型は消去された断片内でのみ構築できるため、実行時に型を構築することは不可能です。Idris 2 は実行時の型構築を許可していますが、型シグネチャの内部では引き続き消去された断片を使用します。
 
-While we have tried to be as mathematically accurate as possible in this section, some accuracy had to be sacrificed for the sake of simplicity. In particular, the description of pattern matching given here is substantially oversimplified. A proper formal treatment of pattern matching would require introducing an eliminator function for each datatype; this eliminator would serve to determine how that datatype's constructors interacted with quantity checking. The details of how this would work for a few simple types (such as the boolean type `Bool`) are in Atkey's paper above.
+本節では可能な限り数学的に正確であることを目指しましたが、単純化のために一部の正確さは犠牲にされています。特に、ここで示したパターンマッチの説明は大幅に単純化されています。パターンマッチを厳密に形式的に扱うには、各データ型に対してエリミネータ（eliminator）関数を導入する必要があります。このエリミネータは、そのデータ型のコンストラクタが多重度チェックとどのように相互作用するかを決定する役割を果たします。いくつかの単純な型（ブール型 `Bool` など）に対してこれがどのように機能するかの詳細は、上記の Atkey の論文に記載されています。
 
 <!-- vi: filetype=idris2:syntax=markdown -->
+
