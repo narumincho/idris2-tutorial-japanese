@@ -1,11 +1,15 @@
-# Exercises part 1
+# プリミティブ 練習問題 パート1
 
-In these exercises, you are supposed to implement a bunch of utility functions for consuming and converting strings. I don't give the expected types here, because you are supposed to come up with those yourself.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Exercises1.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-1. Implement functions similar to `map`, `filter`, and `mapMaybe` for strings. The output type of these should always be a string.
+この練習問題では、文字列を消費・変換するためのいくつかのユーティリティ関数を実装します。ここでは期待される型シグネチャを明示していませんので、ご自身で考えて定義してください。
 
-2. Implement functions similar to `foldl` and `foldMap` for strings.
+1. 文字列に対する `map`、`filter`、`mapMaybe` に類似した関数を実装してください。これらの戻り値の型は常に文字列（`String`）であるべきです。
 
-3. Implement a function similar to `traverse` for strings. The output type should be a wrapped string.
+2. 文字列に対する `foldl` および `foldMap` に類似した関数を実装してください。
 
-4. Implement the bind operator for strings. The output type should again be a string.
+3. 文字列に対する `traverse` に類似した関数を実装してください。戻り値の型はエフェクトでラップされた文字列であるべきです。
+
+4. 文字列に対する bind 演算子（`>>=`）を実装してください。戻り値の型は再び文字列であるべきです。
+

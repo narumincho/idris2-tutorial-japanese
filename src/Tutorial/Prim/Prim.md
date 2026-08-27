@@ -1,4 +1,7 @@
-# How Primitives are Implemented
+# プリミティブの実装方法 (How Primitives are Implemented)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Prim.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Prim.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Prim.Prim
@@ -9,59 +12,59 @@ import Data.String
 %default total
 ```
 
-## A Short Note on Backends
+## バックエンドに関する補足 (A Short Note on Backends)
 
-According to [Wikipedia](https://en.wikipedia.org/wiki/Compiler), a compiler is "a computer program that translates computer code written in one programming language (the source language) into another language (the target language)". The Idris compiler is exactly that: A program translating programs written in Idris into programs written in Chez Scheme. This scheme code is then parsed and interpreted by a Chez Scheme interpreter, which must be installed on the computers we use to run compiled Idris programs.
+[Wikipedia](https://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%B3%E3%83%91%E3%82%A4%E3%83%A9) によると、コンパイラとは「あるプログラミング言語（ソース言語）で書かれたコンピュータプログラムを、別の言語（ターゲット言語）に変換するコンピュータプログラム」です。Idris コンパイラはまさにそれであり、Idris で書かれたプログラムを Chez Scheme で書かれたプログラムに変換するプログラムです。この Scheme コードは Chez Scheme インタプリタによってパース・解釈され実行されます（そのため、コンパイルされた Idris プログラムを実行するにはマシンに Chez Scheme がインストールされている必要があります）。
 
-But that's only part of the story. Idris 2 was from the beginning designed to support different code generators (so called *backends*), which allows us to write Idris code to target different platforms, and your Idris installation comes with several additional backends available. You can specify the backend to use with the `--cg` command-line argument (`cg` stands for *code generator*). For instance:
+しかし、それは一面にすぎません。Idris 2 は当初からさまざまなコード生成器（いわゆる **バックエンド / backends**）をサポートするように設計されており、異なるプラットフォームをターゲットにした Idris コードを記述できます。標準の Idris インストール環境にも複数のバックエンドが用意されています。使用するバックエンドは `--cg` コマンドライン引数（`cg` は *code generator* の略）で指定できます。例えば：
 
 ```sh
 idris2 --cg racket
 ```
 
-Here is a non-comprehensive list of the backends available with a standard Idris installation (the name to be used in the command-line argument is given in parentheses):
+以下は標準の Idris インストール環境で利用可能なバックエンドの一部です（括弧内はコマンドライン引数で指定する名前）：
 
-- Racket Scheme (`racket`): This is a different flavour of the scheme programming language, which can be useful to use when Chez Scheme is not available on your operating system.
-- Node.js (`node`): This converts an Idris program to JavaScript.
-- Browser (`javascript`): Another JavaScript backend which allows you to write web applications which run in the browser in Idris.
-- RefC (`refc`): A backend compiling Idris to C code, which is then further compiled by a C compiler.
+- Racket Scheme (`racket`): Scheme プログラミング言語の別の方言です。OS で Chez Scheme が利用できない場合に便利です。
+- Node.js (`node`): Idris プログラムを JavaScript に変換し、Node.js 上で実行します。
+- Browser (`javascript`): ブラウザ上で動作する Web アプリケーションを Idris で記述するための JavaScript バックエンドです。
+- RefC (`refc`): Idris を C 言語のコードにコンパイルし、それをさらに C コンパイラでコンパイルするバックエンドです。
 
-I plan to at least cover the JavaScript backends in some more detail in another part of this Idris guide, as I use them pretty often myself.
+私自身もよく利用しているため、この Idris ガイドの別のパートで JavaScript バックエンドについて詳しく取り上げる予定です。
 
-There are also several external backends not officially supported by the Idris project, amongst which are backends for compiling Idris code to Java and Python. You can find a list of external backends on the [Idris Wiki](https://github.com/idris-lang/Idris2/wiki/1-%5BLanguage%5D-External-backends).
+また、Idris プロジェクト公式ではサポートされていない外部バックエンドもいくつか存在し、Java や Python へコンパイルするバックエンドなどがあります。外部バックエンドの一覧は [Idris Wiki](https://github.com/idris-lang/Idris2/wiki/1-%5BLanguage%5D-External-backends) で確認できます。
 
-## The Idris Primitives
+## Idris のプリミティブ型 (The Idris Primitives)
 
-A *primitive data type* is a type that is built into the Idris compiler together with a set of *primitive functions*, which are used to perform calculations on the primitives. You will therefore not find a definition of a primitive type or function in the source code of the *Prelude*.
+**プリミティブデータ型（primitive data type）** とは、プリミティブに対する計算を実行するために使用される一連の **プリミティブ関数（primitive functions）** とともに、Idris コンパイラ内部に組み込まれている型のことです。したがって、*Prelude* のソースコードの中にプリミティブ型や関数の通常の定義を見つけることはできません。
 
-Here is again the list of primitive types in Idris:
+Idris におけるプリミティブ型の一覧は以下のとおりです：
 
-- Signed, fixed precision integers:
-  - `Int8`: Integer in the range [-128,127]
-  - `Int16`: Integer in the range [-32768,32767]
-  - `Int32`: Integer in the range [-2147483648,2147483647]
-  - `Int64`: Integer in the range [-9223372036854775808,9223372036854775807]
-- Unsigned, fixed precision integers:
-  - `Bits8`: Integer in the range [0,255]
-  - `Bits16`: Integer in the range [0,65535]
-  - `Bits32`: Integer in the range [0,4294967295]
-  - `Bits64`: Integer in the range [0,18446744073709551615]
-- `Integer`: A signed, arbitrary precision integer.
-- `Double`: A double precision (64 bit) floating point number.
-- `Char`: A unicode character.
-- `String`: A sequence of unicode characters.
-- `%World`: A symbolic representation of the current world state. We learned about this when I showed you how `IO` is implemented. Most of the time, you will not handle values of this type in your own code.
-- `Int`: This one is special. It is a fixed precision, signed integer, but the bit size is somewhat dependent on the backend and (maybe) platform we use. For instance, if you use the default Chez Scheme backend, `Int` is a 64 bit signed integer, while on the JavaScript backends it is a 32 bit signed integer for performance reasons. Therefore, `Int` comes with very few guarantees, and you should use one of the well specified integer types listed above whenever possible.
+- 符号付き固定長整数:
+  - `Int8`: [-128, 127] の範囲の整数
+  - `Int16`: [-32768, 32767] の範囲の整数
+  - `Int32`: [-2147483648, 2147483647] の範囲の整数
+  - `Int64`: [-9223372036854775808, 9223372036854775807] の範囲の整数
+- 符号なし固定長整数:
+  - `Bits8`: [0, 255] の範囲の整数
+  - `Bits16`: [0, 65535] の範囲の整数
+  - `Bits32`: [0, 4294967295] の範囲の整数
+  - `Bits64`: [0, 18446744073709551615] の範囲の整数
+- `Integer`: 符号付き任意精度整数（多倍長整数）。
+- `Double`: 倍精度（64ビット）浮動小数点数。
+- `Char`: Unicode 文字。
+- `String`: Unicode 文字のシーケンス（文字列）。
+- `%World`: 現在の世界の状態のシンボリックな表現。`IO` の実装方法を説明した際に登場しました。普段、自分のコードでこの型の値を直接操作することはありません。
+- `Int`: これは特別な型です。固定精度の符号付き整数ですが、ビットサイズは使用しているバックエンドや（場合によっては）プラットフォームに依存します。例えば、デフォルトの Chez Scheme バックエンドでは `Int` は 64 ビット符号付き整数ですが、JavaScript バックエンドではパフォーマンス上の理由から 32 ビット符号付き整数になります。そのため、`Int` の保証は非常に少なく、可能な限り上記の明確に規定された整数型のいずれかを使用することをお勧めします。
 
-It can be instructive to learn, where in the compiler's source code the primitive types and functions are defined. This source code can be found in folder `src` of the [Idris project](https://github.com/idris-lang/Idris2) and the primitive types are the constant constructors of data type `Core.TT.Constant`.
+コンパイラのソースコードのどこでプリミティブ型や関数が定義されているかを知ることは勉強になります。このソースコードは [Idris プロジェクト](https://github.com/idris-lang/Idris2) の `src` フォルダにあり、プリミティブ型はデータ型 `Core.TT.Constant` の定数コンストラクタとして定義されています。
 
-## Primitive Functions
+## プリミティブ関数 (Primitive Functions)
 
-All calculations operating on primitives are based on two kinds of primitive functions: The ones built into the compiler (see below) and the ones defined by programmers via the foreign function interface (FFI), about which I'll talk in another chapter.
+プリミティブを操作するすべての計算は、2 種類のプリミティブ関数に基づいています。コンパイラ組み込みの関数（後述）と、プログラマが外部関数インターフェース（FFI）経由で定義した関数（別の章で説明します）です。
 
-Built-in primitive functions are functions known to the compiler the definition of which can not be found in the *Prelude*. They define the core functionality available for the primitive types. Typically, you do not invoke these directly (although it is perfectly fine to do so in most cases) but via functions and interfaces exported by the *Prelude* or the *base* library.
+組み込みプリミティブ関数はコンパイラが既知の関数であり、その定義は *Prelude* には見当たりません。これらはプリミティブ型に対して利用可能なコア機能を定義します。通常、これらを直接呼び出すことはなく（ほとんどの場合直接呼び出しても問題ありませんが）、*Prelude* や *base* ライブラリからエクスポートされた関数やインターフェースを経由して呼び出します。
 
-For instance, the primitive function for adding two eight bit unsigned integers is `prim__add_Bits8`. You can inspect its type and behavior at the REPL:
+例えば、2 つの 8 ビット符号なし整数を加算するプリミティブ関数は `prim__add_Bits8` です。REPL でその型と動作を確認できます：
 
 ```repl
 Tutorial.Prim> :t prim__add_Bits8
@@ -70,13 +73,13 @@ Tutorial.Prim> prim__add_Bits8 12 100
 112
 ```
 
-If you look at the source code implementing interface `Num` for `Bits8`, you will see that the plus operator just invokes `prim__add_Bits8` internally. The same goes for most of the other functions in primitive interface implementations. For instance, every primitive type with the exception of `%World` comes with primitive comparison functions. For `Bits8`, these are: `prim__eq_Bits8`, `prim__gt_Bits8`, `prim__lt_Bits8`, `prim__gte_Bits8`, and `prim__lte_Bits8`. Note, that these functions do not return a `Bool` (which is *not* a primitive type in Idris), but an `Int`. They are therefore not as safe or convenient to use as the corresponding operator implementations from interfaces `Eq` and `Comp`. On the other hand, they do not go via a conversion to `Bool` and might therefore perform slightly better in performance critical code (which you can only identify after some serious profiling).
+`Bits8` に対する `Num` インターフェースの実装コードを見ると、プラス演算子 `(+)` が内部で `prim__add_Bits8` を呼び出しているだけであることが分かります。プリミティブのインターフェース実装にある他のほとんどの関数も同様です。例えば、`%World` を除くすべてのプリミティブ型にはプリミティブ比較関数が用意されています。`Bits8` の場合、`prim__eq_Bits8`、`prim__gt_Bits8`、`prim__lt_Bits8`、`prim__gte_Bits8`、`prim__lte_Bits8` です。これらの関数は `Bool`（これは Idris ではプリミティブ型では *ありません*）を返すのではなく、`Int` を返す点に注意してください。そのため、インターフェース `Eq` や `Comp` の演算子実装ほど安全でも使いやすくもありません。一方で、`Bool` への変換を挟まないため、パフォーマンスが極めて重要なコードではわずかに高速に動作する可能性があります（これは本格的なプロファイリングを行った後でのみ特定すべき事項です）。
 
-As with primitive types, the primitive functions are listed as constructors in a data type (`Core.TT.PrimFn`) in the compiler sources. We will look at most of these in the following sections.
+プリミティブ型と同様に、プリミティブ関数はコンパイラソースのデータ型（`Core.TT.PrimFn`）のコンストラクタとして列挙されています。以降の節でこれらの多くを見ていきます。
 
-## Consequences of being Primitive
+## プリミティブであることの帰結 (Consequences of being Primitive)
 
-Primitive functions and types are opaque to the compiler in most regards: They have to be defined and implemented by each backend individually, therefore, the compiler knows nothing about the inner structure of a primitive value nor about the inner workings of primitive functions. For instance, in the following recursive function, *we* know that the argument in the recursive call must be converging towards the base case (unless there is a bug in the backend we use), but the compiler does not:
+プリミティブ関数やプリミティブ型は、多くの点でコンパイラにとって **不透明（opaque）** です。これらは各バックエンドによって個別に定義・実装される必要があるため、コンパイラはプリミティブ値の内部構造についても、プリミティブ関数の内部動作についても何も知りません。例えば、以下の再帰関数において、再帰呼び出しの引数が基底ケースに向かって減少していることは *私たち* には分かりますが（使用しているバックエンドにバグがない限り）、コンパイラには分かりません：
 
 ```idris
 covering
@@ -85,7 +88,7 @@ replicateBits8' 0 _ = []
 replicateBits8' n v = v :: replicateBits8' (n - 1) v
 ```
 
-In these cases, we either must be content with just a *covering* function, or we use `assert_smaller` to convince the totality checker (the preferred way):
+このような場合、単なる *covering*（網羅的）な関数で妥協するか、全域性チェッカーを納得させるために `assert_smaller` を使用します（推奨される方法）：
 
 ```idris
 replicateBits8 : Bits8 -> a -> List a
@@ -93,23 +96,23 @@ replicateBits8 0 _ = []
 replicateBits8 n v = v :: replicateBits8 (assert_smaller n $ n - 1) v
 ```
 
-I have shown you the risks of using `assert_smaller` before, so we must be extra careful in making sure that the new function argument is indeed smaller with relation to the base case.
+以前にも `assert_smaller` を使用するリスクをお見せしたとおり、新しい関数引数が基底ケースに関して本当に小さくなっているかについては細心の注意を払う必要があります。
 
-While Idris knows nothing about the internal workings of primitives and related functions, most of these functions still reduce during evaluation when fed with values known at compile time. For instance, we can trivially proof that for `Bits8` the following equation holds:
+Idris はプリミティブや関連関数の内部動作について何も知りませんが、コンパイル時に既知の値が与えられた場合、これらの関数の多くは評価中に簡約（reduce）されます。例えば、`Bits8` に対して以下の等式が成り立つことを自明に証明できます：
 
 ```idris
 zeroBits8 : the Bits8 0 = 255 + 1
 zeroBits8 = Refl
 ```
 
-Having no clue about the internal structure of a primitive nor about the implementations of primitive functions, Idris can't help us proofing any *general* properties of such functions and values. Here is an example to demonstrate this. Assume we'd like to wrap a list in a data type indexed by the list's length:
+プリミティブの内部構造やプリミティブ関数の実装を把握していないため、Idris はそのような関数や値に関する **一般的な性質（general properties）** を証明する手助けをすることはできません。これを示す例を挙げます。リストをその長さでインデックス付けしたデータ型でラップしたいとしましょう：
 
 ```idris
 data LenList : (n : Nat) -> Type -> Type where
   MkLenList : (as : List a) -> LenList (length as) a
 ```
 
-When we concatenate two `LenList`s, the length indices should be added. That's how list concatenation affects the length of lists. We can safely teach Idris that this is true:
+2 つの `LenList` を連結する場合、長さのインデックスは加算されるべきです。これがリストの連結がリストの長さに与える影響です。これが真であることを Idris に安全に教えることができます：
 
 ```idris
 0 concatLen : (xs,ys : List a) -> length xs + length ys = length (xs ++ ys)
@@ -117,7 +120,7 @@ concatLen []        ys = Refl
 concatLen (x :: xs) ys = cong S $ concatLen xs ys
 ```
 
-With the above lemma, we can implement concatenation of `LenList`:
+上記の補題を使えば、`LenList` の連結を実装できます：
 
 ```idris
 (++) : LenList m a -> LenList n a -> LenList (m + n) a
@@ -125,7 +128,7 @@ MkLenList xs ++ MkLenList ys =
   rewrite concatLen xs ys in MkLenList (xs ++ ys)
 ```
 
-The same is not possible for strings. There are applications where pairing a string with its length would be useful (for instance, if we wanted to make sure that strings are getting strictly shorter during parsing and will therefore eventually be wholly consumed), but Idris cannot help us getting these things right. There is no way to implement and thus proof the following lemma in a safe way:
+しかし、文字列（`String`）に対しては同じことができません。文字列とその長さをペアにすることが役立つアプリケーションは存在しますが（例えば、パース処理中に文字列が狭義に短くなっていることを保証し、最終的に完全に消費されることを保証したい場合など）、Idris はこれらを正しく証明する手助けをしてくれません。以下の補題を安全に実装（証明）する方法は存在しないのです：
 
 ```idris
 0 concatLenStr : (a,b : String) -> length a + length b = length (a ++ b)
@@ -133,26 +136,26 @@ The same is not possible for strings. There are applications where pairing a str
 
 <!-- markdownlint-disable MD026 -->
 
-## Believe Me!
+## 信じるか信じないかはあなた次第: `believe_me` (Believe Me!)
 
 <!-- markdownlint-enable MD026 -->
 
-In order to implement `concatLenStr`, we have to abandon all safety and use the ten ton wrecking ball of type coercion: `believe_me`. This primitive function allows us to freely coerce a value of any type into a value of any other type. Needless to say, this is only safe if we *really* know what we are doing:
+`concatLenStr` を実装するには、すべての安全性を捨て去り、型強制（type coercion）の究極の手段である `believe_me` を使う必要があります。このプリミティブ関数を使うと、任意の型の値を他の任意の型の値へ自由に強制変換できます。言うまでもなく、これは自分が何をしているかを **本当に** 理解している場合にのみ安全です：
 
 ```idris
 concatLenStr a b = believe_me $ Refl {x = length a + length b}
 ```
 
-The explicit assignment of variable `x` in `{x = length a + length b}` is necessary, because otherwise Idris will complain about an *unsolved hole*: It can't infer the type of parameter `x` in the `Refl` constructor. We could assign any type to `x` here, because we are passing the result to `believe_me` anyway, but I consider it to be good practice to assign one of the two sides of the equality to make our intention clear.
+`{x = length a + length b}` で変数 `x` を明示的に指定しているのは、そうしないと Idris が *未解決のホール（unsolved hole）* について警告を出すためです（`Refl` コンストラクタ内のパラメータ `x` の型を推論できないため）。結果をいずれにせよ `believe_me` に渡すため、ここで `x` には任意の型を割り当てることができますが、意図を明確にするために等式の片側の型を割り当てるのが良い習慣です。
 
-The higher the complexity of a primitive type, the riskier it is to assume even the most basic properties for it to hold. For instance, we might act under the delusion that floating point addition is associative:
+プリミティブ型の複雑さが増すほど、最も基本的な性質でさえ成り立つと仮定することはリスクを伴います。例えば、浮動小数点数の加算が結合的であるという錯覚にとらわれるかもしれません：
 
 ```idris
 0 doubleAddAssoc : (x,y,z : Double) -> x + (y + z) = (x + y) + z
 doubleAddAssoc x y z = believe_me $ Refl {x = x + (y + z)}
 ```
 
-Well, guess what: That's a lie. And lies lead us straight into the `Void`:
+しかし、これは誤り（嘘）です。そして嘘は私たちをまっすぐに `Void` へと導きます：
 
 ```idris
 Tiny : Double
@@ -168,7 +171,7 @@ boom : Void
 boom = wrong (doubleAddAssoc One Tiny Tiny)
 ```
 
-Here's what happens in the code above: The call to `doubleAddAssoc` returns a proof that `One + (Tiny + Tiny)` is equal to `(One + Tiny) + Tiny`. But `One + (Tiny + Tiny)` equals `1.0000000000000002`, while `(One + Tiny) + Tiny` equals `1.0`. We can therefore pass our (wrong) proof to `wrong`, because it is of the correct type, and from this follows a proof of `Void`.
+上記のコードで何が起きているか説明します。`doubleAddAssoc` の呼び出しは、`One + (Tiny + Tiny)` が `(One + Tiny) + Tiny` に等しいという証明を返します。しかし、`One + (Tiny + Tiny)` は `1.0000000000000002` に等しく、`(One + Tiny) + Tiny` は `1.0` に等しくなります。したがって、型が一致しているためこの（間違った）証明を `wrong` に渡すことができ、その結果 `Void` の証明が導かれてしまいます。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

@@ -1,4 +1,7 @@
-# Integers
+# 整数 (Integers)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Integers.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Integers.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Prim.Integers
@@ -9,38 +12,38 @@ import Data.String
 %default total
 ```
 
-As listed at the beginning of this chapter, Idris provides different fixed-precision signed and unsigned integer types as well as `Integer`, an arbitrary precision signed integer type. All of them come with the following primitive functions (given here for `Bits8` as an example):
+本章の冒頭で列挙したように、Idris はさまざまな固定精度の符号付き・符号なし整数型、および任意精度符号付き整数型 `Integer` を提供しています。これらすべてに以下のプリミティブ関数が用意されています（ここでは `Bits8` を例として示します）：
 
-- `prim__add_Bits8`: Integer addition.
-- `prim__sub_Bits8`: Integer subtraction.
-- `prim__mul_Bits8`: Integer multiplication.
-- `prim__div_Bits8`: Integer division.
-- `prim__mod_Bits8`: Modulo function.
-- `prim__shl_Bits8`: Bitwise left shift.
-- `prim__shr_Bits8`: Bitwise right shift.
-- `prim__and_Bits8`: Bitwise *and*.
-- `prim__or_Bits8`: Bitwise *or*.
-- `prim__xor_Bits8`: Bitwise *xor*.
+- `prim__add_Bits8`: 整数の加算。
+- `prim__sub_Bits8`: 整数の減算。
+- `prim__mul_Bits8`: 整数の乗算。
+- `prim__div_Bits8`: 整数の除算。
+- `prim__mod_Bits8`: 剰余（モジュロ）関数。
+- `prim__shl_Bits8`: ビット単位の左シフト。
+- `prim__shr_Bits8`: ビット単位の右シフト。
+- `prim__and_Bits8`: ビット単位の論理積（*AND*）。
+- `prim__or_Bits8`: ビット単位の論理和（*OR*）。
+- `prim__xor_Bits8`: ビット単位の排他的論理和（*XOR*）。
 
-Typically, you use the functions for addition and multiplication through the operators from interface `Num`, the function for subtraction through interface `Neg`, and the functions for division (`div` and `mod`) through interface `Integral`. The bitwise operations are available through interfaces `Data.Bits.Bits` and `Data.Bits.FiniteBits`.
+通常、加算と乗算の関数は `Num` インターフェースの演算子を通じて、減算の関数は `Neg` インターフェースを通じて、除算関数（`div` と `mod`）は `Integral` インターフェースを通じて利用します。ビット演算は `Data.Bits.Bits` および `Data.Bits.FiniteBits` インターフェースを通じて利用可能です。
 
-For all integral types, the following laws are assumed to hold for numeric operations (`x`, `y`, and `z` are arbitrary value of the same primitive integral type):
+すべての整数型において、数値演算に対して以下の法則が成り立つと仮定されています（`x`、`y`、`z` は同一のプリミティブ整数型の任意の値）：
 
-- `x + y = y + x`: Addition is commutative.
-- `x + (y + z) = (x + y) + z`: Addition is associative.
-- `x + 0 = x`: Zero is the neutral element of addition.
-- `x - x = x + (-x) = 0`: `-x` is the additive inverse of `x`.
-- `x * y = y * x`: Multiplication is commutative.
-- `x * (y * z) = (x * y) * z`: Multiplication is associative.
-- `x * 1 = x`: One is the neutral element of multiplication.
-- `x * (y + z) = x * y + x * z`: The distributive law holds.
-- `` y * (x `div` y) + (x `mod` y) = x `` (for `y /= 0`).
+- `x + y = y + x`: 加算の可換性（交換法則）。
+- `x + (y + z) = (x + y) + z`: 加算の結合法則。
+- `x + 0 = x`: 0 は加算の単位元。
+- `x - x = x + (-x) = 0`: `-x` は `x` の加法逆元。
+- `x * y = y * x`: 乗算の可換性（交換法則）。
+- `x * (y * z) = (x * y) * z`: 乗算の結合法則。
+- `x * 1 = x`: 1 は乗算の単位元。
+- `x * (y + z) = x * y + x * z`: 分配法則。
+- `` y * (x `div` y) + (x `mod` y) = x ``（`y /= 0` の場合）。
 
-Please note, that the officially supported backends use *Euclidian modulus* for calculating `mod`: For `y /= 0`, `` x `mod` y `` is always a non-negative value strictly smaller than `abs y`, so that the law given above does hold. If `x` or `y` are negative numbers, this is different to what many other languages do but for good reasons as explained in the following [article](https://www.microsoft.com/en-us/research/publication/division-and-modulus-for-computer-scientists/).
+公式にサポートされているバックエンドでは、`mod` の計算に **ユークリッド剰余（Euclidian modulus）** を使用している点に注意してください。`y /= 0` の場合、`` x `mod` y `` は常に `abs y` より真に小さい非負の値となり、上記の法則が成り立ちます。`x` または `y` が負の数の場合、これは他の多くの言語の動作と異なりますが、[こちらの論文](https://www.microsoft.com/en-us/research/publication/division-and-modulus-for-computer-scientists/) で説明されているように妥当な理由があります。
 
-## Unsigned Integers
+## 符号なし整数 (Unsigned Integers)
 
-The unsigned fixed precision integer types (`Bits8`, `Bits16`, `Bits32`, and `Bits64`) come with implementations of all integral interfaces (`Num`, `Neg`, and `Integral`) and the two interfaces for bitwise operations (`Bits` and `FiniteBits`). All functions with the exception of `div` and `mod` are total. Overflows are handled by calculating the remainder modulo `2^bitsize`. For instance, for `Bits8`, all operations calculate their results modulo 256:
+符号なし固定長整数型（`Bits8`、`Bits16`、`Bits32`、`Bits64`）は、すべての整数インターフェース（`Num`、`Neg`、`Integral`）およびビット演算の 2 つのインターフェース（`Bits`、`FiniteBits`）の実装を備えています。`div` と `mod` を除くすべての関数は全域（total）です。オーバーフローは `2^bitsize` を法とする剰余を計算することによって処理されます。例えば `Bits8` の場合、すべての演算は 256 を法として結果を計算します：
 
 ```repl
 Main> the Bits8 255 + 1
@@ -53,9 +56,9 @@ Main> the Bits8 12 - 13
 255
 ```
 
-## Signed Integers
+## 符号付き整数 (Signed Integers)
 
-Like the unsigned integer types, the signed fixed precision integer types (`Int8`, `Int16`, `Int32`, and `Int64`) come with implementations of all integral interfaces and the two interfaces for bitwise operations (`Bits` and `FiniteBits`). Overflows are handled by calculating the remainder modulo `2^bitsize` and subtracting `2^bitsize` if the result is still out of range. For instance, for `Int8`, all operations calculate their results modulo 256, subtracting 256 if the result is still out of bounds:
+符号なし整数型と同様に、符号付き固定長整数型（`Int8`、`Int16`、`Int32`、`Int64`）もすべての整数インターフェースおよびビット演算インターフェース（`Bits`、`FiniteBits`）の実装を備えています。オーバーフローは `2^bitsize` を法とする剰余を計算し、結果がまだ範囲外の場合は `2^bitsize` を減算することによって処理されます。例えば `Int8` の場合、すべての演算は 256 を法として結果を計算し、範囲外であれば 256 を引きます：
 
 ```repl
 Main> the Int8 2 * 127
@@ -64,20 +67,20 @@ Main> the Int8 3 * 127
 125
 ```
 
-## Bitwise Operations
+## ビット演算 (Bitwise Operations)
 
-Module `Data.Bits` exports interfaces for performing bitwise operations on integral types. I'm going to show a couple of examples on unsigned 8-bit numbers (`Bits8`) to explain the concept to readers new to bitwise arithmetics. Note, that this is much easier to grasp for unsigned integer types than for the signed versions. Those have to include information about the *sign* of numbers in their bit pattern, and it is assumed that signed integers in Idris use a [two's complement representation](https://en.wikipedia.org/wiki/Two%27s_complement), about which I will not go into the details here.
+`Data.Bits` モジュールは、整数型に対するビット単位の演算を行うためのインターフェースをエクスポートしています。ビット演算に馴染みのない読者のために、8 ビット符号なし整数（`Bits8`）を使った例をいくつか紹介します。これは符号付き整数よりも符号なし整数の方がはるかに直感的に理解しやすい点に注意してください。符号付き整数はビットパターンに数値の「符号（正負）」の情報を含める必要があり、Idris の符号付き整数は [2 の補数表現](https://ja.wikipedia.org/wiki/2%E3%81%AE%E8%A3%9C%E6%95%B0) を使用していると想定されています。
 
-An unsigned 8-bit binary number is represented internally as a sequence of eight bits (with values 0 or 1), each of which corresponds to a power of 2. For instance, the number 23 (= 16 + 4 + 2 + 1) is represented as `0001 0111`:
+8 ビット符号なし 2 進数は、内部的には 8 個のビット（0 または 1 の値）のシーケンスとして表現され、それぞれのビットが 2 の累乗に対応しています。例えば、数値 23（= 16 + 4 + 2 + 1）は `0001 0111` として表現されます：
 
 ```repl
-23 in binary:    0  0  0  1    0  1  1  1
+23 (2進数):       0  0  0  1    0  1  1  1
 
-Bit number:      7  6  5  4    3  2  1  0
-Decimal value: 128 64 32 16    8  4  2  1
+ビット位置:        7  6  5  4    3  2  1  0
+10進数値:        128 64 32 16    8  4  2  1
 ```
 
-We can use function `testBit` to check if the bit at the given position is set or not:
+`testBit` 関数を使って、指定した位置のビットが立っている（1 である）かどうかを判定できます：
 
 ```repl
 Tutorial.Prim> testBit (the Bits8 23) 0
@@ -88,7 +91,7 @@ Tutorial.Prim> testBit (the Bits8 23) 3
 False
 ```
 
-Likewise, we can use functions `setBit` and `clearBit` to set or unset a bit at a certain position:
+同様に、`setBit` や `clearBit` 関数を使って、特定の位置のビットを立てたり（1 にする）クリアしたり（0 にする）できます：
 
 ```repl
 Tutorial.Prim> setBit (the Bits8 23) 3
@@ -97,18 +100,18 @@ Tutorial.Prim> clearBit (the Bits8 23) 2
 19
 ```
 
-There are also operators `(.&.)` (bitwise *and*) and `(.|.)` (bitwise *or*) as well as function `xor` (bitwise *exclusive or*) for performing boolean operations on integral values. For instance `x .&. y` has exactly those bits set, which both `x` and `y` have set, while `x .|. y` has all bits set that are either set in `x` or `y` (or both), and `` x `xor` y `` has those bits set that are set in exactly one of the two values:
+また、整数値に対するブール演算を行うための演算子 `(.&.)`（ビット積 / AND）、`(.|.)`（ビット和 / OR）、および関数 `xor`（排他的論理和 / XOR）もあります。例えば `x .&. y` は `x` と `y` の両方で立っているビットのみが立ち、`x .|. y` は `x` または `y`（またはその両方）で立っているすべてのビットが立ち、`` x `xor` y `` は 2 つの値のいずれか一方のみで立っているビットが立ちます：
 
 ```repl
-23 in binary:          0  0  0  1    0  1  1  1
-11 in binary:          0  0  0  0    1  0  1  1
+23 (2進数):            0  0  0  1    0  1  1  1
+11 (2進数):            0  0  0  0    1  0  1  1
 
-23 .&. 11 in binary:   0  0  0  0    0  0  1  1
-23 .|. 11 in binary:   0  0  0  1    1  1  1  1
-23 `xor` 11 in binary: 0  0  0  1    1  1  0  0
+23 .&. 11 (2進数):     0  0  0  0    0  0  1  1
+23 .|. 11 (2進数):     0  0  0  1    1  1  1  1
+23 `xor` 11 (2進数):   0  0  0  1    1  1  0  0
 ```
 
-And here are the examples at the REPL:
+REPL での実行例は以下のとおりです：
 
 ```repl
 Tutorial.Prim> the Bits8 23 .&. 11
@@ -119,16 +122,16 @@ Tutorial.Prim> the Bits8 23 `xor` 11
 28
 ```
 
-Finally, it is possible to shift all bits to the right or left by a certain number of steps by using functions `shiftR` and `shiftL`, respectively (overflowing bits will just be dropped). A left shift can therefore be viewed as a multiplication by a power of two, while a right shift can be seen as a division by a power of two:
+最後に、`shiftR` および `shiftL` 関数を使用して、すべてのビットを指定されたステップ数だけ右または左にシフトすることができます（あふれたビットは単純に切り捨てられます）。したがって、左シフトは 2 の累乗による乗算と見なすことができ、右シフトは 2 の累乗による除算と見なすことができます：
 
 ```repl
-22 in binary:            0  0  0  1    0  1  1  0
+22 (2進数):              0  0  0  1    0  1  1  0
 
-22 `shiftL` 2 in binary: 0  1  0  1    1  0  0  0
-22 `shiftR` 1 in binary: 0  0  0  0    1  0  1  1
+22 `shiftL` 2 (2進数):   0  1  0  1    1  0  0  0
+22 `shiftR` 1 (2進数):   0  0  0  0    1  0  1  1
 ```
 
-And at the REPL:
+REPL での実行例：
 
 ```repl
 Tutorial.Prim> the Bits8 22 `shiftL` 2
@@ -137,13 +140,13 @@ Tutorial.Prim> the Bits8 22 `shiftR` 1
 11
 ```
 
-Bitwise operations are often used in specialized code or certain high-performance applications. As programmers, we have to know they exist and how they work.
+ビット演算は、特化されたコードや特定のハイパフォーマンスなアプリケーションでよく使用されます。プログラマとして、それらが存在しどのように動作するかを知っておくことは重要です。
 
-## Integer Literals
+## 整数リテラル (Integer Literals)
 
-So far, we always required an implementation of `Num` in order to be able to use integer literals for a given type. However, it is actually only necessary to implement a function `fromInteger` converting an `Integer` to the type in question. As we will see in the last section, such a function can even restrict the values allowed as valid literals.
+これまでは、特定の型に対して整数リテラルを使用できるようにするために常に `Num` の実装が必要でした。しかし実際には、`Integer` を対象の型に変換する `fromInteger` 関数を実装するだけで十分です。最後の節で見るように、このような関数は有効なリテラルとして許可される値を制約することさえ可能です。
 
-For instance, assume we'd like to define a data type for representing the charge of a chemical molecule. Such a value can be positive or negative and (theoretically) of almost arbitrary magnitude:
+例えば、化学分子の電荷を表すデータ型を定義したいとしましょう。電荷の値は正または負になり、（理論上）任意の大きさを取ることができます：
 
 ```idris
 record Charge where
@@ -151,7 +154,7 @@ record Charge where
   value : Integer
 ```
 
-It makes sense to be able to sum up charges, but not to multiply them. They should therefore have an implementation of `Monoid` but not of `Num`. Still, we'd like to have the convenience of integer literals when using constant charges at compile time. Here's how to do this:
+電荷どうしを加算できるのは自然ですが、乗算することは意味をなしません。したがって、`Monoid` の実装は持つべきですが、`Num` の実装は持つべきではありません。それでも、コンパイル時に定数の電荷を使用する際には整数リテラルの利便性を享受したいと考えます。これを行う方法は以下のとおりです：
 
 ```idris
 fromInteger : Integer -> Charge
@@ -164,9 +167,9 @@ Monoid Charge where
   neutral = 0
 ```
 
-### Alternative Bases
+### 基数の指定 (Alternative Bases)
 
-In addition to the well known decimal literals, it is also possible to use integer literals in binary, octal, or hexadecimal representation. These have to be prefixed with a zero following by a `b`, `o`, or `x` for binary, octal, and hexadecimal, respectively:
+おなじみの 10 進数リテラルに加えて、2 進数、8 進数、16 進数表現で整数リテラルを記述することも可能です。これらは、先頭に 0 を置き、その後にそれぞれ 2 進数は `b`、8 進数は `o`、16 進数は `x` を付加します：
 
 ```repl
 Tutorial.Prim> 0b1101

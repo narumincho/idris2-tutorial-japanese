@@ -1,4 +1,7 @@
-# Working with Strings
+# 文字列の操作 (Working with Strings)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Strings.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Strings.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Prim.Strings
@@ -9,17 +12,17 @@ import Data.String
 %default total
 ```
 
-Module `Data.String` in *base* offers a rich set of functions for working with strings. All these are based on the following primitive operations built into the compiler:
+*base* の `Data.String` モジュールには、文字列を操作するための豊富な関数が用意されています。これらはすべて、コンパイラ組み込みの以下のプリミティブ操作に基づいています：
 
-- `prim__strLength`: Returns the length of a string.
-- `prim__strHead`: Extracts the first character from a string.
-- `prim__strTail`: Removes the first character from a string.
-- `prim__strCons`: Prepends a character to a string.
-- `prim__strAppend`: Appends two strings.
-- `prim__strIndex`: Extracts a character at the given position from a string.
-- `prim__strSubstr`: Extracts the substring between the given positions.
+- `prim__strLength`: 文字列の長さを返します。
+- `prim__strHead`: 文字列の先頭文字を抽出します。
+- `prim__strTail`: 文字列から先頭文字を取り除いた残りを返します。
+- `prim__strCons`: 文字を文字列の先頭に追加します。
+- `prim__strAppend`: 2 つの文字列を連結します。
+- `prim__strIndex`: 文字列の指定位置にある文字を抽出します。
+- `prim__strSubstr`: 指定された位置の間の部分文字列を抽出します。
 
-Needless to say, not all of these functions are total. Therefore, Idris must make sure that invalid calls do not reduce during compile time, as otherwise the compiler would crash. If, however we force the evaluation of a partial primitive function by compiling and running the corresponding program, this program will crash with an error:
+言うまでもなく、これらの関数のすべてが全域（total）であるわけではありません。そのため、無効な呼び出しがコンパイル時に簡約（reduce）されないように Idris は制御しています（そうしないとコンパイラ自体がクラッシュしてしまうためです）。しかし、対応するプログラムをコンパイルして実行し、部分プリミティブ関数の評価を強制した場合、プログラムは実行時エラーでクラッシュします：
 
 ```repl
 Tutorial.Prim> prim__strTail ""
@@ -28,27 +31,27 @@ Tutorial.Prim> :exec putStrLn (prim__strTail "")
 Exception in substring: 1 and 0 are not valid start/end indices for ""
 ```
 
-Note, how `prim__strTail ""` is not reduced at the REPL and how the same expression leads to a runtime exception if we compile and execute the program. Valid calls to `prim__strTail` are reduced just fine, however:
+`prim__strTail ""` が REPL では簡約されず、プログラムをコンパイルして実行すると実行時例外になる点に注目してください。一方、有効な `prim__strTail` の呼び出しは問題なく簡約されます：
 
 ```idris
 tailExample : prim__strTail "foo" = "oo"
 tailExample = Refl
 ```
 
-## Pack and Unpack
+## Pack と Unpack (Pack and Unpack)
 
-Two of the most important functions for working with strings are `unpack` and `pack`, which convert a string to a list of characters and vice versa. This allows us to conveniently implement many string operations by iterating or folding over the list of characters instead. This might not always be the most efficient thing to do, but unless you plan to handle very large amounts of text, they work and perform reasonably well.
+文字列を扱う上で最も重要な関数の 2 つが `unpack` と `pack` です。これらは文字列を文字のリストに変換し、またその逆を行います。これにより、文字のリストに対する反復処理や畳み込み（fold）を用いて、多くの文字列操作を簡潔に実装できます。これは常に最も効率的であるとは限りませんが、非常に膨大なテキストを処理するのでない限り、十分に高速に機能します。
 
-## String Interpolation
+## 文字列展開・埋め込み (String Interpolation)
 
-Idris allows us to include arbitrary string expressions in a string literal by wrapping them in curly braces, the first of which has to be escaped with a backslash. For instance:
+Idris では、波括弧（開き括弧の前にバックスラッシュをエスケープとして付ける）で囲むことで、文字列リテラルの中に任意の文字列表現を埋め込むことができます。例えば：
 
 ```idris
 interpEx1 : Bits64 -> Bits64 -> String
 interpEx1 x y = "\{show x} + \{show y} = \{show $ x + y}"
 ```
 
-This is a very convenient way to assemble complex strings from values of different types. In addition, there is interface `Interpolation`, which allows us to use values in interpolated strings without having to convert them to strings first:
+これは、異なる型の値から複雑な文字列を組み立てる非常に便利な方法です。さらに、`Interpolation` インターフェースを利用すると、事前に文字列へ明示的に変換することなく、埋め込み文字列の中で値を直接使用できるようになります：
 
 ```idris
 data Element = H | He | C | N | O | F | Ne
@@ -77,16 +80,16 @@ ethanol : String
 ethanol = "The formulat of ethanol is: \{[(C,2),(H,6),(O, the Nat 1)]}"
 ```
 
-## Raw and Multiline String Literals
+## Raw 文字列と複数行文字列リテラル (Raw and Multiline String Literals)
 
-In string literals, we have to escape certain characters like quotes, backslashes or new line characters. For instance:
+通常の文字列リテラルでは、引用符やバックスラッシュ、改行文字などの特定の文字をエスケープする必要があります。例えば：
 
 ```idris
 escapeExample : String
 escapeExample = "A quote: \". \nThis is on a new line.\nA backslash: \\"
 ```
 
-Idris allows us to enter raw string literals, where there is no need to escape quotes and backslashes, by pre- and postfixing the wrapping quote characters with the same number of hash characters. For instance:
+Idris では、囲む引用符の前後に同じ数のハッシュ記号（`#`）を付けることで、引用符やバックスラッシュをエスケープする必要のない **Raw 文字列リテラル（raw string literals）** を記述できます。例えば：
 
 ```idris
 rawExample : String
@@ -96,14 +99,14 @@ rawExample2 : String
 rawExample2 = ##"A quote: ". A blackslash: \"##
 ```
 
-With raw string literals, it is still possible to use string interpolation, but the opening curly brace has to be prefixed with a backslash and the same number of hashes as are being used for opening and closing the string literal:
+Raw 文字列リテラルでも文字列展開（インターポレーション）を使用できますが、開き波括弧の前にバックスラッシュと、文字列リテラルの開始・終了に使われているのと同じ数のハッシュ記号をプレフィックスとして付ける必要があります：
 
 ```idris
 rawInterpolExample : String
 rawInterpolExample = ##"An interpolated "string": \##{rawExample}"##
 ```
 
-Finally, Idris also allows us to conveniently write multiline strings. These can be pre- and postfixed with hashes if we want raw multiline string literals, and they also can be combined with string interpolation. Multiline literals are opened and closed with triple quote characters. Indenting the closing triple quotes allows us to indent the whole multiline literal. Whitespace used for indentation will not appear in the resulting string. For instance:
+最後に、Idris では複数行文字列（multiline strings）も便利に記述できます。これらも Raw 複数行文字列リテラルにしたい場合はハッシュ記号を前後に付けることができ、文字列展開と組み合わせることも可能です。複数行リテラルは 3 つの引用符（`"""`）で開始および終了します。終了の三重引用符をインデントすることで、複数行リテラル全体をインデントできます。インデントに使用された空白は結果の文字列には含まれません。例えば：
 
 ```idris
 multiline1 : String
@@ -124,7 +127,7 @@ multiline2 = #"""
   """#
 ```
 
-Make sure to look at the example strings at the REPL to see the effect of interpolation and raw string literals and compare it with the syntax we used.
+REPL でこれらの例の文字列を確認し、文字列展開や Raw 文字列リテラルの効果を構文と比較してみてください。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

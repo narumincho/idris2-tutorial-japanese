@@ -1,4 +1,7 @@
-# Refined Primitives
+# 洗練されたプリミティブ (Refined Primitives)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Refined.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Refined.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Prim.Refined
@@ -9,13 +12,13 @@ import Data.String
 %default total
 ```
 
-We often do not want to allow all values of a type in a certain context. For instance, `String` as an arbitrary sequence of UTF-8 characters (several of which are not even printable), is too general most of the time. Therefore, it is usually advisable to rule out invalid values early on, by pairing a value with an erased proof of validity.
+特定のコンテキストにおいて、ある型のすべての値を許可したくないことがよくあります。例えば、UTF-8 文字の任意のシーケンス（その中には印字不能な文字も含まれます）としての `String` は、多くの場面で汎用が過ぎます。したがって、値を消去される妥当性の証明とペアにすることで、無効な値を早期に排除することが通常望ましいです。
 
-We have learned how we can write elegant predicates, with which we can proof our functions to be total, and from which we can - in the ideal case - derive other, related predicates. However, when we define predicates on primitives they are to a certain degree doomed to live in isolation, unless we come up with a set of primitive axioms (implemented most likely using `believe_me`), with which we can manipulate our predicates.
+これまで、関数が全域であることを証明し、理想的には関連する他の述語を導出できるようなエレガントな述語の書き方を学んできました。しかし、プリミティブに対する述語を定義する場合、述語を操作できる一連のプリミティブ公理（おそらく `believe_me` を使って実装される）を用意しない限り、ある程度孤立した状態にならざるを得ません。
 
-## Use Case: ASCII Strings
+## ユースケース: ASCII 文字列 (ASCII Strings)
 
-String encodings is a difficult topic, so in many low level routines it makes sense to rule out most characters from the beginning. Assume therefore, we'd like to make sure the strings we accept in our application only consist of ASCII characters:
+文字エンコーディングは複雑なトピックであるため、多くの低レベルルーチンでは最初から大半の文字を排除しておくことが理にかなっています。そこで、アプリケーションで受け入れる文字列が ASCII 文字のみで構成されていることを保証したいとしましょう：
 
 ```idris
 isAsciiChar : Char -> Bool
@@ -25,7 +28,7 @@ isAsciiString : String -> Bool
 isAsciiString = all isAsciiChar . unpack
 ```
 
-We can now *refine* a string value by pairing it with an erased proof of validity:
+これで、文字列値を消去される妥当性の証明とペアにすることで **洗練（refine）** できます：
 
 ```idris
 record Ascii where
@@ -34,28 +37,30 @@ record Ascii where
   0 prf : isAsciiString value === True
 ```
 
-It is now *impossible* to at runtime or compile time create a value of type `Ascii` without first validating the wrapped string. With this, it is already pretty easy to safely wrap strings at compile time in a value of type `Ascii`:
+これで、ラップされた文字列を事前に検証することなく、実行時またはコンパイル時に `Ascii` 型の値を作成することは **不可能** になりました。これにより、コンパイル時に文字列を安全に `Ascii` 型の値にラップすることがすでに非常に簡単になります：
 
 ```idris
 hello : Ascii
 hello = MkAscii "Hello World!" Refl
 ```
 
-And yet, it would be much more convenient to still use string literals for this, without having to sacrifice the comfort of safety. To do so, we can't use interface `FromString`, as its function `fromString` would force us to convert *any* string, even an invalid one. However, we actually don't need an implementation of `FromString` to support string literals, just like we didn't require an implementation of `Num` to support integer literals. What we really need is a function named `fromString`. Now, when string literals are desugared, they are converted to invocations of `fromString` with the given string value as its argument. For instance, literal `"Hello"` gets desugared to `fromString "Hello"`. This happens before type checking and filling in of (auto) implicit values. It is therefore perfectly fine, to define a custom `fromString` function with an erased auto implicit argument as a proof of validity:
+しかし、安全性の恩恵を犠牲にすることなく、文字列リテラルをそのまま使えた方がはるかに便利です。そのためには `FromString` インターフェースを使うことはできません。その関数 `fromString` は、無効な文字列であっても *任意の* 文字列を変換することを強制してしまうためです。
+
+しかし実際には、整数リテラルをサポートするために `Num` の実装が必要でなかったのと同様に、文字列リテラルをサポートするために `FromString` の実装は必須ではありません。本当に必要なのは `fromString` という名前の関数です。文字列リテラルが脱糖（糖衣構文の解除）される際、与えられた文字列値を引数とする `fromString` の呼び出しに変換されます。例えば、リテラル `"Hello"` は `fromString "Hello"` に脱糖されます。これは型チェックや（自動）暗黙値の解決の前に発生します。したがって、妥当性の証明として消去される自動暗黙引数を持つカスタムの `fromString` 関数を定義することはまったく問題ありません：
 
 ```idris
 fromString : (s : String) -> {auto 0 prf : isAsciiString s === True} -> Ascii
 fromString s = MkAscii s prf
 ```
 
-With this, we can use (valid) string literals for coming up with values of type `Ascii` directly:
+これにより、（有効な）文字列リテラルを使って `Ascii` 型の値を直接作成できます：
 
 ```idris
 hello2 : Ascii
 hello2 = "Hello World!"
 ```
 
-In order to at runtime create values of type `Ascii` from strings of an unknown source, we can use a refinement function returning some kind of failure type:
+実行時に未知のソースの文字列から `Ascii` 型の値を作成するには、失敗型を返す洗練関数を使用できます：
 
 ```idris
 test : (b : Bool) -> Dec (b === True)
@@ -68,11 +73,11 @@ ascii x = case test (isAsciiString x) of
   No contra => Nothing
 ```
 
-### Disadvantages of Boolean Proofs
+### ブール値の証明の欠点 (Disadvantages of Boolean Proofs)
 
-For many use cases, what we described above for ASCII strings can take us very far. However, one drawback of this approach is that we can't safely perform any computations with the proofs at hand.
+多くのユースケースにおいて、上記の ASCII 文字列で説明したアプローチは非常に役立ちます。しかし、このアプローチの欠点のひとつは、手元にある証明を使って安全に計算を行うことができない点です。
 
-For instance, we know it will be perfectly fine to concatenate two ASCII strings, but in order to convince Idris of this, we will have to use `believe_me`, because we will not be able to proof the following lemma otherwise:
+例えば、2 つの ASCII 文字列を連結しても問題ないことは分かっていますが、それを Idris に納得させるためには `believe_me` を使わざるを得ません。そうしないと以下の補題を証明できないからです：
 
 ```idris
 0 allAppend :  (f : Char -> Bool)
@@ -89,21 +94,21 @@ namespace Ascii
     MkAscii (s1 ++ s2) (allAppend isAsciiChar s1 s2 p1 p2)
 ```
 
-The same goes for all operations extracting a substring from a given string: We will have to implement according rules using `believe_me`. Finding a reasonable set of axioms to conveniently deal with refined primitives can therefore be challenging at times, and whether such axioms are even required very much depends on the use case at hand.
+与えられた文字列から部分文字列を抽出するすべての操作についても同様です。`believe_me` を使用して対応する規則を実装する必要があります。したがって、洗練されたプリミティブを便利に扱うための適切な公理のセットを見つけることは時に困難であり、そのような公理がそもそも必要かどうかは目の前のユースケースに大きく依存します。
 
-## Use Case: Sanitized HTML
+## ユースケース: サニタイズされた HTML (Sanitized HTML)
 
-Assume you write a simple web application for scientific discourse between registered users. To keep things simple, we only consider unformatted text input here. Users can write arbitrary text in a text field and upon hitting Enter, the message is displayed to all other registered users.
+登録ユーザー間の科学的議論のためのシンプルな Web アプリケーションを作成しているとしましょう。話を簡単にするため、ここでは未フォーマットのテキスト入力のみを考えます。ユーザーはテキストフィールドに任意のテキストを入力でき、Enter キーを押すとそのメッセージが他のすべての登録ユーザーに表示されます。
 
-Assume now a user decides to enter the following text:
+あるユーザーが以下のテキストを入力したとします：
 
 ```html
 <script>alert("Hello World!")</script>
 ```
 
-Well, it could have been (much) worse. Still, unless we take measures to prevent this from happening, this might embed a JavaScript program in our web page we never intended to have there! What I described here, is a well known security vulnerability called [cross-site scripting](https://en.wikipedia.org/wiki/Cross-site_scripting). It allows users of web pages to enter malicious JavaScript code in text fields, which will then be included in the page's HTML structure and executed when it is being displayed to other users.
+もっと悪質なものもあり得ましたが、これを防ぐ措置を講じない限り、意図しない JavaScript プログラムが Web ページに埋め込まれてしまう可能性があります。ここで説明したのは、[クロスサイトスクリプティング（XSS）](https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%AD%E3%82%B9%E3%82%B5%E3%82%A4%E3%83%88%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%86%E3%82%A3%E3%83%B3%E3%82%AC) としてよく知られているセキュリティ脆弱性です。これにより、Web ページのユーザーが悪意のある JavaScript コードをテキストフィールドに入力し、それがページの HTML 構造に含まれて他のユーザーに表示された際に実行されてしまいます。
 
-We want to make sure, that this cannot happen on our own web page. In order to protect us from this attack, we could for instance disallow certain characters like `'<'` or `'>'` completely (although this might not be enough!), but if our chat service is targeted at programmers, this will be overly restrictive. An alternative is to escape certain characters before rendering them on the page.
+自身の Web ページ上でこれが起こらないようにしたいと考えます。この攻撃から防御するために、例えば `'<'` や `'>'` などの特定の文字を完全に禁止することもできますが（これだけでは不十分な場合もあります）、チャットサービスがプログラマ向けである場合、これは過度に制限的です。代替案として、特定の文字をページに描画する前にエスケープする方法があります。
 
 ```idris
 escape : String -> String
@@ -117,7 +122,7 @@ escape = concat . map esc . unpack
         esc c    = singleton c
 ```
 
-What we now want to do is to store a string together with a proof that is was properly escaped. This is another form of existential quantification: "Here is a string, and there once existed another string, which we passed to `escape` and arrived at the string we have now". Here's how to encode this:
+ここで行いたいのは、適切にエスケープされたことの証明と一緒に文字列を保持することです。これは存在量化のもうひとつの形です。「ここに文字列があり、過去に別の文字列が存在し、それを `escape` に渡した結果、現在の文字列に到達した」。これをエンコードする方法は以下のとおりです：
 
 ```idris
 record Escaped where
@@ -127,7 +132,7 @@ record Escaped where
   0 prf    : escape origin === value
 ```
 
-Whenever we now embed a string of unknown origin in our web page, we can request a value of type `Escaped` and have the very strong guarantee that we are no longer vulnerable to cross-site scripting attacks. Even better, it is also possible to safely embed string literals known at compile time without the need to escape them first:
+未知のソースからの文字列を Web ページに埋め込む際はいつでも `Escaped` 型の値を要求するようにすれば、クロスサイトスクリプティング攻撃に対して脆弱でないという極めて強い保証が得られます。さらに素晴らしいことに、コンパイル時に既知の文字列リテラルを事前にエスケープすることなく安全に埋め込むことも可能です：
 
 ```idris
 namespace Escaped

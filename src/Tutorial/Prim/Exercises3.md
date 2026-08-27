@@ -1,53 +1,57 @@
-# Exercises part 3
+# プリミティブ 練習問題 パート3
 
-In this massive set of exercises, you are going to build a small library for working with predicates on primitives. We want to keep the following goals in mind:
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Exercises3.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-- We want to use the usual operations of propositional logic to combine predicates: Negation, conjuction (logical *and*), and disjunction (logical *or*).
-- All predicates should be erased at runtime. If we proof something about a primitive number, we want to make sure not to carry around a huge proof of validity.
-- Calculations on predicates should make no appearance at runtime (with the exception of `decide`; see below).
-- Recursive calculations on predicates should be tail recursive if they are used in implementations of `decide`. This might be tough to achieve. If you can't find a tail recursive solution for a given problem, use what feels most natural instead.
+この非常に充実した練習問題セットでは、プリミティブに対する述語を扱うための小さなライブラリを構築します。以下の目標を念頭に置いて進めてください：
 
-A note on efficiency: In order to be able to run computations on our predicates, we try to convert primitive values to algebraic data types as often and as soon as possible: Unsigned integers will be converted to `Nat` using `cast`, and strings will be converted to `List Char` using `unpack`. This allows us to work with proofs on `Nat` and `List` most of the time, and such proofs can be implemented without resorting to `believe_me` or other cheats. However, the one advantage of primitive types over algebraic data types is that they often perform much better. This is especially critical when comparing integral types with `Nat`: Operations on natural numbers often run with `O(n)` time complexity, where `n` is the size of one of the natural numbers involved, while with `Bits64`, for instance, many operations run in fast constant time (`O(1)`). Luckily, the Idris compiler optimizes many functions on natural number to use the corresponding `Integer` operations at runtime. This has the advantage that we can still use proper induction to proof stuff about natural numbers at compile time, while getting the benefit of fast integer operations at runtime. However, operations on `Nat` do run with `O(n)` time complexity and *compile time*. Proofs working on large natural number will therefore drastically slow down the compiler. A way out of this is discussed at the end of this section of exercises.
+- 命題論理の通常の演算を用いて述語を組み合わせられるようにする: 否定（negation）、論理積（conjunction / *AND*）、論理和（disjunction / *OR*）。
+- すべての述語は実行時に消去される（erased）ようにする。プリミティブな数値について何かを証明する場合、実行時に巨大な妥当性の証明を持ち歩かないようにする。
+- 述語に対する計算は実行時に現れないようにする（`decide` の実装を除く。後述）。
+- `decide` の実装で使用される述語に対する再帰計算は、可能であれば末尾再帰にする。これは達成が難しい場合もあります。特定の問題に対して末尾再帰の解法が見つからない場合は、最も自然に思える方法を採用してください。
 
-Enough talk, let's begin! To start with, you are given the following utilities:
+効率に関する補足: 述語に対する計算を実行できるようにするため、プリミティブ値を可能な限り頻繁かつ早期に代数的データ型に変換します。符号なし整数は `cast` を使って `Nat` に変換し、文字列は `unpack` を使って `List Char` に変換します。これにより、ほとんどの場合で `Nat` や `List` に対する証明を扱うことができ、そのような証明は `believe_me` やその他の裏技に頼ることなく実装できます。
+
+しかし、代数的データ型に対するプリミティブ型の唯一の利点は、多くの場合ではるかに優れたパフォーマンスを発揮することです。これは特に整数型と `Nat` を比較する場合に顕著です。自然数に対する演算は関数の引数の自然数の大きさを $n$ としたとき $O(n)$ の時間計算量で実行されることが多いのに対し、例えば `Bits64` の多くの演算は高速な定数時間（$O(1)$）で実行されます。幸いなことに、Idris コンパイラは自然数に対する多くの関数を実行時に対応する `Integer` 演算を使用するように最適化します。これには、コンパイル時には自然数について完全な数学的帰納法を用いて証明を行いつつ、実行時には高速な整数演算の恩恵を享受できるという利点があります。
+
+ただし、`Nat` に対する演算は *コンパイル時* には $O(n)$ の時間計算量で実行されます。したがって、大きな自然数に対する証明はコンパイラを大幅に低速化させる要因になります。この回避策については本練習問題の最後で議論します。
+
+前置きはここまでにして、始めましょう！まず、以下のユーティリティが与えられています：
 
 ```idris
--- Like `Dec` but with erased proofs. Constructors `Yes0`
--- and `No0` will be converted to constants `0` and `1` by
--- the compiler!
+-- `Dec` に似ていますが、証明が消去されます。
+-- コンストラクタ `Yes0` と `No0` はコンパイラによって
+-- 定数 `0` と `1` に変換されます！
 data Dec0 : (prop : Type) -> Type where
   Yes0 : (0 prf : prop) -> Dec0 prop
   No0  : (0 contra : prop -> Void) -> Dec0 prop
 
--- For interfaces with more than one parameter (`a` and `p`
--- in this example) sometimes one parameter can be determined
--- by knowing the other. For instance, if we know what `p` is,
--- we will most certainly also know what `a` is. We therefore
--- specify that proof search on `Decidable` should only be
--- based on `p` by listing `p` after a vertical bar: `| p`.
--- This is like specifing the search parameter(s) of
--- a data type with `[search p]` as was shown in the chapter
--- about predicates.
--- Specifying a single search parameter as shown here can
--- drastically help with type inference.
+-- 複数のパラメータを持つインターフェース（この例では `a` と `p`）では、
+-- 一方のパラメータが分かればもう一方が確定することがあります。
+-- 例えば `p` が分かれば、ほぼ確実に `a` も分かります。
+-- したがって、縦棒の後に `p` を指定して `| p` と書くことで、
+-- `Decidable` の証明探索が `p` のみに基づいて行われるように指定します。
+-- これは、述語の章で示したデータ型の探索パラメータを `[search p]` で
+-- 指定するのと同様です。
+-- ここで示すように単一の探索パラメータを指定することは、
+-- 型推論を大幅に支援します。
 interface Decidable (0 a : Type) (0 p : a -> Type) | p where
   decide : (v : a) -> Dec0 (p v)
 
--- We often have to pass `p` explicitly in order to help Idris with
--- type inference. In such cases, it is more convenient to use
--- `decideOn pred` instead of `decide {p = pred}`.
+-- Idris の型推論を助けるために `p` を明示的に渡す必要があることがよくあります。
+-- そのような場合、`decide {p = pred}` の代わりに `decideOn pred` を
+-- 使用する方が便利です。
 decideOn : (0 p : a -> Type) -> Decidable a p => (v : a) -> Dec0 (p v)
 decideOn _ = decide
 
--- Some primitive predicates can only be reasonably implemented
--- using boolean functions. This utility helps with decidability
--- on such proofs.
+-- 一部のプリミティブな述語はブール関数を用いてのみ合理的に実装できます。
+-- このユーティリティはそのような証明に対する決定可能性を支援します。
 test0 : (b : Bool) -> Dec0 (b === True)
 test0 True  = Yes0 Refl
 test0 False = No0 absurd
 ```
 
-We also want to run decidable computations at compile time. This is often much more efficient than running a direct proof search on an inductive type. We therefore come up with a predicate witnessing that a `Dec0` value is actually a `Yes0` together with two utility functions:
+また、コンパイル時に決定可能な計算を実行したいと考えます。これは帰納的型に対して直接証明探索を行うよりもはるかに効率的なことが多いためです。そこで、`Dec0` の値が実際に `Yes0` であることを証拠立てる述語と、2 つのユーティリティ関数を用意します：
 
 ```idris
 data IsYes0 : (d : Dec0 prop) -> Type where
@@ -65,11 +69,11 @@ fromYes0 (No0 contra) impossible
 safeDecideOn p v = fromYes0 $ decideOn p v
 ```
 
-Finally, as we are planning to refine mostly primitives, we will at times require some sledge hammer to convince Idris that we know what we are doing:
+最後に、主にプリミティブを洗練することを計画しているため、自分が何をしているかを Idris に納得させるための強力な手段が時折必要になります：
 
 ```idris
--- only use this if you are sure that `decideOn p v`
--- will return a `Yes0`!
+-- `decideOn p v` が確実に `Yes0` を返すと確信できる場合にのみ
+-- 使用してください！
 0 unsafeDecideOn : (0 p : a -> Type) -> Decidable a p => (v : a) -> p v
 unsafeDecideOn p v = case decideOn p v of
   Yes0 prf => prf
@@ -77,31 +81,31 @@ unsafeDecideOn p v = case decideOn p v of
     assert_total $ idris_crash "Unexpected refinement failure in `unsafeRefineOn`"
 ```
 
-01. We start with equality proofs. Implement `Decidable` for `Equal v`.
+01. 等値性の証明から始めます。`Equal v` に対する `Decidable` を実装してください。
 
-    Hint: Use `DecEq` from module `Decidable.Equality` as a constraint and make sure that `v` is available at runtime.
+    ヒント: `Decidable.Equality` モジュールの `DecEq` を制約として使用し、`v` が実行時に利用可能であることを確認してください。
 
-02. We want to be able to negate a predicate:
+02. 述語を否定できるようにしたいと考えます：
 
     ```idris
     data Neg : (p : a -> Type) -> a -> Type where
       IsNot : {0 p : a -> Type} -> (contra : p v -> Void) -> Neg p v
     ```
 
-    Implement `Decidable` for `Neg p` using a suitable constraint.
+    適切な制約を用いて、`Neg p` に対する `Decidable` を実装してください。
 
-03. We want to describe the conjunction of two predicates:
+03. 2 つの述語の論理積（AND）を記述したいと考えます：
 
     ```idris
     data (&&) : (p,q : a -> Type) -> a -> Type where
       Both : {0 p,q : a -> Type} -> (prf1 : p v) -> (prf2 : q v) -> (&&) p q v
     ```
 
-    Implement `Decidable` for `(p && q)` using suitable constraints.
+    適切な制約を用いて、`(p && q)` に対する `Decidable` を実装してください。
 
-04. Come up with a data type called `(||)` for the disjunction (logical *or*) of two predicates and implement `Decidable` using suitable constraints.
+04. 2 つの述語の論理和（OR）を表すデータ型 `(||)` を考案し、適切な制約を用いて `Decidable` を実装してください。
 
-05. Proof [De Morgan's laws](https://en.wikipedia.org/wiki/De_Morgan%27s_laws) by implementing the following propositions:
+05. 以下の命題を実装することで、[ド・モルガンの法則（De Morgan's laws）](https://ja.wikipedia.org/wiki/%E3%83%89%E3%83%BB%E3%83%A2%E3%83%AB%E3%82%AC%E3%83%B3%E3%81%AE%E6%B3%95%E5%89%87) を証明してください：
 
     ```idris
     negOr : Neg (p || q) v -> (Neg p && Neg q) v
@@ -111,7 +115,7 @@ unsafeDecideOn p v = case decideOn p v of
     orNeg : (Neg p || Neg q) v -> Neg (p && q) v
     ```
 
-    The last of De Morgan's implications is harder to type and proof as we need a way to come up with values of type `p v` and `q v` and show that not both can exist. Here is a way to encode this (annotated with quantity 0 as we will need to access an erased contraposition):
+    ド・モルガンの含意のうち最後のものは、`p v` と `q v` の型の値を用意し、両方が同時に存在しえないことを示す必要があるため、型付けと証明が難しくなります。これをエンコードする方法は以下のとおりです（消去された対偶にアクセスする必要があるため、多重度 0 の注釈が付いています）：
 
     ```idris
     0 negAnd :  Decidable a p
@@ -120,18 +124,18 @@ unsafeDecideOn p v = case decideOn p v of
              -> (Neg p || Neg q) v
     ```
 
-    When you implement `negAnd`, remember that you can freely access erased (implicit) arguments, because `negAnd` itself can only be used in an erased context.
+    `negAnd` を実装する際、`negAnd` 自体が消去されたコンテキストでのみ使用できるため、消去された（暗黙の）引数に自由にアクセスできることを思い出してください。
 
-    So far, we implemented the tools to algebraically describe and combine several predicate. It is now time to come up with some examples. As a first use case, we will focus on limiting the valid range of natural numbers. For this, we use the following data type:
+    ここまでで、複数の述語を代数的に記述・合成するためのツールを実装しました。ここからは具体例を見ていきましょう。最初のユースケースとして、自然数の有効範囲を制限することに焦点を当てます。このために以下のデータ型を使用します：
 
     ```idris
-    -- Proof that m <= n
+    -- m <= n の証明
     data (<=) : (m,n : Nat) -> Type where
       ZLTE : 0 <= n
       SLTE : m <= n -> S m <= S n
     ```
 
-    This is similar to `Data.Nat.LTE` but I find operator notation often to be clearer. We also can define and use the following aliases:
+    これは `Data.Nat.LTE` に似ていますが、演算子表記の方がわかりやすいことが多いです。また、以下のエイリアスを定義して使用できます：
 
     ```repl
     (>=) : (m,n : Nat) -> Type
@@ -162,9 +166,9 @@ unsafeDecideOn p v = case decideOn p v of
     Between l u = GreaterThan l && LessThan u
     ```
 
-06. Coming up with a value of type `m <= n` by pattern matching on `m` and `n` is highly inefficient for large values of `m`, as it will require `m` iterations to do so. However, while in an erased context, we don't need to hold a value of type `m <= n`. We only need to show, that such a value follows from a more efficient computation. Such a computation is `compare` for natural numbers: Although this is implemented in the *Prelude* with a pattern match on its arguments, it is optimized by the compiler to a comparison of integers which runs in constant time even for very large numbers. Since `Prelude.(<=)` for natural numbers is implemented in terms of `compare`, it runs just as efficiently.
+06. `m` と `n` に対するパターンマッチによって `m <= n` 型の値を生成することは、`m` が大きい値の場合に $m$ 回の反復が必要となるため非常に非効率的です。しかし、消去されたコンテキストにおいては、`m <= n` 型の値を保持する必要はありません。そのような値がより効率的な計算から導かれることだけを示せば十分です。そのような計算が自然数に対する `compare` です。これは *Prelude* では引数に対するパターンマッチで実装されていますが、コンパイラによって非常に大きな数値に対しても定数時間で実行される整数比較に最適化されます。自然数に対する `Prelude.(<=)` は `compare` を用いて実装されているため、同様に効率的に動作します。
 
-    We therefore need to proof the following two lemmas (make sure to not confuse `Prelude.(<=)` with `Prim.(<=)` in these declarations):
+    したがって、以下の 2 つの補題を証明する必要があります（宣言内で `Prelude.(<=)` と `Prim.(<=)` を混同しないように注意してください）：
 
     ```idris
     0 fromLTE : (n1,n2 : Nat) -> (n1 <= n2) === True -> n1 <= n2
@@ -172,17 +176,17 @@ unsafeDecideOn p v = case decideOn p v of
     0 toLTE : (n1,n2 : Nat) -> n1 <= n2 -> (n1 <= n2) === True
     ```
 
-    They come with a quantity of 0, because they are just as inefficient as the other computations we discussed above. We therefore want to make absolutely sure that they will never be used at runtime!
+    これらは先ほど説明した他の計算と同様に非効率であるため、多重度 0 が指定されています。これにより、実行時には決して使用されないことが完全に保証されます！
 
-    Now, implement `Decidable Nat (<= n)`, making use of `test0`, `fromLTE`, and `toLTE`. Likewise, implement `Decidable Nat (m <=)`, because we require both kinds of predicates.
+    それでは、`test0`、`fromLTE`、`toLTE` を活用して `Decidable Nat (<= n)` を実装してください。同様に、両方の種類の述語が必要となるため、`Decidable Nat (m <=)` も実装してください。
 
-    Note: You should by now figure out yourself that `n` must be available at runtime and how to make sure that this is the case.
+    注意: `n` が実行時に利用可能でなければならないこと、およびそれを確実にする方法については、そろそろ理解できているはずです。
 
-07. Proof that `(<=)` is reflexive and transitive by declaring and implementing corresponding propositions. As we might require the proof of transitivity to chain several values of type `(<=)`, it makes sense to also define a short operator alias for this.
+07. 対応する命題を宣言・実装することで、`(<=)` が反射的（reflexive）かつ推移的（transitive）であることを証明してください。推移性の証明を使って `(<=)` 型の複数の値を連鎖させる必要があるかもしれないため、これに対する短い演算子エイリアスを定義するのも有益です。
 
-08. Proof that from `n > 0` follows `IsSucc n` and vise versa.
+08. `n > 0` から `IsSucc n` が導かれ、その逆も成り立つことを証明してください。
 
-09. Declare and implement safe division and modulo functions for `Bits64`, by requesting an erased proof that the denominator is strictly positive when cast to a natural number. In case of the modulo function, return a refined value carrying an erased proof that the result is strictly smaller than the modulus:
+09. 自然数にキャストしたときに分母が狭義に正（0 より大きい）であるという消去された証明を要求することで、`Bits64` に対する安全な除算および剰余関数を宣言・実装してください。剰余関数の場合、結果が法（modulus）より真に小さいという消去された証明を保持する洗練された値を返してください：
 
     ```idris
     safeMod :  (x,y : Bits64)
@@ -190,11 +194,10 @@ unsafeDecideOn p v = case decideOn p v of
             => Subset Bits64 (\v => cast v < cast y)
     ```
 
-10. We will use the predicates and utilities we defined so far to convert a value of type `Bits64` to a string of digits in base `b` with `2 <= b && b <= 16`. To do so, implement the following skeleton definitions:
+10. ここまでに定義した述語とユーティリティを使用して、`2 <= b && b <= 16` を満たす基数 `b` の数字列（文字列）に `Bits64` 型の値を変換します。そのために、以下のスケルトン定義を実装してください：
 
     ```idris
-    -- this will require some help from `assert_total`
-    -- and `idris_crash`.
+    -- これには `assert_total` と `idris_crash` の助けが必要です
     digit : (v : Bits64) -> (0 prf : cast v < 16) => Char
 
     record Base where
@@ -209,51 +212,51 @@ unsafeDecideOn p v = case decideOn p v of
       fromInteger : (v : Integer) -> {auto 0 _ : IsJust (base $ cast v)} -> Base
     ```
 
-    Finally, implement `digits`, using `safeDiv` and `safeMod` in your implementation. This might be challenging, as you will have to manually transform some proofs to satisfy the type checker. You might also require `assert_smaller` in the recursive step.
+    最後に、実装内で `safeDiv` と `safeMod` を使用して `digits` を実装してください。型チェッカーを満たすために一部の証明を手動で変換する必要があるため、これは挑戦的な課題かもしれません。再帰ステップで `assert_smaller` が必要になる場合もあります。
 
     ```idris
     digits : Bits64 -> Base -> String
     ```
 
-    We will now turn our focus on strings. Two of the most obvious ways in which we can restrict the strings we accept are by limiting the set of characters and limiting their lengths. More advanced refinements might require strings to match a certain pattern or regular expression. In such cases, we might either go for a boolean check or use a custom data type representing the different parts of the pattern, but we will not cover these topics here.
+    次に、文字列に対する述語に焦点を当てます。受け入れる文字列を制限する最も明白な方法の 2 つは、文字の集合を制限することと、長さを制限することです。より高度な洗練では、文字列が特定のパターンや正規表現に一致することを要求する場合があります。そのような場合、ブール値チェックを行うか、パターンの異なる部分を表すカスタムデータ型を使用しますが、ここではそれらのトピックは扱いません。
 
-11. Implement the following aliases for useful predicates on characters.
+11. 文字に対する有用な述語の以下のエイリアスを実装してください。
 
-    Hint: Use `cast` to convert characters to natural numbers, use `(<=)` and `InRange` to specify regions of characters, and use `(||)` to combine regions of characters.
+    ヒント: 文字を自然数に変換するには `cast` を使い、文字の範囲を指定するには `(<=)` と `InRange` を使い、文字の範囲を合成するには `(||)` を使用してください。
 
     ```idris
-    -- Characters <= 127
+    -- 127 以下の文字
     IsAscii : Char -> Type
 
-    -- Characters <= 255
+    -- 255 以下の文字
     IsLatin : Char -> Type
 
-    -- Characters in the interval ['A','Z']
+    -- 区間 ['A','Z'] の文字
     IsUpper : Char -> Type
 
-    -- Characters in the interval ['a','z']
+    -- 区間 ['a','z'] の文字
     IsLower : Char -> Type
 
-    -- Lower or upper case characters
+    -- 英大文字または英小文字
     IsAlpha : Char -> Type
 
-    -- Characters in the range ['0','9']
+    -- 範囲 ['0','9'] の数字文字
     IsDigit : Char -> Type
 
-    -- Digits or characters from the alphabet
+    -- 数字文字または英文字
     IsAlphaNum : Char -> Type
 
-    -- Characters in the ranges [0,31] or [127,159]
+    -- 範囲 [0,31] または [127,159] の文字
     IsControl : Char -> Type
 
-    -- An ASCII character that is not a control character
+    -- 制御文字ではない ASCII 文字
     IsPlainAscii : Char -> Type
 
-    -- A latin character that is not a control character
+    -- 制御文字ではない Latin 文字
     IsPlainLatin : Char -> Type
     ```
 
-12. The advantage of this more modular approach to predicates on primitives is that we can safely run calculations on our predicates and get the strong guarantees from the existing proofs on inductive types like `Nat` and `List`. Here are some examples of such calculations and conversions, all of which can be implemented without cheating:
+12. プリミティブに対する述語へのこのよりモジュール化されたアプローチの利点は、述語に対して安全に計算を実行でき、`Nat` や `List` のような帰納的型に対する既存の証明から強力な保証を得られる点です。以下は、裏技を使うことなくすべて実装できるそのような計算と変換の例です：
 
     ```idris
     0 plainToAscii : IsPlainAscii c -> IsAscii c
@@ -271,7 +274,7 @@ unsafeDecideOn p v = case decideOn p v of
     0 upperToAlphaNum : IsUpper c -> IsAlphaNum c
     ```
 
-    The following (`asciiToLatin`) is trickier. Remember that `(<=)` is transitive. However, in your invocation of the proof of transitivity, you will not be able to apply direct proof search using `%search` because the search depth is too small. You could increase the search depth, but it is much more efficient to use `safeDecideOn` instead.
+    次の `asciiToLatin` は少しトリッキーです。`(<=)` が推移的であることを思い出してください。ただし、推移性の証明の呼び出しにおいて、探索深度が小さすぎるため `%search` を用いた直接の証明探索を適用することはできません。探索深度を増やすこともできますが、代わりに `safeDecideOn` を使用する方がはるかに効率的です。
 
     ```idris
     0 asciiToLatin : IsAscii c -> IsLatin c
@@ -279,16 +282,16 @@ unsafeDecideOn p v = case decideOn p v of
     0 plainAsciiToPlainLatin : IsPlainAscii c -> IsPlainLatin c
     ```
 
-    Before we turn our full attention to predicates on strings, we have to cover lists first, because we will often treat strings as lists of characters.
+    文字列に対する述語に本格的に取り掛かる前に、文字列を文字のリストとして扱うことが多いため、まずリストについて扱う必要があります。
 
-13. Implement `Decidable` for `Head`:
+13. `Head` に対する `Decidable` を実装してください：
 
     ```idris
     data Head : (p : a -> Type) -> List a -> Type where
       AtHead : {0 p : a -> Type} -> (0 prf : p v) -> Head p (v :: vs)
     ```
 
-14. Implement `Decidable` for `Length`:
+14. `Length` に対する `Decidable` を実装してください：
 
     ```idris
     data Length : (p : Nat -> Type) -> List a -> Type where
@@ -297,7 +300,7 @@ unsafeDecideOn p v = case decideOn p v of
                 -> Length p vs
     ```
 
-15. The following predicate is a proof that all values in a list of values fulfill the given predicate. We will use this to limit the valid set of characters in a string.
+15. 以下の述語は、値のリスト内のすべての値が指定された述語を満たすことの証明です。これを使って、文字列内の有効な文字集合を制限します。
 
     ```idris
     data All : (p : a -> Type) -> (as : List a) -> Type where
@@ -308,11 +311,11 @@ unsafeDecideOn p v = case decideOn p v of
            -> All p (v :: vs)
     ```
 
-    Implement `Decidable` for `All`.
+    `All` に対する `Decidable` を実装してください。
 
-    For a real challenge, try to make your implementation of `decide` tail recursive. This will be important for real world applications on the JavaScript backends, where we might want to refine strings of thousands of characters without overflowing the stack at runtime. In order to come up with a tail recursive implementation, you will need an additional data type `AllSnoc` witnessing that a predicate holds for all elements in a `SnocList`.
+    本格的な挑戦として、`decide` の実装を末尾再帰にしてみてください。これは JavaScript バックエンドでの実際のアプリケーションにおいて、実行時にスタックをオーバーフローさせることなく何千文字もの文字列を洗練したい場合に重要になります。末尾再帰の実装を作成するには、述語が `SnocList` のすべての要素に対して成り立つことを証拠立てる追加のデータ型 `AllSnoc` が必要になります。
 
-16. It's time to come to an end here. An identifier in Idris is a sequence of alphanumeric characters, possibly separated by underscore characters (`_`). In addition, all identifiers must start with a letter. Given this specification, implement predicate `IdentChar`, from which we can define a new wrapper type for identifiers:
+16. いよいよ締めくくりです。Idris における識別子（identifier）は、英数字のシーケンスであり、アンダースコア（`_`）で区切られている場合もあります。さらに、すべての識別子は英文字で始まらなければなりません。この仕様に基づいて、識別子のための新しいラッパー型を定義できる述語 `IdentChar` を実装してください：
 
     ```idris
     0 IdentChars : List Char -> Type
@@ -323,17 +326,18 @@ unsafeDecideOn p v = case decideOn p v of
       0 prf : IdentChars (unpack value)
     ```
 
-    Implement a factory method `identifier` for converting strings of unknown source at runtime:
+    実行時に未知のソースの文字列を変換するためのファクトリ関数 `identifier` を実装してください：
 
     ```idris
     identifier : String -> Maybe Identifier
     ```
 
-    In addition, implement `fromString` for `Identifier` and verify, that the following is a valid identifier:
+    さらに、`Identifier` に対する `fromString` を実装し、以下が有効な識別子であることを検証してください：
 
     ```idris
     testIdent : Identifier
     testIdent = "fooBar_123"
     ```
 
-Final remarks: Proofing stuff about the primitives can be challenging, both when deciding on what axioms to use and when trying to make things perform well at runtime and compile time. I'm experimenting with a library, which deals with these issues. It is not yet finished, but you can have a look at it [here](https://github.com/stefan-hoeck/idris2-prim).
+結びの言葉: プリミティブについて何かを証明することは、どのような公理を使用するかを決める際にも、実行時やコンパイル時に適切に動作させようとする際にも、困難を伴う場合があります。筆者はこれらの問題に対処するライブラリを実験的に作成しています。まだ完成していませんが、[こちら](https://github.com/stefan-hoeck/idris2-prim) で確認できます。
+
