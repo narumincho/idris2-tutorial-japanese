@@ -51,7 +51,7 @@ if "theme".IO.d {
 
 # Katla over the source files, just plain copying them if the ttm doesn't exist
 # Implement special handling for idr files
-paths("src").race(batch => 1).map( -> $path {
+for paths("src") -> $path {
     my $rel-path = $path.IO.relative;
     my $ttc-path = $ttc.add($path.IO.relative: "src").extension: "ttm";
     given $path.IO.extension {
@@ -68,22 +68,26 @@ paths("src").race(batch => 1).map( -> $path {
             }
         }
         when "idr" {
-            die "Idris file ", $rel-path, " didn't have ttm: ", $ttc-path
-                unless $ttc-path ~~ :e;
-
-            say "Running katla on ", $rel-path,
-                " with ttc at ", $ttc-path.relative,
-                " sending to ", $path.IO.extension('md').relative;
-            katla-html $path.IO.relative, $ttc-path.relative, $path.IO.extension('md').relative;
-            # katla $path.IO.relative,
-            $ttc-path.relative,
-            output-name => $path.IO.extension('md').relative;
+            if $ttc-path ~~ :e {
+                say "Running katla on ", $rel-path,
+                    " with ttc at ", $ttc-path.relative,
+                    " sending to ", $path.IO.extension('md').relative;
+                katla-html $path.IO.relative, $ttc-path.relative, $path.IO.extension('md').relative;
+            } else {
+                say "ttc not found for ", $rel-path, ", fallback to code block in md";
+                my $output-path = $tempdir.add: $path.IO.extension('md').relative;
+                if !$output-path.parent.d {
+                    $output-path.parent.mkdir;
+                }
+                $output-path.spurt("```idris\n" ~ $path.IO.slurp ~ "\n```\n");
+            }
         }
         default {
             say "Copying ", $rel-path, " verbatim";
+            copy-to-dest $rel-path;
         }
     }
-}).sink;
+}
 
 # Build the book
 
@@ -109,19 +113,22 @@ sub katla-html($src, $ttc-src, $out-path) {
     # Short circut if requested
     if $skip-katla {
         say 'Skipping katla for input at ', $src;
-        $output-path.spurt($src.IO.slurp);
+        $output-path.spurt("```idris\n" ~ $src.IO.slurp ~ "\n```\n");
         return;
     }
     # Run katla and collect the output
     my $katla = run 'katla', 'html', $src, $ttc-src, :out, :err;
     my $raw-output = $katla.out.slurp(:close);
     my $err-output = $katla.err.slurp(:close);
-    if !$katla {
+    if !$katla || $raw-output.chars == 0 {
         say "Warning: katla html failed on $src (code {$katla.exitcode}): $err-output";
+        say "Falling back to markdown code block for $src";
+        $output-path.spurt("```idris\n" ~ $src.IO.slurp ~ "\n```\n");
+        return;
     }
     # Extract just the code from the output if present, or fallback
     my $code-match = $raw-output ~~ /'<code' [\n|\N]* '</code>'/;
-    my $output = $code-match ?? $code-match.Str !! ($raw-output.chars > 0 ?? $raw-output !! "```idris\n" ~ $src.IO.slurp ~ "\n```");
+    my $output = $code-match ?? $code-match.Str !! $raw-output;
     # Rerrange into a markdown document
     $output = process-katla-output($output);
     $output = qq:to/END/;
