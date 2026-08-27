@@ -1,10 +1,13 @@
-# Recursion and Folds
+# 再帰と畳み込み (Recursion and Folds)
 
-In this chapter, we are going to have a closer look at the computations we typically perform with *container types*: Parameterized data types like `List`, `Maybe`, or `Identity`, holding zero or more values of the parameter's type. Many of these functions are recursive in nature, so we start with a discourse about recursion in general, and tail recursion as an important optimization technique in particular. Most recursive functions in this part will describe pure iterations over lists.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
-It is recursive functions, for which totality is hard to determine, so we will next have a quick look at the totality checker and learn, when it will refuse to accept a function as being total and what to do about this.
+本章では、`List`、`Maybe`、`Identity` のような、型パラメータで指定された型の値を 0 個以上保持する **コンテナ型** に対して通常行う計算について詳しく見ていきます。これらの関数の多くは本質的に再帰的であるため、まず一般的な再帰について、そして重要な最適化手法である **末尾再帰（tail recursion）** についての解説から始めます。本節のほとんどの再帰関数は、リストに対する純粋な反復処理を記述します。
 
-Finally, we will start looking for common patterns in the recursive functions from the first part and will eventually introduce a new interface for consuming container types: Interface `Foldable`.
+全域性の判定が難しいのは再帰関数であるため、次に全域性チェッカーについて簡単に確認し、コンパイラが関数の全域性を認めてくれないケースとその対処法について学びます。
+
+最後に、前半で登場した再帰関数の共通パターンを抽出し、コンテナ型を集約・消費するための新しいインターフェース **`Foldable`（畳み込み可能）** を導入します。
 
 ```idris hide
 module Tutorial.Folds

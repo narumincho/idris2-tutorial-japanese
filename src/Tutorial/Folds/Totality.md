@@ -1,4 +1,7 @@
-# Notes on Totality Checking
+# 全域性チェックに関する補足 (Notes on Totality Checking)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Totality.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Totality.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Folds.Totality
@@ -6,13 +9,13 @@ module Tutorial.Folds.Totality
 %default total
 ```
 
-The totality checker in Idris verifies, that at least one (possibly erased!) argument in a recursive call converges towards a base case. For instance, with natural numbers, if the base case is zero (corresponding to data constructor `Z`), and we continue with `k` after pattern matching on `S k`, Idris can derive from `Nat`'s constructors, that `k` is strictly smaller than `S k` and therefore the recursive call must converge towards a base case. Exactly the same reasoning is used when pattern matching on a list and continuing only with its tail in the recursive call.
+Idris の全域性チェッカーは、再帰呼び出しにおける少なくとも1つの（消去されている可能性もある）引数が基底ケースに向かって収束しているかを検証します。たとえば自然数の場合、基底ケースが 0（データコンストラクタ `Z`）であり、`S k` に対するパターンマッチの後に `k` を渡していれば、Idris は `Nat` のコンストラクタの構造から `k` が `S k` より真に小さいことを導出し、再帰が必ず終了すると判断できます。リストをパターンマッチして末尾（tail）のみを再帰呼び出しに渡す場合も全く同じ推論が行われます。
 
-While this works in many cases, it doesn't always go as expected. Below, I'll show you a couple of examples where totality checking fails, although *we* know, that the functions in question are definitely total.
+これは多くのケースで機能しますが、常に期待通りにいくとは限りません。以下では、人間から見れば確実に全域であるにもかかわらず、全域性チェックが失敗する代表的な例を紹介します。
 
-## Case 1: Recursion over a Primitive
+## ケース 1: プリミティブ型に対する再帰
 
-Idris doesn't know anything about the internal structure of primitive data types. So the following function, although being obviously total, will not be accepted by the totality checker:
+Idris はプリミティブデータ型の内部構造を認識していません。そのため、明らかに有限回で終了する以下の関数であっても、全域性チェッカーには受け入れられません：
 
 ```idris
 covering
@@ -21,9 +24,9 @@ replicatePrim 0 v = []
 replicatePrim x v = v :: replicatePrim (x - 1) v
 ```
 
-Unlike with natural numbers (`Nat`), which are defined as an inductive data type and are only converted to integer primitives during compilation, Idris can't tell that `x - 1` is strictly smaller than `x`, and so it fails to verify that this must converge towards the base case. (The reason is, that `x - 1` is implemented in terms of primitive function `prim__sub_Bits32`, which is built into the compiler and must be implemented by each backend individually. The totality checker knows about data types, constructors, and functions defined in Idris, but not about (primitive) functions and foreign functions implemented at the backends. While it is theoretically possible to also define and use laws for primitive and foreign functions, this hasn't yet been done for most of them.)
+帰納的データ型として定義されている自然数（`Nat`）とは異なり、Idris は `x - 1` が `x` より真に小さいことを判定できないため、基底ケースに収束することを検証できません（`x - 1` はコンパイラ組み込みのプリミティブ関数 `prim__sub_Bits32` で実装されているためです）。
 
-Since non-totality is highly contagious (all functions invoking a partial function are themselves considered to be partial by the totality checker), there is utility function `assert_smaller`, which we can use to convince the totality checker and still annotate our functions with the `total` keyword:
+非全域性（partial）は伝播するため（部分関数を呼び出す関数はすべて全域性チェッカーによって部分関数と見なされる）、全域性チェッカーを納得させて関数に `total` を付与するためのユーティリティ関数 `assert_smaller` が用意されています：
 
 ```idris
 replicatePrim' : Bits32 -> a -> List a
@@ -31,57 +34,47 @@ replicatePrim' 0 v = []
 replicatePrim' x v = v :: replicatePrim' (assert_smaller x $ x - 1) v
 ```
 
-Please note, though, that whenever you use `assert_smaller` to silence the totality checker, the burden of proving totality rests on your shoulders. Failing to do so can lead to arbitrary and unpredictable program behavior (which is the default with most other programming languages).
+ただし、`assert_smaller` を使って全域性チェッカーを黙らせる場合、全域性を証明する責任はプログラマ自身に委ねられます。誤った使い方をすると、予期せぬプログラムの挙動を引き起こす可能性があります。
 
-### Ex Falso Quodlibet
+### 偽からは何でも導ける (Ex Falso Quodlibet)
 
-Below - as a demonstration - is a simple proof of `Void`. `Void` is an *uninhabited type*: a type with no values. *Proofing `Void`* means, that we implement a function accepted by the totality checker, which returns a value of type `Void`, although this is supposed to be impossible as there is no such value. Doing so allows us to completely disable the type system together with all the guarantees it provides. Here's the code and its dire consequences:
+デモンストレーションとして、`Void` の簡単な「偽の証明」を示します。`Void` は値を持たない **無人型（uninhabited type）** です。`Void` を証明する（`Void` 型の値を返す関数を全域性チェッカーに通す）ことができてしまうと、型システムが提供するすべての安全性の保証を完全に無効化できてしまいます：
 
 ```idris
--- In order to proof `Void`, we just loop forever, using
--- `assert_smaller` to silence the totality checker.
+-- `Void` を証明するために、`assert_smaller` を悪用して無限ループを全域と誤認させる
 proofOfVoid : Bits8 -> Void
 proofOfVoid n = proofOfVoid (assert_smaller n n)
 
--- From a value of type `Void`, anything follows!
--- This function is safe and total, as there is no
--- value of type `Void`!
+-- `Void` 型の値からは何でも導ける！
+-- `Void` 型の値は存在しないため、この関数自体は安全で全域的
 exFalsoQuodlibet : Void -> a
 exFalsoQuodlibet _ impossible
 
--- By passing our proof of void to `exFalsoQuodlibet`
--- (exported by the *Prelude* by the name of `void`), we
--- can coerce any value to a value of any other type.
--- This renders type checking completely useless, as
--- we can freely convert between values of different
--- types.
+-- `proofOfVoid` を `exFalsoQuodlibet`（Prelude では `void` としてエクスポート）に渡すことで、
+-- 任意の値を任意の別の型の値にキャストできてしまう。
+-- これにより型チェックは完全に無力化される。
 coerce : a -> b
 coerce _ = exFalsoQuodlibet (proofOfVoid 0)
 
--- Finally, we invoke `putStrLn` with a number instead
--- of a string. `coerce` allows us to do just that.
+-- 文字列を期待する `putStrLn` に整数を渡せてしまう
 pain : IO ()
 pain = putStrLn $ coerce 0
 ```
 
-Please take a moment to marvel at provably total function `coerce`: It claims to convert *any* value to a value of *any* other type. And it is completely safe, as it only uses total functions in its implementation. The problem is - of course - that `proofOfVoid` should never ever have been a total function.
+`coerce` は「任意の値を任意の別の型に変換できる」と主張し、実装には全域関数しか使われていないため型上は完全に安全に見えます。問題は当然ながら、`proofOfVoid` を全域関数として偽装してしまった点にあります。
 
-In `pain` we use `coerce` to conjure a string from an integer. In the end, we get what we deserve: The program crashes with an error. While things could have been much worse, it can still be quite time consuming and annoying to localize the source of such an error.
+これを実行すると、当然ながら実行時エラーでクラッシュします：
 
 ```sh
 $ idris2 --cg node --exec pain --find-ipkg src/Tutorial/Folds.md
 ERROR: No clauses
 ```
 
-So, with a single thoughtless placement of `assert_smaller` we wrought havoc within our pure and total codebase sacrificing totality and type safety in one fell swoop. Therefore: Use at your own risk!
+このように、たった1箇所で `assert_smaller` を不適切に使用するだけで、型安全性と全域性が一瞬で崩壊します。使用には細心の注意を払ってください。
 
-Note: I do not expect you to understand all the dark magic at work in the code above. I'll explain the details in due time in another chapter.
+## ケース 2: 高階関数経由の再帰
 
-Second note: *Ex falso quodlibet*, also called [the principle of explosion](https://en.wikipedia.org/wiki/Principle_of_explosion) is a law in logic: From a contradiction, any statement can be proven. In our case, the contradiction was our proof of `Void`: The claim that we wrote a total function producing such a value, although `Void` is an uninhabited type. You can verify this by inspecting `Void` at the REPL with `:doc Void`: It has no data constructors.
-
-## Case 2: Recursion via Function Calls
-
-Below is an implementation of a [*rose tree*](https://en.wikipedia.org/wiki/Rose_tree). Rose trees can represent search paths in computer algorithms, for instance in graph theory.
+以下は [ローズツリー（Rose Tree / 多分木）](https://ja.wikipedia.org/wiki/%E3%83%AD%E3%83%BC%E3%82%BA%E3%83%84%E3%83%AA%E3%83%BC) の実装です：
 
 ```idris
 record Tree a where
@@ -93,7 +86,7 @@ Forest : Type -> Type
 Forest = List . Tree
 ```
 
-We could try and compute the size of such a tree as follows:
+この木のサイズを計算しようとすると、以下のようになります：
 
 ```idris
 covering
@@ -101,9 +94,9 @@ size : Tree a -> Nat
 size (Node _ forest) = S . sum $ map size forest
 ```
 
-In the code above, the recursive call happens within `map`. *We* know that we are using only subtrees in the recursive calls (since we know how `map` is implemented for `List`), but Idris can't know this (teaching a totality checker how to figure this out on its own seems to be an open research question). So it will refuse to accept the function as being total.
+上記のコードでは、再帰呼び出しが `map` の内部で行われています。人間は `forest` の各要素（部分木）に対して再帰していることがわかりますが、Idris は `map` の中身まで追跡してそれを認識することができません。そのため、全域関数として承認されません。
 
-There are two ways to handle the case above. If we don't mind writing a bit of otherwise unneeded boilerplate code, we can use explicit recursion. In fact, since we often also work with search *forests*, this is the preferable way here.
+これに対処する安全な方法は、**相互再帰** を使って明示的な再帰関数を書くことです：
 
 ```idris
 mutual
@@ -115,9 +108,9 @@ mutual
   forestSize (x :: xs) = treeSize x + forestSize xs
 ```
 
-In the case above, Idris can verify that we don't blow up our trees behind its back as we are explicit about what happens in each recursive step. This is the safe, preferable way of going about this, especially if you are new to the language and totality checking in general.
+これならば、Idris は各再帰ステップで引数が真に小さくなっていることを検証できます。
 
-However, sometimes the solution presented above is just too cumbersome to write. For instance, here is an implementation of `Show` for rose trees:
+一方、ボイラープレートを書くのが極めて面倒な場合（たとえば `Show` インスタンスの実装など）のために、最終手段として `assert_total` というマクロも提供されています：
 
 ```idris
 Show a => Show (Tree a) where
@@ -125,7 +118,7 @@ Show a => Show (Tree a) where
     assert_total $ showCon p "Node" (showArg v ++ showArg ts)
 ```
 
-In this case, we'd have to manually reimplement `Show` for lists of trees: A tedious task - and error-prone on its own. Instead, we resort to using the mighty sledgehammer of totality checking: `assert_total`. Needless to say that this comes with the same risks as `assert_smaller`, so be very careful.
+`assert_total` も `assert_smaller` と同様のリスクを伴うため、慎重に使用する必要があります。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

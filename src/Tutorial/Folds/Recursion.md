@@ -1,4 +1,7 @@
-# Recursion
+# 再帰 (Recursion)
+
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Recursion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Recursion.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
 
 ```idris
 module Tutorial.Folds.Recursion
@@ -11,11 +14,11 @@ import Debug.Trace
 %default total
 ```
 
-In this section, we are going to have a closer look at recursion in general and at tail recursion in particular.
+本節では、一般的な再帰と、特に末尾再帰について詳しく見ていきます。
 
-Recursive functions are functions, which call themselves to repeat a task or calculation until a certain aborting condition (called the *base case*) holds. Please note, that it is recursive functions, which make it hard to verify totality: Non-recursive functions, which are *covering* (they cover all possible cases in their pattern matches) are automatically total if they only invoke other total functions.
+再帰関数とは、特定の終了条件（**基底ケース / base case** と呼ばれます）が満たされるまで、タスクや計算を繰り返すために自分自身を呼び出す関数のことです。全域性の検証を難しくしているのは再帰関数です。全ケースを網羅（*covering*）している非再帰関数は、他の全域関数のみを呼び出している限り、自動的に全域（total）となります。
 
-Here is an example of a recursive function: It generates a list of the given length filling it with identical values:
+以下は再帰関数の例です：指定された長さのリストを生成し、同一の値で埋めます：
 
 ```idris
 replicateList : Nat -> a -> List a
@@ -23,7 +26,7 @@ replicateList 0     _ = []
 replicateList (S k) x = x :: replicateList k x
 ```
 
-As you can see (this module has the `%default total` pragma at the top), this function is provably total. Idris verifies, that the `Nat` argument gets *strictly smaller* in each recursive call, and that therefore, the function *must* eventually come to an end. Of course, we can do the same thing for `Vect`, where we can even show that the length of the resulting vector matches the given natural number:
+このモジュールの冒頭には `%default total` プラグマがありますが、この関数は全域であることが証明されています。Idris は再帰呼び出しのたびに `Nat` 引数が **真に小さく（strictly smaller）** なっていることを検証し、したがって関数が最終的に必ず終了することを保証します。もちろん `Vect` に対しても同様のことができます：
 
 ```idris
 replicateVect : (n : Nat) -> a -> Vect n a
@@ -31,7 +34,7 @@ replicateVect 0     _ = []
 replicateVect (S k) x = x :: replicateVect k x
 ```
 
-While we often use recursion to *create* values of data types like `List` or `Vect`, we also use recursion, when we *consume* such values. For instance, here is a function for calculating the length of a list:
+`List` や `Vect` などのデータ型の値を **生成** するために再帰を使用するだけでなく、それらの値を **消費（走査・集約）** する際にも再帰を使用します。たとえば、リストの長さを計算する関数は以下の通りです：
 
 ```idris
 len : List a -> Nat
@@ -39,9 +42,9 @@ len []        = 0
 len (_ :: xs) = 1 + len xs
 ```
 
-Again, Idris can verify that `len` is total, as the list we pass in the recursive case is strictly smaller than the original list argument.
+ここでも、再帰ケースで渡されるリストが元のリスト引数よりも真に小さいため、Idris は `len` が全域であることを検証できます。
 
-But when is a recursive function non-total? Here is an example: The following function creates a sequence of values until the given generation function (`gen`) returns a `Nothing`. Note, how we use a *state* value (of generic type `s`) and use `gen` to calculate a value together with the next state:
+では、どのような場合に再帰関数は非全域になるのでしょうか？ 以下の関数は、指定された生成関数（`gen`）が `Nothing` を返すまで値のシーケンスを生成します：
 
 ```idris
 covering
@@ -51,7 +54,7 @@ unfold gen vs = case gen vs of
   Nothing       => []
 ```
 
-With `unfold`, Idris can't verify that any of its arguments is converging towards the base case. It therefore rightfully refuses to accept that `unfold` is total. And indeed, the following function produces an infinite list (so please, don't try to inspect this at the REPL, as doing so will consume all your computer's memory):
+`unfold` では、Idris はどの引数も基底ケースに向かって収束していることを検証できません。そのため、Idris は `unfold` が全域であることを拒絶し、`covering` の注釈が必要になります。実際、以下の関数は無限リストを生成します（メモリを使い果たしてしまうため、REPL で評価しないでください）：
 
 ```idris
 fiboHelper : (Nat,Nat) -> ((Nat,Nat),Nat)
@@ -62,7 +65,7 @@ fibonacci : List Nat
 fibonacci = unfold (Just . fiboHelper) (1,1)
 ```
 
-In order to safely create a (finite) sequence of Fibonacci numbers, we need to make sure the function generating the sequence will stop after a finite number of steps, for instance by limiting the length of the list:
+有限個のフィボナッチ数を安全に生成するには、たとえばリストの長さを制限するなどして、生成関数が有限ステップで停止することを保証する必要があります：
 
 ```idris
 unfoldTot : Nat -> (gen : s -> Maybe (s,a)) -> s -> List a
@@ -75,31 +78,31 @@ fibonacciN : Nat -> List Nat
 fibonacciN n = unfoldTot n (Just . fiboHelper) (1,1)
 ```
 
-## The Call Stack
+## コールスタック (The Call Stack)
 
-In order to demonstrate what tail recursion is about, we require the following `main` function:
+末尾再帰の意義を理解するために、次の `main` 関数を考えてみましょう：
 
 ```idris
 main : IO ()
 main = printLn . len $ replicateList 10000 10
 ```
 
-If you have [Node.js](https://nodejs.org/en/) installed on your system, you might try the following experiment. Compile and run this module using the *Node.js* backend of Idris instead of the default *Chez Scheme* backend and run the resulting JavaScript source file with the Node.js binary:
+もしシステムに [Node.js](https://nodejs.org/ja/) がインストールされているなら、以下の実験を試してみてください。デフォルトの Chez Scheme バックエンドの代わりに Idris の Node.js バックエンドを使ってこのモジュールをコンパイル・実行します：
 
 ```sh
 idris2 --cg node -o test.js --find-ipkg src/Tutorial/Folds.md
 node build/exec/test.js
 ```
 
-Node.js will fail with the following error message and a lengthy stack trace: `RangeError: Maximum call stack size exceeded`. What's going on here? How can it be that `main` fails with an exception although it is provably total?
+Node.js は `RangeError: Maximum call stack size exceeded` というエラーとスタックトレースを出力してクラッシュします。全域であることが証明されているプログラムなのに、なぜ例外で失敗するのでしょうか？
 
-First, remember that a function being total means that it will eventually produce a value of the given type in a finite amount of time, *given enough resources like computer memory*. Here, `main` hasn't been given enough resources as Node.js has a very small size limit on its call stack. The *call stack* can be thought of as a stack data structure (first in, last out), where nested function calls are put. In case of recursive functions, the stack size increases by one with every recursive function call. In case of our `main` function, we create and consume a list of length 10'000, so the call stack will hold at least 10'000 function calls before they are being invoked and the stack's size is reduced again. This exceeds Node.js's stack size limit by far, hence the overflow error.
+まず、「全域（total）」とは、**メモリなどの計算リソースが十分にあるという前提の下で**、有限時間内に値を生成することを意味します。Node.js はコールスタックのサイズ制限が非常に小さいため、十分なリソースが与えられていませんでした。**コールスタック** はネストした関数呼び出しが積まれるスタック構造（LIFO）です。再帰関数の場合、再帰呼び出しのたびにスタックサイズが1つずつ増加します。上記の `main` では長さ 10,000 のリストを生成・消費するため、コールスタックには少なくとも 10,000 回分の呼び出しが積まれます。これが Node.js のスタック制限を大幅に超えてしまい、スタックオーバーフローが発生したのです。
 
-Now, before we look at a solution how to circumvent this issue, please note that this is a very serious and limiting source of bugs when using the JavaScript backends of Idris. In Idris, having no access to control structures like `for` or `while` loops, we *always* have to resort to recursion in order to describe iterative computations. Luckily (or should I say "unfortunately", since otherwise this issue would already have been addressed with all seriousness), the Scheme backends don't have this issue, as their stack size limit is much larger and they perform all kinds of optimizations internally to prevent the call stack from overflowing.
+なお、Scheme バックエンドはスタック制限がはるかに大きく、内部で最適化を行うためこの問題は発生しにくいですが、JavaScript バックエンドなどをターゲットにする際には極めて重要な考慮事項になります。
 
-## Tail Recursion
+## 末尾再帰 (Tail Recursion)
 
-A recursive function is said to be *tail recursive*, if all recursive calls occur at *tail position*: The last function call in a (sub)expression. For instance, the following version of `len` is tail recursive:
+すべての再帰呼び出しが **末尾位置（tail position）**（式の中で最後に評価される関数の位置）にある再帰関数を **末尾再帰（tail recursive）** であると呼びます。たとえば、以下の `lenOnto` は末尾再帰です：
 
 ```idris
 lenOnto : Nat -> List a -> Nat
@@ -107,20 +110,20 @@ lenOnto k []        = k
 lenOnto k (_ :: xs) = lenOnto (k + 1) xs
 ```
 
-Compare this to `len` as defined above: There, the last function call is an invocation of operator `(+)`, and the recursive call happens in one of its arguments:
+先ほどの `len` と比較してみましょう：先ほどの `len` では、最後に呼ばれるのは加算演算子 `(+)` であり、再帰呼び出しはその引数の中で行われていました：
 
 ```repl
 len (_ :: xs) = 1 + len xs
 ```
 
-We can use `lenOnto` as a utility to implement a tail recursive version of `len` without the additional `Nat` argument:
+`lenOnto` を使って、追加の `Nat` 引数を持たない末尾再帰版の `len` を実装できます：
 
 ```idris
 lenTR : List a -> Nat
 lenTR = lenOnto 0
 ```
 
-This is a common pattern when writing tail recursive functions: We typically add an additional function argument for accumulating intermediary results, which is then passed on explicitly at each recursive call. For instance, here is a tail recursive version of `replicateList`:
+これは末尾再帰関数を書く際の典型的なパターンです：中間結果を蓄積（アキュムレート）するための引数を1つ追加し、各再帰呼び出しでそれを明示的に渡していきます。以下は `replicateList` の末尾再帰版です：
 
 ```idris
 replicateListTR : Nat -> a -> List a
@@ -130,23 +133,21 @@ replicateListTR n v = go Nil n
         go xs (S k) = go (v :: xs) k
 ```
 
-The big advantage of tail recursive functions is, that they can be easily converted to efficient, imperative loops by the Idris compiler, and are thus *stack safe*: Recursive function calls are *not* added to the call stack, thus avoiding the dreaded stack overflow errors.
+末尾再帰関数の最大の利点は、Idris コンパイラによって **効率的な命令型ループ（ループ文）に自動変換** されるため、**スタックセーフ（stack safe）** になる点です。再帰呼び出しがコールスタックに積まれなくなるため、スタックオーバーフローを回避できます。
 
 ```idris
 main1 : IO ()
 main1 = printLn . lenTR $ replicateListTR 10000 10
 ```
 
-We can again run `main1` using the *Node.js* backend. This time, we use slightly different syntax to execute a function other than `main` (Remember: The dollar prefix is only there to distinghish a terminal command from its output. It is not part of the command you enter in a terminal sesssion.):
+これを Node.js バックエンドで実行すると、スタックオーバーフローを起こさずに正常に完了します：
 
 ```sh
 $ idris2 --cg node --exec main1 --find-ipkg src/Tutorial/Folds.md
 10000
 ```
 
-As you can see, this time the computation finished without overflowing the call stack.
-
-Tail recursive functions are allowed to consist of (possibly nested) pattern matches, with recursive calls at tail position in several of the branches. Here is an example:
+末尾再帰関数は、複数の分岐を持つ pattern match で構成されていても、各分岐の末尾で再帰呼び出しが行われていれば問題ありません：
 
 ```idris
 countTR : (a -> Bool) -> List a -> Nat
@@ -158,11 +159,9 @@ countTR p = go 0
           False => go k xs
 ```
 
-Note, how each invocation of `go` is in tail position in its branch of the case expression.
+## 相互再帰 (Mutual Recursion)
 
-## Mutual Recursion
-
-It is sometimes convenient to implement several related functions, which call each other recursively. In Idris, unlike in many other programming languages, a function must be declared in a source file *before* it can be called by other functions, as in general a function's implementation must be available during type checking (because Idris has dependent types). There are two ways around this, which actually result in the same internal representation in the compiler. Our first option is to write down the functions' declarations first with the implementations following after. Here's a silly example:
+複数の関連する関数が互いを再帰的に呼び出し合う **相互再帰（mutual recursion）** を書きたい場合があります。Idris では型チェック時に実装が必要になる場合があるため、他の関数から呼び出される前に宣言されている必要があります。1つの方法は宣言を先にまとめて書き、後から実装を書くことです：
 
 ```idris
 even : Nat -> Bool
@@ -176,9 +175,7 @@ odd 0     = False
 odd (S k) = even k
 ```
 
-As you can see, function `even` is allowed to call function `odd` in its implementation, since `odd` has already been declared (but not yet implemented).
-
-If you're like me and want to keep declarations and implementations next to each other, you can introduce a `mutual` block, which has the same effect. Like with other code blocks, functions in a `mutual` block must all be indented by the same amount of whitespace:
+宣言と実装を近くにまとめておきたい場合は、`mutual` ブロックを使用できます：
 
 ```idris
 mutual
@@ -191,7 +188,7 @@ mutual
   odd' (S k) = even' k
 ```
 
-Just like with single recursive functions, mutually recursive functions can be optimized to imperative loops if all recursive calls occur at tail position. This is the case with functions `even` and `odd`, as can again be verified at the *Node.js* backend:
+単一の再帰関数と同様に、相互再帰関数もすべての再帰呼び出しが末尾位置にあれば命令型ループに最適化（相互末尾呼び出し最適化）されます：
 
 ```idris
 main2 : IO ()
@@ -205,21 +202,14 @@ True
 False
 ```
 
-## Final Remarks
+## まとめと留意点
 
-In this section, we learned about several important aspects of recursion and totality checking, which are summarized here:
+- 純粋関数型プログラミングでは、再帰が反復処理を記述するための基本手段です。
+- 再帰関数は、再帰呼び出しごとに引数の1つが真に小さくなっていることを検証できれば全域性チェッカーをパスします。
+- 任意の再帰は、スタック制限の厳しいバックエンドでスタックオーバーフローを引き起こす可能性があります。
+- Idris の JavaScript バックエンドは末尾呼び出し最適化を行い、末尾再帰関数をスタックセーフなループに変換します。
 
-- In pure functional programming, recursion is the way to implement iterative procedures.
-
-- Recursive functions pass the totality checker, if it can verify that one of the arguments is getting strictly smaller in every recursive function call.
-
-- Arbitrary recursion can lead to stack overflow exceptions on backends with small stack size limits.
-
-- The JavaScript backends of Idris perform mutual tail call optimization: Tail recursive functions are converted to stack safe, imperative loops.
-
-Note, that not all Idris backends you will come across in the wild will perform tail call optimization. Please check the corresponding documentation.
-
-Note also, that most recursive functions in the core libraries (*prelude* and *base*) do not yet make use of tail recursion. There is an important reason for this: In many cases, non-tail recursive functions are easier to use in compile-time proofs, as they unify more naturally than their tail recursive counterparts. Compile-time proofs are an important aspect of programming in Idris (as we will see in later chapters), so there is a compromise to be made between what performs well at runtime and what works well at compile time. Eventually, the way to go might be to provide two implementations for most recursive functions with a *transform rule* telling the compiler to use the optimized version at runtime whenever programmers use the non-optimized version in their code. Such transform rules have - for instance - already been written for functions `pack` and `unpack` (which use `fastPack` and `fastUnpack` at runtime; see the corresponding rules in [the following source file](https://github.com/idris-lang/Idris2/blob/main/libs/prelude/Prelude/Types.idr)).
+なお、*prelude* や *base* ライブラリ内の多くの再帰関数は、現時点ではあえて末尾再帰になっていないものがあります。これは、非末尾再帰関数の方がコンパイル時の等式証明において単一化しやすく扱いやすいためです。Idris では実行時のパフォーマンスとコンパイル時の証明の書きやすさのバランスが考慮されています。
 
 <!-- vi: filetype=idris2:syntax=markdown
 -->

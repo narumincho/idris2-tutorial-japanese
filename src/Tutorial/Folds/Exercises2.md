@@ -1,19 +1,23 @@
-# Exercises part 2
+# 再帰と畳み込み 練習問題 パート2
 
-Implement the following functions in a provably total way without "cheating". Note: It is not necessary to implement these in a tail recursive way.
+> 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Exercises2.md)  
+> 🤖 **翻訳:** Gemini 3.7 Flash
+
+以下の関数を、`assert_smaller` や `assert_total` でごまかすことなく、証明可能に全域的な方法で実装してください（末尾再帰にする必要はありません）。
 
 <!-- textlint-disable terminology -->
 
-1. Implement function `depth` for rose trees. This should return the maximal number of `Node` constructors from the current node to the farthest child node. For instance, the current node should be at depth one, all its direct child nodes are at depth two, their immediate child nodes at depth three and so on.
+1. ローズツリーに対する関数 `depth`（深さ）を実装してください。現在のノードから最も遠い子ノードまでの `Node` コンストラクタの最大数を返すようにします（現在のノード自体の深さは 1、その直接の子ノードは深さ 2、さらにその子ノードは深さ 3 となります）。
 
-2. Implement interface `Eq` for rose trees.
+2. ローズツリーに対する `Eq` インターフェースを実装してください。
 
-3. Implement interface `Functor` for rose trees.
+3. ローズツリーに対する `Functor` インターフェースを実装してください。
 
-4. For the fun of it: Implement interface `Show` for rose trees.
+4. ローズツリーに対する `Show` インターフェースを実装してください。
 
-5. In order not to forget how to program with dependent types, implement function `treeToVect` for converting a rose tree to a vector of the correct size.
+5. 依存型プログラミングを復習するために、ローズツリーを正しいサイズの `Vect` に変換する関数 `treeToVect` を実装してください。
 
-   Hint: Make sure to follow the same recursion scheme as in the implementation of `treeSize`. Otherwise, this might be very hard to get to work.
+   ヒント: `treeSize` の実装と同じ再帰スキーム（相互再帰）に従ってください。そうしないと、型を合わせるのが非常に困難になります。
 
 <!-- textlint-enable -->
+
