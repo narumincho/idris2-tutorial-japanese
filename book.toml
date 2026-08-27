@@ -11,6 +11,8 @@ create-missing = false
 preferred-dark-theme = "ayu"
 default-theme = "rust"
 git-repository-url = "https://github.com/idris-community/idris2-tutorial"
+additional-js = ["assets/japanese-search.js"]
+
 
 [output.html.print]
 enable = true

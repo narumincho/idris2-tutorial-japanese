@@ -37,6 +37,17 @@ sub copy-to-dest($src) {
 
 # Copy our metadata files
 copy-to-dest "book.toml";
+if "assets".IO.d {
+    for paths("assets") -> $path {
+        copy-to-dest $path.IO.relative;
+    }
+}
+if "theme".IO.d {
+    for paths("theme") -> $path {
+        copy-to-dest $path.IO.relative;
+    }
+}
+
 
 # Katla over the source files, just plain copying them if the ttm doesn't exist
 # Implement special handling for idr files
