@@ -29,19 +29,34 @@ sub copy-to-dest($src) {
    # Create the parent directory if needed
    if !$output-path.parent.d {
        $output-path.parent.mkdir;
-
    }
    # Copy the file
    $src-path.resolve.copy: $output-path;
 }
 
-# Copy our metadata files
-copy-to-dest "book.toml";
+# Determine git commit hash
+my $commit-hash = %*ENV<GITHUB_SHA> // do {
+    my $git-rev = run 'git', 'rev-parse', 'HEAD', :out, :err;
+    if $git-rev {
+        $git-rev.out.slurp(:close).trim;
+    } else {
+        'japanese';
+    }
+};
+
+say "Building for commit hash: $commit-hash";
+
+# Copy and interpolate book.toml
+my $book-toml = "book.toml".IO.slurp;
+$book-toml ~~ s:g/'__COMMIT_HASH__'/$commit-hash/;
+$tempdir.add("book.toml").spurt($book-toml);
+
 if "assets".IO.d {
     for paths("assets") -> $path {
         copy-to-dest $path.IO.relative;
     }
 }
+
 if "theme".IO.d {
     for paths("theme") -> $path {
         copy-to-dest $path.IO.relative;

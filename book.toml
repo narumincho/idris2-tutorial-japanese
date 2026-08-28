@@ -10,8 +10,10 @@ create-missing = false
 [output.html]
 preferred-dark-theme = "ayu"
 default-theme = "rust"
-git-repository-url = "https://github.com/idris-community/idris2-tutorial"
-additional-js = ["assets/japanese-search.js"]
+git-repository-url = "https://github.com/narumincho/idris2-tutorial-japanese/tree/__COMMIT_HASH__"
+edit-url-template = "https://github.com/narumincho/idris2-tutorial-japanese/blob/__COMMIT_HASH__/src/{path}"
+additional-js = ["assets/japanese-search.js", "assets/github-link.js"]
+
 
 
 [output.html.print]
