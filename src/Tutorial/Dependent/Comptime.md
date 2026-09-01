@@ -87,9 +87,11 @@ ex5 = zipWith (*) (replicate _ 10) (replicate _ 11)
 したがって、`n` を **無制限 (unrestricted)** の多重度を持つ暗黙の引数として渡す `replicate` の代替バージョンを実装できます：
 
 ```idris
-replicate' : {n : Nat} -> a -> Vect n a
+replicate' : {n : _} -> a -> Vect n a
 replicate' = replicate n
 ```
+
+`replicate'` の実装において、`n` を参照して `replicate` に明示的な引数として渡せている点に注目してください。
 
 推論可能な引数を暗黙的に渡すか明示的に渡すかの判断は、Idris がその引数を実際に推論できる頻度がどれくらいあるかによって決まります。場合によっては、1つの関数に対して両方のバージョンを用意するのが有用なこともあります。なお、暗黙の引数であっても明示的に値を渡すことができることを思い出してください：
 
