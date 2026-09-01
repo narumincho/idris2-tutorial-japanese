@@ -111,7 +111,7 @@ traverseVect' : Applicative f => (a -> f b) -> Vect n a -> f (List b)
 traverseVect' fun = traverseList fun . toList
 ```
 
-私たちが欲しいのは、元のコンテナの構造（型レベル情報）をそのまま保持する関数です：
+ここで必要となるのは、元のコンテナの構造（型レベル情報）をそのまま保持する関数です：
 
 ```idris
 traverseVect : Applicative f => (a -> f b) -> Vect n a -> f (Vect n b)

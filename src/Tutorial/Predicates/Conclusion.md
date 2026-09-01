@@ -1,4 +1,4 @@
-# 述語と証明探索 おわりに (Conclusion)
+# おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Conclusion.md)  
 > 🤖 **翻訳:** Gemini 3.7 Flash
