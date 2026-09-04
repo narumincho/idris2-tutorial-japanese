@@ -1,7 +1,7 @@
 # 述語と証明探索 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. `inSchema` の戻り値の型を `Dec (c ** InSchema n ss c)` に変更することで、`InSchema` が決定可能であることを示してください。
 

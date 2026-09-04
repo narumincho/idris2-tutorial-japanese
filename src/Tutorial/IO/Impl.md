@@ -1,7 +1,7 @@
 # `IO` の実装の仕組み
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Impl.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Impl.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 すでに長くなった本章の最後に、Idris で `IO` が内部的にどのように実装されているかを少し覗いてみましょう。興味深いことに、`IO` はコンパイラ組み込みの魔法の型ではなく、ほんの少しの特殊性を持つ通常のデータ型です。REPL で確認してみましょう：
 

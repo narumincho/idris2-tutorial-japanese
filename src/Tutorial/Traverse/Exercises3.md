@@ -1,7 +1,7 @@
 # エフェクトを伴う走査 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 *Prelude* は、`Either` や `Pair` のように **2 つ** の型パラメータを持つコンテナ型向けに、`Bifunctor`, `Bifoldable`, `Bitraversable` という 3 つの追加インターフェースを提供しています。以下の練習問題でこれらを実践してみましょう。
 

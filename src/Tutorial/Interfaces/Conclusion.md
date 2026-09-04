@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 - インターフェースを使用すると、異なる型に対して異なる振る舞いを持つ同じ関数を実装できます。
 - 1つ以上のインターフェース実装を引数（制約）として受け取る関数は **制約付き関数 (constrained functions)** と呼ばれます。

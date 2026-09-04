@@ -1,7 +1,7 @@
 # 困ったときのヘルプ・質問先
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/WhereToGetHelp.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/WhereToGetHelp.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 Idris プログラミング言語に関するヘルプやドキュメントを入手できるリソースが、オンラインや書籍としていくつか提供されています。以下はその主な一覧です：
 

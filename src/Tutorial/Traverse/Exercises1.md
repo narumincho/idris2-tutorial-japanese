@@ -1,7 +1,7 @@
 # エフェクトを伴う走査 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. `Traversable` が `Functor` を制約（親インターフェース）に持つのは興味深い点です。`map` を `traverse` を使って実装することで、すべての `Traversable` が自動的に `Functor` になることを証明してください。
 

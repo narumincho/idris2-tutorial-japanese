@@ -1,7 +1,7 @@
 # インターフェース 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 これらの練習問題は、Idris コードを書く際に頻繁に行うことになる「独自のデータ型に対するインターフェースの実装」に慣れるためのものです。
 

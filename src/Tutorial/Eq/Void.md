@@ -1,7 +1,7 @@
-# 空虚（Void）への招待 (Into the Void)
+# 空型（Void）への招待 (Into the Void)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Void.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Void.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Eq.Void
@@ -17,7 +17,7 @@ import Data.String
 ```
 
 「ある命題が偽である（成り立たない）」ことを Idris で表現するにはどうすればよいでしょうか？
-Idris では、命題が成り立つならその型は要素（値）を持つ（**居住している / inhabited**）といい、成り立たないならその型には要素が存在しない（**空である / uninhabited**）といいます。
+Idris では、命題が成り立つならその型は要素（値）を持つ（**要素が存在する / inhabited**）といい、成り立たないならその型には要素が存在しない（**空である / uninhabited**）といいます。
 
 「命題 $P$ が偽である」ことは、「もし $P$ が成り立つと仮定すると矛盾（`Void`）が導かれる」、すなわち **$P \to \text{Void}$** という関数型で表現します：
 
@@ -38,7 +38,7 @@ contraCong fun x = fun $ cong f x
 
 ## `Uninhabited` インターフェース
 
-値が存在し得ない型を表すインターフェースとして `Uninhabited`（関数 `uninhabited : t -> Void`）が用意されています。また、`absurd : Uninhabited t => t -> a` は矛盾から任意の型を導出する（爆破律 / principle of explosion）関数です：
+値が存在し得ない型を表すインターフェースとして `Uninhabited`（関数 `uninhabited : t -> Void`）が用意されています。また、`absurd : Uninhabited t => t -> a` は矛盾から任意の型を導出する（爆発律 / principle of explosion）関数です：
 
 ```idris
 Uninhabited (SameSchema [] (h :: t)) where

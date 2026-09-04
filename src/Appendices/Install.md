@@ -1,7 +1,7 @@
 # pack と Idris 2 の導入手順 (Getting Started with pack and Idris2)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/Install.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/Install.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ここでは、Idris 2 を使い始めるにあたって最も便利だと考える方法を説明します。[pack](https://github.com/stefan-hoeck/idris2-pack) パッケージマネージャをインストールすることで、最新バージョンの Idris コンパイラも同時にインストールされます。ただし、これには Linux や macOS などの Unix 系オペレーティングシステムが必要です。Windows ユーザーは [WSL](https://learn.microsoft.com/ja-jp/windows/wsl/about) を利用して Linux 環境を用意することができます。
 

@@ -1,7 +1,7 @@
 # インターフェース
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 関数のオーバーロード（同じ名前でありながら異なる実装を持つ関数の定義）は、多くのプログラミング言語に見られる概念です。Idris は関数のオーバーロードをネイティブにサポートしています。異なるモジュールや名前空間で同名の2つの関数を定義でき、Idris は関連する型に基づいてそれらの曖昧さを解消しようと試みます。以下に例を示します：
 

@@ -1,7 +1,7 @@
 # プリミティブの実装方法 (How Primitives are Implemented)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Prim.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Prim.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Prim.Prim

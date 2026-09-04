@@ -1,7 +1,7 @@
 # シグマ型 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ここでの課題は、テーブルエディタを拡張するものです（練習問題 1〜3 は特に重要です）。
 

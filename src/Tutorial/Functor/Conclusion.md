@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 - `Functor`, `Applicative`, `Monad` インターフェースは、`Type -> Type` 型の型コンストラクタを扱う際に頻出するプログラミングパターンを抽象化します。このようなデータ型は「文脈を持つ値（values in a context）」や「エフェクトを伴う計算（effectful computations）」とも呼ばれます。
 - `Functor` は、内部構造を変えずに文脈内の値に純粋関数をマップ（適用）することを可能にします。

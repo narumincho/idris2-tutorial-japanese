@@ -1,7 +1,7 @@
 # 代数的データ型
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 前章では、独自の関数を記述し、それらを組み合わせてより複雑な機能を作り出す方法について学びました。それと同様に重要なのが、独自のデータ型を定義し、それらを関数の引数や戻り値として利用できるようにすることです。
 

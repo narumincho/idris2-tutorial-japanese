@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 - 依存型を使用すると、値から型を計算できます。これにより値の性質を型レベルでエンコードし、コンパイル時に検証することが可能になります。
 - 長さ付きリスト（ベクトル）は、入力と出力のベクトルの長さを厳密に指定することを強制することで、特定の実装エラーを排除します。

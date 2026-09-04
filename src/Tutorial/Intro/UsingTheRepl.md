@@ -1,7 +1,7 @@
 # REPL の使い方
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/UsingTheRepl.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/UsingTheRepl.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 Idris には REPL（*Read-Eval-Print Loop*、対話型評価環境）が付属しており、ちょっとしたアイデアを試したり、書いたばかりのコードを手早く実験したりするのに便利です。REPL セッションを開始するには、ターミナルで以下のコマンドを実行します：
 

@@ -1,7 +1,7 @@
 # 再帰と畳み込み 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 以下の関数を、`assert_smaller` や `assert_total` でごまかすことなく、証明可能に全域的な方法で実装してください（末尾再帰にする必要はありません）。
 

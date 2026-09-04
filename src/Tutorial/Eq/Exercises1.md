@@ -1,7 +1,7 @@
 # 命題的等値性 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節の練習問題では、等値性の証明に関する基本的な性質（同値関係）を実装します。
 

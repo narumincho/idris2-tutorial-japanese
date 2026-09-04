@@ -1,7 +1,7 @@
 # IO 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節の練習問題では、いくつかの小さなコマンドラインアプリケーションを実装します。その中には、ユーザーが終了キーワードを入力するまで潜在的に永遠に実行され続けるものがあります。そのようなプログラムは全域性を証明できません。ソースファイルの冒頭に `%default total` プラグマを追加している場合、これらの関数には `covering` アノテーションを付与する必要があります。これは「すべてのパターンマッチで全ケースを網羅（カバー）しているが、無制限の再帰によりプログラムが無限ループする可能性がある」ことを意味します。
 

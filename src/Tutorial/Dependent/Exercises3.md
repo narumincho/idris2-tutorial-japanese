@@ -1,7 +1,7 @@
 # 依存型 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. 以下は `List` のリストを平坦化（flatten）する関数宣言です：
 

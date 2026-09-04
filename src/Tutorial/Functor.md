@@ -1,7 +1,7 @@
 # Functor とその仲間たち
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 プログラミングは数学と同様に、抽象化が中核をなします。現実世界の振る舞いをモデル化し、繰り返し現れるパターンを抽象化して再利用可能な形に落とし込んでいきます。
 

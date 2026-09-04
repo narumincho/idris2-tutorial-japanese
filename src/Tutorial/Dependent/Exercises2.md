@@ -1,7 +1,7 @@
 # 依存型 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. 関数 `a -> a` を受け取り、`Vect n a` の位置 `k < n` にある要素を更新する関数 `update` を実装してください。
 

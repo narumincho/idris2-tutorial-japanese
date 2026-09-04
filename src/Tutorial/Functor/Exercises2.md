@@ -1,7 +1,7 @@
 # Functor 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 01. `Either e` と `Identity` に対する `Applicative'` を実装してください。
 

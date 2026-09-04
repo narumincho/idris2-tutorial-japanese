@@ -1,7 +1,7 @@
 # 再帰と畳み込み 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節の練習問題では、さまざまなデータ型に対する `Foldable` を実装します。できる限りインターフェースの 6 つの関数すべてを手動で実装してみてください。
 

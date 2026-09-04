@@ -1,7 +1,7 @@
 # プリミティブ 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 この非常に充実した練習問題セットでは、プリミティブに対する述語を扱うための小さなライブラリを構築します。以下の目標を念頭に置いて進めてください：
 

@@ -100,7 +100,7 @@
   - [練習問題 1](./Tutorial/Eq/Exercises1.md)
   - [証明としてのプログラム](./Tutorial/Eq/ProgramsAsProofs.md)
   - [練習問題 2](./Tutorial/Eq/Exercises2.md)
-  - [空虚（Void）への招待](./Tutorial/Eq/Void.md)
+  - [空型（Void）への招待](./Tutorial/Eq/Void.md)
   - [練習問題 3](./Tutorial/Eq/Exercises3.md)
   - [書き換え規則 (Rewrite Rules)](./Tutorial/Eq/Rewrite.md)
   - [練習問題 4](./Tutorial/Eq/Exercises4.md)

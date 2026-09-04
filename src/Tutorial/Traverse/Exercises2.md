@@ -1,7 +1,7 @@
 # エフェクトを伴う走査 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節は、State モナドへの理解を深めるための 2 つの発展的な練習問題で構成されています。第 1 問では状態付き計算の典型例である擬似乱数生成を扱い、第 2 問では状態の値だけでなく状態の **型** も変化させることができるインデックス付き State モナドを扱います。
 

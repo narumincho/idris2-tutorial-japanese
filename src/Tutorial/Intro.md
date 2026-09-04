@@ -1,7 +1,7 @@
 # はじめに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 [本書を構成する](https://github.com/idris-community/idris2-tutorial) Markdown ファイルの多く（拡張子が `.md` のもの）は、Markdown と Idris コードが混在した「文芸的 (literate) Idris」ファイルです。これらは通常のコードと同様に Idris コンパイラによって型チェックされ、ビルドされます。ドキュメントが文芸的 Idris ファイルであるかどうかは、以下のように `module` 宣言が含まれているかどうかで判別できます：
 

@@ -1,7 +1,7 @@
 # IO 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. 以下の *do ブロック* を、1回目は **bang 記法（`!`）** を使用して、2回目はネストした *bind* 演算子による **脱糖された形式** で再実装してください：
 

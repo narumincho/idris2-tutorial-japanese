@@ -1,7 +1,7 @@
 # IO 練習問題 パート3
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. 前述の例で見たように、ファイルハンドルを操作する `IO` アクションには失敗のリスクが常に伴います。そこで、いくつかのユーティリティ関数とカスタム *bind* 演算子を作成して、これらのネストしたエフェクトを簡潔に扱えるようにしましょう。新しい名前空間 `IOErr` 内で以下のユーティリティ関数を実装し、それらを使って `countEmpty'` の実装をさらに整理してください：
 

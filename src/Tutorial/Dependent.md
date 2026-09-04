@@ -1,7 +1,7 @@
 # 依存型
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 値から型を計算し、型を関数の引数として渡し、関数の結果として型を返す能力——要するに **依存型付き言語 (dependently typed language)** であることは、Idris の最も際立った特徴の1つです。Haskell などの言語における高度な型レベル拡張の多く（そしてそれ以上のこと）が、依存型によって一挙に扱えるようになります。
 

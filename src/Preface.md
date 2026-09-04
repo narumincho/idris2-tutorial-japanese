@@ -1,7 +1,7 @@
 # Idris 2 プログラミング言語
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Preface.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Preface.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 _著: Stefan Höck, Nathan McCarty, [他コントリビューター](https://github.com/idris-community/idris2-tutorial/graphs/contributors)_
 

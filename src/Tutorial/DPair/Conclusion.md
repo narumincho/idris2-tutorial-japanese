@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 依存ペアや依存レコードは、扱う型を決定づける値を実行時に検査するために不可欠です。これらの値に対してパターンマッチを行うことで、他の値の型や取りうる構造を正確に把握し、プログラムの潜在的なバグを大幅に削減できます。
 

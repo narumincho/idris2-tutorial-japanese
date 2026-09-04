@@ -1,7 +1,7 @@
 # 事前条件 (Preconditions)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Preconditions.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Preconditions.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Predicates.Preconditions

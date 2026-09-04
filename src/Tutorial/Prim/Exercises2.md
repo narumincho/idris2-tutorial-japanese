@@ -1,7 +1,7 @@
 # プリミティブ 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. 整数値に対するラッパーレコードを定義し、`(<+>)` が `(.&.)`（ビット積 / AND）に対応するように `Monoid` を実装してください。
 

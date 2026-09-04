@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 - `IO a` 型の値は、最終的に `a` 型の値を返す副作用を伴うプログラムを記述したものです。
 - `IO a` から `a` 型の値を安全に取り出すことはできませんが、いくつかのコンビネータや糖衣構文を使用して `IO` アクションを組み合わせ、より複雑なプログラムを構築できます。

@@ -1,7 +1,7 @@
 # 再帰と畳み込み (Recursion and Folds)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本章では、`List`、`Maybe`、`Identity` のような、型パラメータで指定された型の値を 0 個以上保持する **コンテナ型** に対して通常行う計算について詳しく見ていきます。これらの関数の多くは本質的に再帰的であるため、まず一般的な再帰について、そして重要な最適化手法である **末尾再帰（tail recursion）** についての解説から始めます。本節のほとんどの再帰関数は、リストに対する純粋な反復処理を記述します。
 

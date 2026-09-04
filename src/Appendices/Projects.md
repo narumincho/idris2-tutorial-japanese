@@ -1,7 +1,7 @@
 # Idris プロジェクトの構成方法 (Structuring Idris Projects)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/Projects.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/Projects.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節では、規模の大きい Idris プロジェクトの整理、インストール、および依存関係の管理方法について説明します。Idris パッケージ、モジュールシステム、型や関数の可視性（スコープ）、コメントやドキュメント文字列の書き方、そしてライブラリ管理に pack を使用する方法を見ていきます。
 

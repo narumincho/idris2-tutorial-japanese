@@ -1,7 +1,7 @@
 # 命題的等値性 練習問題 パート4
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Exercises4.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Exercises4.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. `plusSuccRightSucc` を自力で実装してください。
 

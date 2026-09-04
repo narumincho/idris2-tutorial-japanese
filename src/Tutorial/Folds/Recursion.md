@@ -1,7 +1,7 @@
 # 再帰 (Recursion)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Recursion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Recursion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Folds.Recursion

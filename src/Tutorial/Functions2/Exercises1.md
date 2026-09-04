@@ -1,7 +1,7 @@
 # 関数 パート2 練習問題
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節の練習問題は、純粋関数型コードを書く経験を深めるためのものです。場合によっては `let` 式や `where` ブロックを使用すると便利ですが、必ずしも必須ではありません。
 

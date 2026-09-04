@@ -1,7 +1,7 @@
 # インターフェースの発展的な機能
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/More.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/More.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Interfaces.More

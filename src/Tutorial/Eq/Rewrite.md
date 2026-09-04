@@ -1,7 +1,7 @@
 # 書き換え規則 (Rewrite Rules)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Rewrite.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Rewrite.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Eq.Rewrite

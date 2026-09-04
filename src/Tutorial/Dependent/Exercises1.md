@@ -1,7 +1,7 @@
 # 依存型 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Dependent/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Dependent/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 01. `List` の長さを計算する関数 `len : List a -> Nat` を実装してください。たとえば `len [1, 1, 1]` は `3` を返します。
 

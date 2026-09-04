@@ -1,7 +1,7 @@
 # Let 束縛とローカル定義
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/LetBindings.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/LetBindings.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Functions2.LetBindings

@@ -1,7 +1,7 @@
 # 量的型理論の深層探求 (A Deep Dive into Quantitative Type Theory)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/QTT.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/QTT.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 チュートリアルの本文において関数を解説した際、Idris 2 の多重度（quantity）システムを紹介しました。そこでの説明は意図的に簡略化されていました。多重度の内部の仕組みは複雑であり、その複雑さは Idris 2 の初心者にとって混乱の元にしかならないためです。
 

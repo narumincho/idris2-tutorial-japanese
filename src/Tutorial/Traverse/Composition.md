@@ -1,7 +1,7 @@
 # 合成の威力 (The Power of Composition)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Composition.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Composition.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Traverse.Composition

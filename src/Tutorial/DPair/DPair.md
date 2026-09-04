@@ -1,7 +1,7 @@
 # 依存ペア (Dependent Pairs)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/DPair.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/DPair.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.DPair.DPair

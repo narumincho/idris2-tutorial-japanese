@@ -1,7 +1,7 @@
 # プリミティブ (Primitives)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Prim.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Prim.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 これまで扱ってきたトピックでは、Idris のプリミティブ型についてほとんど触れてきませんでした。それらは身近に存在し、いくつかの計算でも使用してきましたが、それらがどのように動作し、どこから来ているのか、何ができて何ができないのかについて詳しく説明していませんでした。
 

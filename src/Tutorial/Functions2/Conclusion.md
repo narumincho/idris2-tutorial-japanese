@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions2/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions2/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本章でも多くの重要なトピックを扱いました。ホール（Hole）を用いたプログラミングに慣れ、次に何をすべきかを型チェッカーに教えてもらう手法は、Idris において非常に重要です。
 

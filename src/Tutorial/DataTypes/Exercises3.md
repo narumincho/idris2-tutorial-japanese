@@ -1,7 +1,7 @@
 # レコード 練習問題
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DataTypes/Exercises3.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DataTypes/Exercises3.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 これらの練習問題の解答は [`src/Solutions/DataTypes.idr`](../../Solutions/DataTypes.md) にあります。
 

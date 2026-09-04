@@ -1,7 +1,7 @@
 # インターフェース 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Interfaces/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Interfaces/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. 値のリストの中に、指定された基準値よりも大きい要素が少なくとも1つ含まれている場合にのみ `True` を返す関数 `anyLarger` を実装してください。実装にはインターフェース `Comp` を使用してください。
 

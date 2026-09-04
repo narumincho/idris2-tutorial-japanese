@@ -1,7 +1,7 @@
 # 再帰と畳み込み 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Folds/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Folds/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節の練習問題では、いくつかの再帰関数を実装します。可能な限り末尾再帰を使用し、REPL で正しく動作するか確認してください。
 

@@ -1,7 +1,7 @@
 # Neovim での対話的編集 (Interactive Editing in Neovim)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Appendices/Neovim.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Appendices/Neovim.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 Idris は、プログラム内の値や式の型を対話的に分析し、提供された型に基づいてスケルトン実装や時にはプログラム全体を自動生成するための強力な機能を提供しています。これらの対話的編集機能は、さまざまなエディタのプラグインを介して利用可能です。筆者は Neovim ユーザーであるため、ここでは自身の設定のうち Idris に関連する部分について詳しく説明します。
 

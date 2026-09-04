@@ -1,7 +1,7 @@
 # 述語と証明探索 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 この練習問題では、関数の引数として受け入れられる値を制約するために、自動暗黙引数（auto implicits）を利用するいくつかの関数を実装します。結果は *純粋（pure）* でなければなりません。つまり、`Maybe` のような失敗を表す型でラップしないでください。
 

@@ -1,7 +1,7 @@
 # シグマ型 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 依存ペアと依存レコードを扱うスキルを磨きましょう！ 練習問題 2〜7 では、関数が依存ペアやレコードを返すべきか、パターンマッチのための追加引数が必要かなどを自分で判断して設計します。
 

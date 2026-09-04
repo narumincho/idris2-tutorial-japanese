@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functions1/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functions1/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本章では、以下の内容について学びました：
 

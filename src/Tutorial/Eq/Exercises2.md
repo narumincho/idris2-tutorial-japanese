@@ -1,7 +1,7 @@
 # 命題的等値性 練習問題 パート2
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Eq/Exercises2.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Eq/Exercises2.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 本節の練習問題では、関数の性質に関する簡単な証明を実装します。ホールを活用しながら進めてください。
 

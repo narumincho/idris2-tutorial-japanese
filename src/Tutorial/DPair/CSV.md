@@ -1,7 +1,7 @@
 # ユースケース: スキーマ付き CSV ファイル (Use Case: CSV Files with a Schema)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/DPair/CSV.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/DPair/CSV.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.DPair.CSV

@@ -1,7 +1,7 @@
 # おわりに
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Traverse/Conclusion.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Traverse/Conclusion.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 `Traversable` インターフェースとその主要関数 `traverse` は信じられないほど強力な抽象化であり、`Applicative` と `Traversable` がどちらも合成可能であることによってその力はさらに増します。さらなるユースケースに興味がある方は、Haskell に `Traversable` を導入した論文 [The Essence of the Iterator Pattern](https://www.cs.ox.ac.uk/jeremy.gibbons/publications/iterator.pdf) を一読することを強くお勧めします。
 

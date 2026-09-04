@@ -1,7 +1,7 @@
 # Do ブロックの脱糖（糖衣構文の解除）
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/IO/DoUnsugared.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/IO/DoUnsugared.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.IO.DoUnsugared

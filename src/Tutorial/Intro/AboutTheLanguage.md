@@ -1,7 +1,7 @@
 # Idris 言語について
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Intro/AboutTheLanguage.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Intro/AboutTheLanguage.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 Idris は、**純粋 (pure)** で、**依存型付き (dependently typed)** かつ **全域的 (total)** な **関数型 (functional)** プログラミング言語です。
 

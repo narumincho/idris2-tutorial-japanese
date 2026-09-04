@@ -1,7 +1,7 @@
 # Functor 練習問題 パート1
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Functor/Exercises1.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Functor/Exercises1.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 1. `Maybe`, `List`, `List1`, `Vect n`, `Either e`, `Pair a` に対する独自の `Functor'` 実装を記述してください。
 

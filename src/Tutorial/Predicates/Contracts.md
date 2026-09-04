@@ -1,7 +1,7 @@
 # 値どうしの契約 (Contracts between Values)
 
 > 🌐 **翻訳元:** [idris-community/idris2-tutorial/src/Tutorial/Predicates/Contracts.md](https://github.com/idris-community/idris2-tutorial/blob/main/src/Tutorial/Predicates/Contracts.md)  
-> 🤖 **翻訳:** Gemini 3.7 Flash
+> 🤖 **翻訳:** Gemini 3.8 Flash
 
 ```idris
 module Tutorial.Predicates.Contracts
@@ -29,7 +29,7 @@ import System.File
 get' : (0 t : Type) -> HList ts -> t
 ```
 
-一般にはこれは成り立ちません。もしこれが実装できてしまうと、即座に空虚（`Void`）の証明が手に入ってしまうからです：
+一般にはこれは成り立ちません。もしこれが実装できてしまうと、即座に矛盾（空型 `Void` の要素）が手に入ってしまうからです：
 
 ```idris
 voidAgain : Void
